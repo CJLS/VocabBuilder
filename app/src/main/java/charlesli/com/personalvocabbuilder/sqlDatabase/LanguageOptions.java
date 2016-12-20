@@ -5,6 +5,9 @@ package charlesli.com.personalvocabbuilder.sqlDatabase;
  */
 public class LanguageOptions {
 
+    public static final int DETECT_LANGUAGE = 0;
+
+
     public static final String [] FROM_LANGUAGE = {
             "Detect Language",
             "Afrikaans",

@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.content.ContextCompat;
@@ -29,11 +30,17 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.appindexing.Action;
+import com.google.android.gms.appindexing.AppIndex;
+import com.google.android.gms.appindexing.Thing;
+import com.google.android.gms.common.api.GoogleApiClient;
+
 import charlesli.com.personalvocabbuilder.R;
 import charlesli.com.personalvocabbuilder.sqlDatabase.CategoryCursorAdapter;
 import charlesli.com.personalvocabbuilder.sqlDatabase.LanguageOptions;
 import charlesli.com.personalvocabbuilder.sqlDatabase.VocabDbContract;
 import charlesli.com.personalvocabbuilder.sqlDatabase.VocabDbHelper;
+import charlesli.com.personalvocabbuilder.ui.SettingsDialog;
 
 
 public class MainActivity extends AppCompatActivity {
@@ -41,14 +48,17 @@ public class MainActivity extends AppCompatActivity {
     // Review Mode
     public static final int WORDTODEF = 0;
     public static final int DEFTOWORD = 1;
-    private final int DETECT_LANGUAGE = 0;
-    private final int ENGLISH = 19;
     private String reviewCategory = VocabDbContract.CATEGORY_NAME_MY_VOCAB;
     private int reviewMode = WORDTODEF;
     private int reviewNumOfWords = 0;
     private CategoryCursorAdapter mCategoryAdapter;
     private ListView mCategoryListView;
     private VocabDbHelper mDbHelper = VocabDbHelper.getDBHelper(MainActivity.this);
+    /**
+     * ATTENTION: This was auto-generated to implement the App Indexing API.
+     * See https://g.co/AppIndexing/AndroidStudio for more information.
+     */
+    private GoogleApiClient client;
 
 
     @Override
@@ -98,6 +108,9 @@ public class MainActivity extends AppCompatActivity {
                 }
             });
         }
+        // ATTENTION: This was auto-generated to implement the App Indexing API.
+        // See https://g.co/AppIndexing/AndroidStudio for more information.
+        client = new GoogleApiClient.Builder(this).addApi(AppIndex.API).build();
     }
 
     @Override
@@ -119,82 +132,15 @@ public class MainActivity extends AppCompatActivity {
 
         if (id == R.id.add_category_button) {
             createAddCategoryDialog();
-        }
-        else if (id == R.id.settings_button) {
+        } else if (id == R.id.settings_button) {
             createSettingsDialog();
         }
         return super.onOptionsItemSelected(item);
     }
 
     private void createSettingsDialog() {
-        final AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
-        builder.setTitle("Translation Settings");
-
-        LayoutInflater li = LayoutInflater.from(MainActivity.this);
-        View promptsView = li.inflate(R.layout.alert_dialog_settings, null);
-
-        Spinner spinnerTranslateFrom = (Spinner) promptsView.findViewById(R.id.spinnerTranslateFrom);
-        Spinner spinnerTranslateTo = (Spinner) promptsView.findViewById(R.id.spinnerTranslateTo);
-
-        ArrayAdapter<String> fromArrayAdapter = new ArrayAdapter<String>(this,
-                android.R.layout.simple_spinner_item, LanguageOptions.FROM_LANGUAGE);
-        ArrayAdapter<String> toArrayAdapter = new ArrayAdapter<String>(this,
-                android.R.layout.simple_spinner_item, LanguageOptions.TO_LANGUAGE);
-
-        fromArrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        toArrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-
-        spinnerTranslateFrom.setAdapter(fromArrayAdapter);
-        spinnerTranslateTo.setAdapter(toArrayAdapter);
-
-        final SharedPreferences sharedPreferences = getSharedPreferences("Translation", MODE_PRIVATE);
-        int source = sharedPreferences.getInt("Source", DETECT_LANGUAGE);
-        int target = sharedPreferences.getInt("Target", ENGLISH);
-
-        spinnerTranslateFrom.setSelection(source);
-        spinnerTranslateTo.setSelection(target);
-
-
-        spinnerTranslateFrom.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                SharedPreferences.Editor editor = sharedPreferences.edit();
-                editor.putInt("Source", position);
-                editor.apply();
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> parent) {
-
-            }
-        });
-        spinnerTranslateTo.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                SharedPreferences.Editor editor = sharedPreferences.edit();
-                editor.putInt("Target", position);
-                editor.apply();
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> parent) {
-
-            }
-        });
-
-        builder.setView(promptsView);
-
-        builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                dialog.cancel();
-            }
-        });
-
-        final AlertDialog dialog = builder.create();
-
+        final AlertDialog dialog = new SettingsDialog(this);
         dialog.show();
-
         changeDialogButtonsColor(dialog);
     }
 
@@ -231,8 +177,7 @@ public class MainActivity extends AppCompatActivity {
                 String description = categoryDescInput.getText().toString();
                 if (mDbHelper.checkIfCategoryExists(name)) {
                     Toast.makeText(MainActivity.this, name + " already exists", Toast.LENGTH_SHORT).show();
-                }
-                else {
+                } else {
                     mDbHelper.insertCategory(name, description);
                     mCategoryAdapter.changeCursor(mDbHelper.getCategoryCursor());
                 }
@@ -385,8 +330,7 @@ public class MainActivity extends AppCompatActivity {
             });
             AlertDialog alertDialog = builder.create();
             alertDialog.show();
-        }
-        else {
+        } else {
             AlertDialog.Builder builder = new AlertDialog.Builder(this);
             builder.setTitle("Edit Category");
             // Set up the input
@@ -474,8 +418,7 @@ public class MainActivity extends AppCompatActivity {
                     // If new category name exists already
                     if (!selectedCategory.equals(categoryName) && mDbHelper.checkIfCategoryExists(categoryName)) {
                         Toast.makeText(MainActivity.this, categoryName + " already exists", Toast.LENGTH_SHORT).show();
-                    }
-                    else {
+                    } else {
                         SQLiteDatabase db = dbHelper.getReadableDatabase();
 
                         ContentValues vocabTableValues = new ContentValues();
@@ -513,4 +456,39 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    /**
+     * ATTENTION: This was auto-generated to implement the App Indexing API.
+     * See https://g.co/AppIndexing/AndroidStudio for more information.
+     */
+    public Action getIndexApiAction() {
+        Thing object = new Thing.Builder()
+                .setName("Main Page") // TODO: Define a title for the content shown.
+                // TODO: Make sure this auto-generated URL is correct.
+                .setUrl(Uri.parse("http://[ENTER-YOUR-URL-HERE]"))
+                .build();
+        return new Action.Builder(Action.TYPE_VIEW)
+                .setObject(object)
+                .setActionStatus(Action.STATUS_TYPE_COMPLETED)
+                .build();
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+
+        // ATTENTION: This was auto-generated to implement the App Indexing API.
+        // See https://g.co/AppIndexing/AndroidStudio for more information.
+        client.connect();
+        AppIndex.AppIndexApi.start(client, getIndexApiAction());
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+
+        // ATTENTION: This was auto-generated to implement the App Indexing API.
+        // See https://g.co/AppIndexing/AndroidStudio for more information.
+        AppIndex.AppIndexApi.end(client, getIndexApiAction());
+        client.disconnect();
+    }
 }
