@@ -6,7 +6,7 @@ package charlesli.com.personalvocabbuilder.sqlDatabase;
 public class LanguageOptions {
 
     public static final int DETECT_LANGUAGE = 0;
-    public static final int ENGLISH = 19;
+    public static final int DEFAULT_TARGET_LANGUAGE_ENGLISH = 19;
 
     public static final String [] FROM_LANGUAGE = {
             "Detect Language",

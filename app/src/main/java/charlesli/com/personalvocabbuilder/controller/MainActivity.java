@@ -35,8 +35,8 @@ import charlesli.com.personalvocabbuilder.sqlDatabase.LanguageOptions;
 import charlesli.com.personalvocabbuilder.sqlDatabase.VocabDbContract;
 import charlesli.com.personalvocabbuilder.sqlDatabase.VocabDbHelper;
 
+import static charlesli.com.personalvocabbuilder.sqlDatabase.LanguageOptions.DEFAULT_TARGET_LANGUAGE_ENGLISH;
 import static charlesli.com.personalvocabbuilder.sqlDatabase.LanguageOptions.DETECT_LANGUAGE;
-import static charlesli.com.personalvocabbuilder.sqlDatabase.LanguageOptions.ENGLISH;
 
 
 public class MainActivity extends AppCompatActivity {
@@ -150,7 +150,7 @@ public class MainActivity extends AppCompatActivity {
 
         final SharedPreferences sharedPreferences = getSharedPreferences("Translation", MODE_PRIVATE);
         int source = sharedPreferences.getInt("Source", DETECT_LANGUAGE);
-        int target = sharedPreferences.getInt("Target", ENGLISH);
+        int target = sharedPreferences.getInt("Target", DEFAULT_TARGET_LANGUAGE_ENGLISH);
 
         spinnerTranslateFrom.setSelection(source);
         spinnerTranslateTo.setSelection(target);
