@@ -35,14 +35,15 @@ import charlesli.com.personalvocabbuilder.sqlDatabase.LanguageOptions;
 import charlesli.com.personalvocabbuilder.sqlDatabase.VocabDbContract;
 import charlesli.com.personalvocabbuilder.sqlDatabase.VocabDbHelper;
 
+import static charlesli.com.personalvocabbuilder.sqlDatabase.LanguageOptions.DETECT_LANGUAGE;
+import static charlesli.com.personalvocabbuilder.sqlDatabase.LanguageOptions.ENGLISH;
+
 
 public class MainActivity extends AppCompatActivity {
 
     // Review Mode
     public static final int WORDTODEF = 0;
     public static final int DEFTOWORD = 1;
-    private final int DETECT_LANGUAGE = 0;
-    private final int ENGLISH = 19;
     private String reviewCategory = VocabDbContract.CATEGORY_NAME_MY_VOCAB;
     private int reviewMode = WORDTODEF;
     private int reviewNumOfWords = 0;
