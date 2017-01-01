@@ -31,7 +31,7 @@ import charlesli.com.personalvocabbuilder.R;
 import charlesli.com.personalvocabbuilder.sqlDatabase.CategoryCursorAdapter;
 import charlesli.com.personalvocabbuilder.sqlDatabase.VocabDbContract;
 import charlesli.com.personalvocabbuilder.sqlDatabase.VocabDbHelper;
-import charlesli.com.personalvocabbuilder.ui.SettingsDialog;
+import charlesli.com.personalvocabbuilder.ui.TranslationSettingsDialog;
 
 
 public class MainActivity extends AppCompatActivity {
@@ -123,7 +123,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void createSettingsDialog() {
-        final AlertDialog dialog = new SettingsDialog(this);
+        final AlertDialog dialog = new TranslationSettingsDialog(this);
         dialog.show();
         changeDialogButtonsColor(dialog);
     }

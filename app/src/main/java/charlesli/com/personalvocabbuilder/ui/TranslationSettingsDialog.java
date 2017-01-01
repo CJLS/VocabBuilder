@@ -21,14 +21,14 @@ import static charlesli.com.personalvocabbuilder.sqlDatabase.LanguageOptions.TO_
  * Created by charles on 2016-12-30.
  */
 
-public class SettingsDialog extends AlertDialog {
+public class TranslationSettingsDialog extends AlertDialog {
 
-    public SettingsDialog(Context context) {
+    public TranslationSettingsDialog(Context context) {
         super(context);
 
         setTitle("Translation Settings");
         LayoutInflater li = LayoutInflater.from(context);
-        View promptsView = li.inflate(R.layout.alert_dialog_settings, null);
+        View promptsView = li.inflate(R.layout.alert_dialog_translation_settings, null);
 
         setupLanguageSelector((Spinner) promptsView.findViewById(R.id.spinnerTranslateFrom),
                 FROM_LANGUAGE, "Source", DETECT_LANGUAGE);
