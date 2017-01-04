@@ -31,6 +31,7 @@ import charlesli.com.personalvocabbuilder.R;
 import charlesli.com.personalvocabbuilder.sqlDatabase.CategoryCursorAdapter;
 import charlesli.com.personalvocabbuilder.sqlDatabase.VocabDbContract;
 import charlesli.com.personalvocabbuilder.sqlDatabase.VocabDbHelper;
+import charlesli.com.personalvocabbuilder.ui.AddCategoryDialog;
 import charlesli.com.personalvocabbuilder.ui.TranslationSettingsDialog;
 
 
@@ -122,63 +123,21 @@ public class MainActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    private void createSettingsDialog() {
-        final AlertDialog dialog = new TranslationSettingsDialog(this);
-        dialog.show();
-        changeDialogButtonsColor(dialog);
-    }
-
     private void changeDialogButtonsColor(AlertDialog dialog) {
         dialog.getButton(DialogInterface.BUTTON_POSITIVE).setTextColor(ContextCompat.getColor(this, R.color.app_icon_color));
         dialog.getButton(DialogInterface.BUTTON_NEGATIVE).setTextColor(ContextCompat.getColor(this, R.color.app_icon_color));
         dialog.getButton(DialogInterface.BUTTON_NEUTRAL).setTextColor(ContextCompat.getColor(this, R.color.app_icon_color));
     }
 
-    private void createAddCategoryDialog() {
-        AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
-        builder.setTitle("Add Category");
-
-        LinearLayout layout = new LinearLayout(this);
-        layout.setOrientation(LinearLayout.VERTICAL);
-
-        final EditText categoryNameInput = new EditText(this);
-        categoryNameInput.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_FLAG_AUTO_COMPLETE);
-        categoryNameInput.setHint("Name");
-        layout.addView(categoryNameInput);
-
-        final EditText categoryDescInput = new EditText(this);
-        categoryDescInput.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_FLAG_AUTO_COMPLETE);
-        categoryDescInput.setHint("Description");
-        layout.addView(categoryDescInput);
-
-        builder.setView(layout);
-
-        // Set up the buttons
-        builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                String name = categoryNameInput.getText().toString();
-                String description = categoryDescInput.getText().toString();
-                if (mDbHelper.checkIfCategoryExists(name)) {
-                    Toast.makeText(MainActivity.this, name + " already exists", Toast.LENGTH_SHORT).show();
-                }
-                else {
-                    mDbHelper.insertCategory(name, description);
-                    mCategoryAdapter.changeCursor(mDbHelper.getCategoryCursor());
-                }
-            }
-        });
-        builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                dialog.cancel();
-            }
-        });
-
-        final AlertDialog dialog = builder.create();
-
+    private void createSettingsDialog() {
+        final AlertDialog dialog = new TranslationSettingsDialog(this);
         dialog.show();
+        changeDialogButtonsColor(dialog);
+    }
 
+    private void createAddCategoryDialog() {
+        AlertDialog dialog = new AddCategoryDialog(this, mDbHelper, mCategoryAdapter);
+        dialog.show();
         changeDialogButtonsColor(dialog);
     }
 
