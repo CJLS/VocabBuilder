@@ -1,24 +1,19 @@
 package charlesli.com.personalvocabbuilder.controller;
 
 import android.app.AlertDialog;
-import android.content.ContentValues;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.text.InputType;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
-import android.widget.EditText;
-import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.RadioButton;
 import android.widget.SeekBar;
@@ -32,6 +27,7 @@ import charlesli.com.personalvocabbuilder.sqlDatabase.CategoryCursorAdapter;
 import charlesli.com.personalvocabbuilder.sqlDatabase.VocabDbContract;
 import charlesli.com.personalvocabbuilder.sqlDatabase.VocabDbHelper;
 import charlesli.com.personalvocabbuilder.ui.AddCategoryDialog;
+import charlesli.com.personalvocabbuilder.ui.EditCategoryDialog;
 import charlesli.com.personalvocabbuilder.ui.TranslationSettingsDialog;
 
 
@@ -276,129 +272,10 @@ public class MainActivity extends AppCompatActivity {
             alertDialog.show();
         }
         else {
-            AlertDialog.Builder builder = new AlertDialog.Builder(this);
-            builder.setTitle("Edit Category");
-            // Set up the input
-            LinearLayout layout = new LinearLayout(this);
-            layout.setOrientation(LinearLayout.VERTICAL);
-
-            final EditText categoryNameInput = new EditText(this);
-            categoryNameInput.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_FLAG_AUTO_COMPLETE);
-            categoryNameInput.setHint("New name");
-            categoryNameInput.setText(selectedCategory);
-            layout.addView(categoryNameInput);
-
-            final EditText categoryDescInput = new EditText(this);
-            categoryDescInput.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_FLAG_AUTO_COMPLETE);
-            categoryDescInput.setHint("New description");
-            categoryDescInput.setText(selectedDesc);
-            layout.addView(categoryDescInput);
-
-            builder.setView(layout);
-
-            // Set up the buttons
-            builder.setNeutralButton("Cancel", new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialog, int which) {
-                    dialog.cancel();
-                }
-            });
-            builder.setPositiveButton("Update", new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialog, int which) {
-
-                }
-            });
-            builder.setNegativeButton("Delete", new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialog, int which) {
-                    final AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
-                    builder.setMessage("This action will delete all the vocab in this category.");
-                    builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            dialog.cancel();
-                        }
-                    });
-                    builder.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            // Delete Category from Database
-                            SQLiteDatabase db = dbHelper.getWritableDatabase();
-                            // Define 'where' part of query
-                            String selection = VocabDbContract.COLUMN_NAME_CATEGORY + " LIKE ?";
-                            // Specify arguments in placeholder order
-                            String[] selectionArgs = {selectedCategory};
-                            // Issue SQL statement
-                            db.delete(VocabDbContract.TABLE_NAME_CATEGORY, selection, selectionArgs);
-                            db.delete(VocabDbContract.TABLE_NAME_MY_VOCAB, selection, selectionArgs);
-
-                            // Update Cursor
-                            cursorAdapter.changeCursor(dbHelper.getCategoryCursor());
-
-                        }
-                    });
-                    AlertDialog alertDialog = builder.create();
-                    alertDialog.show();
-                    alertDialog.getButton(DialogInterface.BUTTON_POSITIVE)
-                            .setTextColor(ContextCompat.getColor(MainActivity.this, R.color.app_icon_color));
-                    alertDialog.getButton(DialogInterface.BUTTON_NEGATIVE)
-                            .setTextColor(ContextCompat.getColor(MainActivity.this, R.color.app_icon_color));
-
-                }
-            });
-
-            final AlertDialog dialog = builder.create();
-
+            AlertDialog dialog = new EditCategoryDialog(this, dbHelper, cursorAdapter, selectedCategory, selectedDesc);
             dialog.show();
 
             changeDialogButtonsColor(dialog);
-
-            dialog.getButton(DialogInterface.BUTTON_POSITIVE).setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    String categoryName = categoryNameInput.getText().toString();
-                    String categoryDesc = categoryDescInput.getText().toString();
-
-                    // If new category name exists already
-                    if (!selectedCategory.equals(categoryName) && mDbHelper.checkIfCategoryExists(categoryName)) {
-                        Toast.makeText(MainActivity.this, categoryName + " already exists", Toast.LENGTH_SHORT).show();
-                    }
-                    else {
-                        SQLiteDatabase db = dbHelper.getReadableDatabase();
-
-                        ContentValues vocabTableValues = new ContentValues();
-                        vocabTableValues.put(VocabDbContract.COLUMN_NAME_CATEGORY, categoryName);
-
-                        ContentValues categoryTableValues = new ContentValues();
-                        categoryTableValues.put(VocabDbContract.COLUMN_NAME_CATEGORY, categoryName);
-                        categoryTableValues.put(VocabDbContract.COLUMN_NAME_DESCRIPTION, categoryDesc);
-
-                        String selectionVocab = VocabDbContract.COLUMN_NAME_CATEGORY + " = ?";
-                        String[] selectionArgsVocab = {selectedCategory};
-
-                        // Update Category Table
-                        db.update(
-                                VocabDbContract.TABLE_NAME_CATEGORY,
-                                categoryTableValues,
-                                selectionVocab,
-                                selectionArgsVocab
-                        );
-
-                        // Update Vocab Table for categories column to transfer the data
-                        db.update(
-                                VocabDbContract.TABLE_NAME_MY_VOCAB,
-                                vocabTableValues,
-                                selectionVocab,
-                                selectionArgsVocab
-                        );
-
-                        // Update Cursor
-                        cursorAdapter.changeCursor(dbHelper.getCategoryCursor());
-                        dialog.dismiss();
-                    }
-                }
-            });
         }
     }
 
