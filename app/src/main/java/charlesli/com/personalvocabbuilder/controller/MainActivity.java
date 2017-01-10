@@ -263,13 +263,15 @@ public class MainActivity extends AppCompatActivity {
         if (selectedCategory.equals("My Word Bank")) {
             AlertDialog alertDialog = new ModifyMyWordBankCategoryDialog(this);
             alertDialog.show();
+            alertDialog.getButton(DialogInterface.BUTTON_POSITIVE)
+                    .setTextColor(ContextCompat.getColor(this, R.color.app_icon_color));
+            return;
         }
-        else {
-            AlertDialog dialog = new EditCategoryDialog(this, dbHelper, cursorAdapter, selectedCategory, selectedDesc);
-            dialog.show();
 
-            changeDialogButtonsColor(dialog);
-        }
+        AlertDialog dialog = new EditCategoryDialog(this, dbHelper, cursorAdapter, selectedCategory, selectedDesc);
+        dialog.show();
+        changeDialogButtonsColor(dialog);
+
     }
 
 }
