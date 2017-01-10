@@ -28,6 +28,7 @@ import charlesli.com.personalvocabbuilder.sqlDatabase.VocabDbContract;
 import charlesli.com.personalvocabbuilder.sqlDatabase.VocabDbHelper;
 import charlesli.com.personalvocabbuilder.ui.AddCategoryDialog;
 import charlesli.com.personalvocabbuilder.ui.EditCategoryDialog;
+import charlesli.com.personalvocabbuilder.ui.ModifyMyWordBankCategoryDialog;
 import charlesli.com.personalvocabbuilder.ui.TranslationSettingsDialog;
 
 
@@ -260,15 +261,7 @@ public class MainActivity extends AppCompatActivity {
     protected void editCategoryAlertDialog(final String selectedCategory, final String selectedDesc, final VocabDbHelper dbHelper,
                                            final CategoryCursorAdapter cursorAdapter) {
         if (selectedCategory.equals("My Word Bank")) {
-            final AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
-            builder.setMessage("My Word Bank backs up all the vocab you've added so it can't be modified.");
-            builder.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialog, int which) {
-
-                }
-            });
-            AlertDialog alertDialog = builder.create();
+            AlertDialog alertDialog = new ModifyMyWordBankCategoryDialog(this);
             alertDialog.show();
         }
         else {
