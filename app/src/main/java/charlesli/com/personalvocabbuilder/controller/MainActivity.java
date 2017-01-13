@@ -37,9 +37,7 @@ public class MainActivity extends AppCompatActivity {
     // Review Mode
     public static final int WORDTODEF = 0;
     public static final int DEFTOWORD = 1;
-    private String reviewCategory = VocabDbContract.CATEGORY_NAME_MY_VOCAB;
     private int reviewMode = WORDTODEF;
-    private int reviewNumOfWords = 0;
     private CategoryCursorAdapter mCategoryAdapter;
     private ListView mCategoryListView;
     private VocabDbHelper mDbHelper = VocabDbHelper.getDBHelper(MainActivity.this);
@@ -142,10 +140,9 @@ public class MainActivity extends AppCompatActivity {
         AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
         builder.setTitle("Review Vocab");
 
-        VocabDbHelper dbHelper = VocabDbHelper.getDBHelper(MainActivity.this);
-        Cursor cursor = dbHelper.getVocabCursor(VocabDbContract.CATEGORY_NAME_MY_VOCAB);
+        Cursor cursor = mDbHelper.getVocabCursor(VocabDbContract.CATEGORY_NAME_MY_VOCAB);
         final Integer maxRow = cursor.getCount();
-        reviewNumOfWords = maxRow;
+        final int[] reviewNumOfWords = {maxRow};
 
         LayoutInflater li = LayoutInflater.from(MainActivity.this);
         View promptsView = li.inflate(R.layout.alert_dialog_review, null);
@@ -155,6 +152,8 @@ public class MainActivity extends AppCompatActivity {
         final RadioButton wordDef = (RadioButton) promptsView.findViewById(R.id.wordDef);
         final RadioButton defWord = (RadioButton) promptsView.findViewById(R.id.defWord);
         final SeekBar seekBar = (SeekBar) promptsView.findViewById(R.id.seekBar);
+
+        final String[] reviewCategory = {VocabDbContract.CATEGORY_NAME_MY_VOCAB};
 
         // TextView
         numText.setText(String.valueOf(maxRow));
@@ -171,9 +170,9 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 categoryCursor.moveToPosition(position);
-                reviewCategory = categoryCursor.getString(categoryCursor.getColumnIndex(VocabDbContract.COLUMN_NAME_CATEGORY));
+                reviewCategory[0] = categoryCursor.getString(categoryCursor.getColumnIndex(VocabDbContract.COLUMN_NAME_CATEGORY));
                 VocabDbHelper dbHelper = VocabDbHelper.getDBHelper(MainActivity.this);
-                Cursor cursor = dbHelper.getVocabCursor(reviewCategory);
+                Cursor cursor = dbHelper.getVocabCursor(reviewCategory[0]);
                 Integer maxRow = cursor.getCount();
                 numText.setText(String.valueOf(maxRow));
                 seekBar.setMax(maxRow);
@@ -213,7 +212,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
                 numText.setText(String.valueOf(progress));
-                reviewNumOfWords = progress;
+                reviewNumOfWords[0] = progress;
             }
 
             @Override
@@ -233,13 +232,13 @@ public class MainActivity extends AppCompatActivity {
         builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                if (reviewNumOfWords == 0) {
+                if (reviewNumOfWords[0] == 0) {
                     Toast.makeText(MainActivity.this, "There are no words to be reviewed", Toast.LENGTH_LONG).show();
                 } else {
                     Intent intent = new Intent(MainActivity.this, Review.class);
                     intent.putExtra("Mode", reviewMode);
-                    intent.putExtra("Category", reviewCategory);
-                    intent.putExtra("NumOfWords", reviewNumOfWords);
+                    intent.putExtra("Category", reviewCategory[0]);
+                    intent.putExtra("NumOfWords", reviewNumOfWords[0]);
                     startActivity(intent);
                 }
             }
