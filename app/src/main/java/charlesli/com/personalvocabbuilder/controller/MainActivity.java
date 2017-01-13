@@ -258,7 +258,7 @@ public class MainActivity extends AppCompatActivity {
         changeDialogButtonsColor(dialog);
     }
 
-    protected void editCategoryAlertDialog(final String selectedCategory, final String selectedDesc, final VocabDbHelper dbHelper,
+    private void editCategoryAlertDialog(final String selectedCategory, final String selectedDesc, final VocabDbHelper dbHelper,
                                            final CategoryCursorAdapter cursorAdapter) {
         if (selectedCategory.equals("My Word Bank")) {
             AlertDialog alertDialog = new ModifyMyWordBankCategoryDialog(this);

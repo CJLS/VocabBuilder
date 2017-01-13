@@ -73,7 +73,7 @@ public class Review extends AppCompatActivity {
         mReviewProgressBar = (ProgressBar) findViewById(R.id.reviewProgressBar);
 
         mCursor = mDbHelper.getVocabCursor(mReviewCategory);
-        mReviewProgressBar.setMax(mCursor.getCount());
+        mReviewProgressBar.setMax(mReviewNumOfWords);
 
         loadVocabInRandomOrder();
     }
