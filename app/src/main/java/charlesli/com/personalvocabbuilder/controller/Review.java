@@ -19,11 +19,12 @@ import charlesli.com.personalvocabbuilder.R;
 import charlesli.com.personalvocabbuilder.sqlDatabase.VocabDbContract;
 import charlesli.com.personalvocabbuilder.sqlDatabase.VocabDbHelper;
 
-import static charlesli.com.personalvocabbuilder.controller.MainActivity.WORDTODEF;
 
 
 public class Review extends AppCompatActivity {
 
+    public static final int WORDTODEF = 0;
+    public static final int DEFTOWORD = 1;
     private static final int DIFFICULT = 0;
     private static final int FAMILIAR = 1;
     private static final int EASY = 2;
