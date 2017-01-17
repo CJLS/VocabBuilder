@@ -29,14 +29,20 @@ import static charlesli.com.personalvocabbuilder.controller.Review.WORDTODEF;
 
 public class ReviewDialog extends AlertDialog {
 
-    private int reviewMode = WORDTODEF;
-
     public ReviewDialog(Context context, VocabDbHelper dbHelper) {
         super(context);
 
         setTitle("Review Vocab");
 
-        Cursor cursor = dbHelper.getVocabCursor(VocabDbContract.CATEGORY_NAME_MY_VOCAB);
+        final Cursor categoryCursor = dbHelper.getCategoryCursor();
+        final int[] reviewMode = {WORDTODEF};
+
+        categoryCursor.moveToFirst();
+        String firstCategoryInCategoryCursor =
+                categoryCursor.getString(categoryCursor.getColumnIndex(VocabDbContract.COLUMN_NAME_CATEGORY));
+        final String[] reviewCategory = {firstCategoryInCategoryCursor};
+
+        Cursor cursor = dbHelper.getVocabCursor(firstCategoryInCategoryCursor);
         final Integer maxRow = cursor.getCount();
         final int[] reviewNumOfWords = {maxRow};
 
@@ -49,13 +55,85 @@ public class ReviewDialog extends AlertDialog {
         final RadioButton defWord = (RadioButton) promptsView.findViewById(R.id.defWord);
         final SeekBar seekBar = (SeekBar) promptsView.findViewById(R.id.seekBar);
 
-        final String[] reviewCategory = {VocabDbContract.CATEGORY_NAME_MY_VOCAB};
-
         numText.setText(String.valueOf(maxRow));
 
+        setUpSpinner(categoryCursor, numText, spinner, seekBar, reviewCategory);
+        setUpRadioButtons(reviewMode, wordDef, defWord);
+        setUpSeekBar(maxRow, reviewNumOfWords, numText, seekBar);
+
+        setView(promptsView);
+
+        setButton(BUTTON_POSITIVE, "OK", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                if (reviewNumOfWords[0] == 0) {
+                    Toast.makeText(getContext(), "There are no words to be reviewed", Toast.LENGTH_LONG).show();
+                } else {
+                    Intent intent = new Intent(getContext(), Review.class);
+                    intent.putExtra("Mode", reviewMode[0]);
+                    intent.putExtra("Category", reviewCategory[0]);
+                    intent.putExtra("NumOfWords", reviewNumOfWords[0]);
+                    getContext().startActivity(intent);
+                }
+            }
+        });
+        setButton(BUTTON_NEGATIVE, "Cancel", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.cancel();
+            }
+        });
+
+
+    }
+
+    private void setUpSeekBar(Integer maxRow, final int[] reviewNumOfWords, final TextView numText, SeekBar seekBar) {
+        seekBar.setMax(maxRow);
+        seekBar.setProgress(maxRow);
+
+        seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                numText.setText(String.valueOf(progress));
+                reviewNumOfWords[0] = progress;
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+
+            }
+        });
+    }
+
+    private void setUpRadioButtons(final int[] reviewMode, final RadioButton wordDef, final RadioButton defWord) {
+        wordDef.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                wordDef.setChecked(true);
+                defWord.setChecked(false);
+                reviewMode[0] = WORDTODEF;
+            }
+        });
+
+        defWord.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                wordDef.setChecked(false);
+                defWord.setChecked(true);
+                reviewMode[0] = DEFTOWORD;
+            }
+        });
+    }
+
+    private void setUpSpinner(final Cursor categoryCursor, final TextView numText, Spinner spinner, final SeekBar seekBar, final String[] reviewCategory) {
         String[] from = {VocabDbContract.COLUMN_NAME_CATEGORY};
         int[] to = {android.R.id.text1};
-        final Cursor categoryCursor = dbHelper.getCategoryCursor();
+
         SimpleCursorAdapter spinnerAdapter = new SimpleCursorAdapter(getContext(), android.R.layout.simple_spinner_item,
                 categoryCursor, from, to, 0);
         spinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
@@ -78,71 +156,5 @@ public class ReviewDialog extends AlertDialog {
 
             }
         });
-
-        // Radio Button
-        wordDef.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                wordDef.setChecked(true);
-                defWord.setChecked(false);
-                reviewMode = WORDTODEF;
-            }
-        });
-
-        defWord.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                wordDef.setChecked(false);
-                defWord.setChecked(true);
-                reviewMode = DEFTOWORD;
-            }
-        });
-
-        // SeekBar
-        seekBar.setMax(maxRow);
-        seekBar.setProgress(maxRow);
-
-        seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
-            @Override
-            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                numText.setText(String.valueOf(progress));
-                reviewNumOfWords[0] = progress;
-            }
-
-            @Override
-            public void onStartTrackingTouch(SeekBar seekBar) {
-
-            }
-
-            @Override
-            public void onStopTrackingTouch(SeekBar seekBar) {
-
-            }
-        });
-
-        setView(promptsView);
-
-        setButton(BUTTON_POSITIVE, "OK", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                if (reviewNumOfWords[0] == 0) {
-                    Toast.makeText(getContext(), "There are no words to be reviewed", Toast.LENGTH_LONG).show();
-                } else {
-                    Intent intent = new Intent(getContext(), Review.class);
-                    intent.putExtra("Mode", reviewMode);
-                    intent.putExtra("Category", reviewCategory[0]);
-                    intent.putExtra("NumOfWords", reviewNumOfWords[0]);
-                    getContext().startActivity(intent);
-                }
-            }
-        });
-        setButton(BUTTON_NEGATIVE, "Cancel", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                dialog.cancel();
-            }
-        });
-
-
     }
 }
