@@ -1,6 +1,5 @@
 package charlesli.com.personalvocabbuilder.ui;
 
-import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.text.InputType;
@@ -15,7 +14,7 @@ import charlesli.com.personalvocabbuilder.sqlDatabase.VocabDbHelper;
  * Created by charles on 2017-01-01.
  */
 
-public class AddCategoryDialog extends AlertDialog {
+public class AddCategoryDialog extends CustomDialog {
 
     public AddCategoryDialog(Context context, final VocabDbHelper dbHelper,
                              final CategoryCursorAdapter categoryAdapter) {
@@ -46,6 +45,9 @@ public class AddCategoryDialog extends AlertDialog {
                 dialog.cancel();
             }
         });
+
+        //show();
+        changeDialogButtonsColor();
     }
 
     private LinearLayout setUpCustomDialogLayout(EditText categoryNameInput, EditText categoryDescInput) {

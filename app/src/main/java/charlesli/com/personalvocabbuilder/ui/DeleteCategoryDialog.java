@@ -1,6 +1,5 @@
 package charlesli.com.personalvocabbuilder.ui;
 
-import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.database.sqlite.SQLiteDatabase;
@@ -13,7 +12,7 @@ import charlesli.com.personalvocabbuilder.sqlDatabase.VocabDbHelper;
  * Created by charles on 2017-01-07.
  */
 
-public class DeleteCategoryDialog extends AlertDialog {
+public class DeleteCategoryDialog extends CustomDialog {
 
     public DeleteCategoryDialog(Context context, final VocabDbHelper dbHelper,
                                 final CategoryCursorAdapter cursorAdapter, final String selectedCategory) {

@@ -1,6 +1,5 @@
 package charlesli.com.personalvocabbuilder.ui;
 
-import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 
@@ -8,7 +7,7 @@ import android.content.DialogInterface;
  * Created by charles on 2017-01-09.
  */
 
-public class ModifyMyWordBankCategoryDialog extends AlertDialog {
+public class ModifyMyWordBankCategoryDialog extends CustomDialog {
 
     public ModifyMyWordBankCategoryDialog(Context context) {
         super(context);

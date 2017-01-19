@@ -1,17 +1,14 @@
 package charlesli.com.personalvocabbuilder.ui;
 
-import android.app.AlertDialog;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.database.sqlite.SQLiteDatabase;
-import android.support.v4.content.ContextCompat;
 import android.text.InputType;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
-import charlesli.com.personalvocabbuilder.R;
 import charlesli.com.personalvocabbuilder.sqlDatabase.CategoryCursorAdapter;
 import charlesli.com.personalvocabbuilder.sqlDatabase.VocabDbContract;
 import charlesli.com.personalvocabbuilder.sqlDatabase.VocabDbHelper;
@@ -20,7 +17,7 @@ import charlesli.com.personalvocabbuilder.sqlDatabase.VocabDbHelper;
  * Created by charles on 2017-01-01.
  */
 
-public class EditCategoryDialog extends AlertDialog{
+public class EditCategoryDialog extends CustomDialog {
 
     public EditCategoryDialog(Context context, final VocabDbHelper dbHelper, final CategoryCursorAdapter cursorAdapter,
                               final String selectedCategory, String selectedDesc) {
@@ -86,13 +83,10 @@ public class EditCategoryDialog extends AlertDialog{
         setButton(BUTTON_NEGATIVE, "Delete", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                AlertDialog alertDialog = new DeleteCategoryDialog(getContext(), dbHelper,
+                DeleteCategoryDialog alertDialog = new DeleteCategoryDialog(getContext(), dbHelper,
                         cursorAdapter, selectedCategory);
                 alertDialog.show();
-                alertDialog.getButton(DialogInterface.BUTTON_POSITIVE)
-                        .setTextColor(ContextCompat.getColor(getContext(), R.color.app_icon_color));
-                alertDialog.getButton(DialogInterface.BUTTON_NEGATIVE)
-                        .setTextColor(ContextCompat.getColor(getContext(), R.color.app_icon_color));
+                alertDialog.changeDialogButtonsColor();
             }
         });
 

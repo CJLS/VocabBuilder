@@ -1,12 +1,9 @@
 package charlesli.com.personalvocabbuilder.controller;
 
-import android.app.AlertDialog;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
-import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
@@ -106,43 +103,36 @@ public class MainActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    private void changeDialogButtonsColor(AlertDialog dialog) {
-        dialog.getButton(DialogInterface.BUTTON_POSITIVE).setTextColor(ContextCompat.getColor(this, R.color.app_icon_color));
-        dialog.getButton(DialogInterface.BUTTON_NEGATIVE).setTextColor(ContextCompat.getColor(this, R.color.app_icon_color));
-        dialog.getButton(DialogInterface.BUTTON_NEUTRAL).setTextColor(ContextCompat.getColor(this, R.color.app_icon_color));
-    }
-
     private void createSettingsDialog() {
-        AlertDialog dialog = new TranslationSettingsDialog(this);
+        TranslationSettingsDialog dialog = new TranslationSettingsDialog(this);
         dialog.show();
-        changeDialogButtonsColor(dialog);
+        dialog.changeDialogButtonsColor();
     }
 
     private void createAddCategoryDialog() {
-        AlertDialog dialog = new AddCategoryDialog(this, mDbHelper, mCategoryAdapter);
+        AddCategoryDialog dialog = new AddCategoryDialog(this, mDbHelper, mCategoryAdapter);
         dialog.show();
-        changeDialogButtonsColor(dialog);
+        dialog.changeDialogButtonsColor();
     }
 
     private void createReviewDialog() {
-        AlertDialog dialog = new ReviewDialog(this, mDbHelper);
+        ReviewDialog dialog = new ReviewDialog(this, mDbHelper);
         dialog.show();
-        changeDialogButtonsColor(dialog);
+        dialog.changeDialogButtonsColor();
     }
 
-    private void editCategoryAlertDialog(final String selectedCategory, final String selectedDesc, final VocabDbHelper dbHelper,
-                                           final CategoryCursorAdapter cursorAdapter) {
+    private void editCategoryAlertDialog(final String selectedCategory, final String selectedDesc,
+                                         final VocabDbHelper dbHelper, final CategoryCursorAdapter cursorAdapter) {
         if (selectedCategory.equals("My Word Bank")) {
-            AlertDialog alertDialog = new ModifyMyWordBankCategoryDialog(this);
-            alertDialog.show();
-            alertDialog.getButton(DialogInterface.BUTTON_POSITIVE)
-                    .setTextColor(ContextCompat.getColor(this, R.color.app_icon_color));
+            ModifyMyWordBankCategoryDialog dialog = new ModifyMyWordBankCategoryDialog(this);
+            dialog.show();
+            dialog.changeDialogButtonsColor();
             return;
         }
 
-        AlertDialog dialog = new EditCategoryDialog(this, dbHelper, cursorAdapter, selectedCategory, selectedDesc);
+        EditCategoryDialog dialog = new EditCategoryDialog(this, dbHelper, cursorAdapter, selectedCategory, selectedDesc);
         dialog.show();
-        changeDialogButtonsColor(dialog);
+        dialog.changeDialogButtonsColor();
     }
 
 }

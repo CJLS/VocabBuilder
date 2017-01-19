@@ -1,6 +1,5 @@
 package charlesli.com.personalvocabbuilder.ui;
 
-import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -27,7 +26,7 @@ import static charlesli.com.personalvocabbuilder.controller.Review.WORDTODEF;
  * Created by charles on 2017-01-01.
  */
 
-public class ReviewDialog extends AlertDialog {
+public class ReviewDialog extends CustomDialog {
 
     public ReviewDialog(Context context, VocabDbHelper dbHelper) {
         super(context);

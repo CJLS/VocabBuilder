@@ -1,6 +1,5 @@
 package charlesli.com.personalvocabbuilder.ui;
 
-import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
@@ -21,7 +20,7 @@ import static charlesli.com.personalvocabbuilder.sqlDatabase.LanguageOptions.TO_
  * Created by charles on 2016-12-30.
  */
 
-public class TranslationSettingsDialog extends AlertDialog {
+public class TranslationSettingsDialog extends CustomDialog {
 
     public TranslationSettingsDialog(Context context) {
         super(context);
