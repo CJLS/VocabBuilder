@@ -45,9 +45,6 @@ public class AddCategoryDialog extends CustomDialog {
                 dialog.cancel();
             }
         });
-
-        //show();
-        changeDialogButtonsColor();
     }
 
     private LinearLayout setUpCustomDialogLayout(EditText categoryNameInput, EditText categoryDescInput) {

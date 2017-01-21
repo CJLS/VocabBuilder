@@ -29,8 +29,6 @@ import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.RadioButton;
-import android.widget.SimpleCursorAdapter;
-import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -41,6 +39,7 @@ import charlesli.com.personalvocabbuilder.sqlDatabase.LanguageOptions;
 import charlesli.com.personalvocabbuilder.sqlDatabase.VocabCursorAdapter;
 import charlesli.com.personalvocabbuilder.sqlDatabase.VocabDbContract;
 import charlesli.com.personalvocabbuilder.sqlDatabase.VocabDbHelper;
+import charlesli.com.personalvocabbuilder.ui.CopyVocabDialog;
 
 
 public class MyVocab extends AppCompatActivity {
@@ -50,7 +49,6 @@ public class MyVocab extends AppCompatActivity {
     private final String VOCAB_ASC = VocabDbContract.COLUMN_NAME_VOCAB + " COLLATE NOCASE ASC";
     private final String VOCAB_DESC = VocabDbContract.COLUMN_NAME_VOCAB + " COLLATE NOCASE DESC";
     private VocabCursorAdapter mVocabAdapter;
-    private ListView mVocabListView;
     private VocabDbHelper mDbHelper = VocabDbHelper.getDBHelper(MyVocab.this);
     private String mCategory;
     private FloatingActionButton fab;
@@ -78,7 +76,7 @@ public class MyVocab extends AppCompatActivity {
         mCategory = intent.getStringExtra("Category");
         setTitle(mCategory);
 
-        mVocabListView = (ListView) findViewById(R.id.mVocabList);
+        ListView mVocabListView = (ListView) findViewById(R.id.mVocabList);
         TextView emptyTextView = (TextView) findViewById(android.R.id.empty);
         mVocabListView.setEmptyView(emptyTextView);
 
@@ -271,107 +269,11 @@ public class MyVocab extends AppCompatActivity {
                                            final String fromCategory) {
         if (cursorAdapter.selectedItemsPositions.isEmpty()) {
             Toast.makeText(this, "No words are selected", Toast.LENGTH_SHORT).show();
+            return;
         }
-        else {
-            // Set up alert dialog
-            final String[] selectedCategory = new String[1];
-            AlertDialog.Builder builder = new AlertDialog.Builder(this);
-            builder.setTitle("Add Vocab To...");
-            // Set up the input
-            LinearLayout layout = new LinearLayout(this);
-            layout.setOrientation(LinearLayout.VERTICAL);
-
-            // Add Spinner to alert dialog
-            final Spinner spinner = new Spinner(this);
-            String[] from = {VocabDbContract.COLUMN_NAME_CATEGORY};
-            int[] to = {android.R.id.text1};
-            final Cursor categoryCursor = dbHelper.getCategoryCursor();
-            SimpleCursorAdapter spinnerAdapter = new SimpleCursorAdapter(this, android.R.layout.simple_spinner_item,
-                    categoryCursor, from, to, 0);
-            spinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-            spinner.setAdapter(spinnerAdapter);
-            spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-                @Override
-                public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                    categoryCursor.moveToPosition(position);
-                    selectedCategory[0] = categoryCursor.getString(categoryCursor.getColumnIndex(VocabDbContract.COLUMN_NAME_CATEGORY));
-                }
-
-                @Override
-                public void onNothingSelected(AdapterView<?> parent) {
-
-                }
-            });
-
-            layout.addView(spinner);
-            builder.setView(layout);
-
-            builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialog, int which) {
-                    addVocabToSelectedTable(cursorAdapter, dbHelper, fromCategory, selectedCategory[0]);
-                }
-            });
-            builder.setNegativeButton("CANCEL", new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialog, int which) {
-                    dialog.cancel();
-                }
-            });
-
-            final AlertDialog dialog = builder.create();
-
-            dialog.show();
-
-            changeDialogButtonsColor(dialog);
-        }
-    }
-
-    protected void addVocabToSelectedTable(VocabCursorAdapter cursorAdapter, VocabDbHelper dbHelper,
-                                           String fromCategory, String toCategory) {
-        Iterator<Integer> posIt = cursorAdapter.selectedItemsPositions.iterator();
-        if (cursorAdapter.selectedItemsPositions.isEmpty()) {
-            Toast.makeText(this, "No words are selected", Toast.LENGTH_SHORT).show();
-        }
-        else {
-            SQLiteDatabase db = dbHelper.getReadableDatabase();
-            while (posIt.hasNext()) {
-                Integer posInt = posIt.next();
-                Integer idInt = (int) cursorAdapter.getItemId(posInt);
-                String[] projection = {
-                        VocabDbContract._ID,
-                        VocabDbContract.COLUMN_NAME_VOCAB,
-                        VocabDbContract.COLUMN_NAME_DEFINITION,
-                        VocabDbContract.COLUMN_NAME_LEVEL
-                };
-                String[] selectionArg = {
-                        String.valueOf(idInt)
-                };
-                Cursor cursor = db.query(
-                        VocabDbContract.TABLE_NAME_MY_VOCAB,
-                        projection,
-                        VocabDbContract._ID + "=?",
-                        selectionArg,
-                        null,
-                        null,
-                        null
-                );
-                cursor.moveToFirst();
-                String vocab = cursor.getString(cursor.getColumnIndex(VocabDbContract.COLUMN_NAME_VOCAB));
-                String definition = cursor.getString(cursor.getColumnIndex(VocabDbContract.COLUMN_NAME_DEFINITION));
-                Integer level = cursor.getInt(cursor.getColumnIndex(VocabDbContract.COLUMN_NAME_LEVEL));
-                dbHelper.insertVocab(toCategory, vocab, definition, level);
-            }
-            cursorAdapter.selectedItemsPositions.clear();
-
-            SharedPreferences sharedPreferences = getSharedPreferences("Sort Order", MODE_PRIVATE);
-            String orderBy = sharedPreferences.getString(fromCategory, DATE_ASC);
-
-            Cursor cursor = dbHelper.getVocabCursor(fromCategory, orderBy);
-            cursorAdapter.changeCursor(cursor);
-
-            Toast.makeText(this, "Vocab added successfully", Toast.LENGTH_SHORT).show();
-        }
+        CopyVocabDialog dialog = new CopyVocabDialog(this, dbHelper, cursorAdapter, fromCategory);
+        dialog.show();
+        dialog.changeDialogButtonsColor();
     }
 
     protected void addVocabAlertDialog(final VocabDbHelper dbHelper, final String category,

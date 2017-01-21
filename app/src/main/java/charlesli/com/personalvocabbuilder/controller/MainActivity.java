@@ -26,7 +26,6 @@ import charlesli.com.personalvocabbuilder.ui.TranslationSettingsDialog;
 public class MainActivity extends AppCompatActivity {
 
     private CategoryCursorAdapter mCategoryAdapter;
-    private ListView mCategoryListView;
     private VocabDbHelper mDbHelper = VocabDbHelper.getDBHelper(MainActivity.this);
 
     @Override
@@ -37,7 +36,7 @@ public class MainActivity extends AppCompatActivity {
         Toolbar myToolbar = (Toolbar) findViewById(R.id.my_toolbar);
         setSupportActionBar(myToolbar);
 
-        mCategoryListView = (ListView) findViewById(R.id.mainListView);
+        ListView mCategoryListView = (ListView) findViewById(R.id.mainListView);
         Cursor cursor = mDbHelper.getCategoryCursor();
         mCategoryAdapter = new CategoryCursorAdapter(this, cursor, 0);
         mCategoryListView.setAdapter(mCategoryAdapter);
