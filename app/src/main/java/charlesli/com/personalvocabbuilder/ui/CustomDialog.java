@@ -11,13 +11,13 @@ import charlesli.com.personalvocabbuilder.R;
  * Created by charles on 2017-01-18.
  */
 
-public class CustomDialog extends AlertDialog {
+public abstract class CustomDialog extends AlertDialog {
 
     protected CustomDialog(Context context) {
         super(context);
     }
 
-    public void changeDialogButtonsColor() {
+    public void changeButtonsToAppIconColor() {
         if (getButton(DialogInterface.BUTTON_POSITIVE) != null) {
             getButton(DialogInterface.BUTTON_POSITIVE)
                     .setTextColor(ContextCompat.getColor(getContext(), R.color.app_icon_color));

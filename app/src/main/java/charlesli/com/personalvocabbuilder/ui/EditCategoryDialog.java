@@ -86,7 +86,7 @@ public class EditCategoryDialog extends CustomDialog {
                 DeleteCategoryDialog alertDialog = new DeleteCategoryDialog(getContext(), dbHelper,
                         cursorAdapter, selectedCategory);
                 alertDialog.show();
-                alertDialog.changeDialogButtonsColor();
+                alertDialog.changeButtonsToAppIconColor();
             }
         });
 

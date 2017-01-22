@@ -113,7 +113,7 @@ public class AddVocabDialog extends CustomDialog {
                 else {
                     NetworkUnavailableDialog dialog = new NetworkUnavailableDialog(getContext());
                     dialog.show();
-                    dialog.changeDialogButtonsColor();
+                    dialog.changeButtonsToAppIconColor();
                 }
             }
         });

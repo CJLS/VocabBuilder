@@ -1,7 +1,6 @@
 package charlesli.com.personalvocabbuilder.controller;
 
 import android.app.AlertDialog;
-import android.content.ContentValues;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -15,14 +14,11 @@ import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
-import android.text.InputType;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
-import android.widget.EditText;
-import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.RadioButton;
 import android.widget.TextView;
@@ -36,6 +32,7 @@ import charlesli.com.personalvocabbuilder.sqlDatabase.VocabDbContract;
 import charlesli.com.personalvocabbuilder.sqlDatabase.VocabDbHelper;
 import charlesli.com.personalvocabbuilder.ui.AddVocabDialog;
 import charlesli.com.personalvocabbuilder.ui.CopyVocabDialog;
+import charlesli.com.personalvocabbuilder.ui.EditVocabDialog;
 
 
 public class MyVocab extends AppCompatActivity {
@@ -135,7 +132,7 @@ public class MyVocab extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    protected void sortVocab() {
+    private void sortVocab() {
         final AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle("Sort By");
 
@@ -221,7 +218,7 @@ public class MyVocab extends AppCompatActivity {
         dialog.dismiss();
     }
 
-    protected void selectAll(VocabCursorAdapter cursorAdapter, VocabDbHelper dbHelper,
+    private void selectAll(VocabCursorAdapter cursorAdapter, VocabDbHelper dbHelper,
                              String category) {
         SharedPreferences sharedPreferences = getSharedPreferences("Sort Order", MODE_PRIVATE);
         String orderBy = sharedPreferences.getString(mCategory, DATE_ASC);
@@ -234,7 +231,7 @@ public class MyVocab extends AppCompatActivity {
         cursorAdapter.changeCursor(cursor);
     }
 
-    protected void deleteVocab(VocabDbHelper dbHelper, String category, VocabCursorAdapter cursorAdapter) {
+    private void deleteVocab(VocabDbHelper dbHelper, String category, VocabCursorAdapter cursorAdapter) {
         Iterator<Integer> posIt = cursorAdapter.selectedItemsPositions.iterator();
         if (cursorAdapter.selectedItemsPositions.isEmpty()) {
             Toast.makeText(this, "No words are selected", Toast.LENGTH_SHORT).show();
@@ -261,7 +258,7 @@ public class MyVocab extends AppCompatActivity {
         }
     }
 
-    protected void selectTableToAddVocabTo(final VocabCursorAdapter cursorAdapter, final VocabDbHelper dbHelper,
+    private void selectTableToAddVocabTo(final VocabCursorAdapter cursorAdapter, final VocabDbHelper dbHelper,
                                            final String fromCategory) {
         if (cursorAdapter.selectedItemsPositions.isEmpty()) {
             Toast.makeText(this, "No words are selected", Toast.LENGTH_SHORT).show();
@@ -269,102 +266,27 @@ public class MyVocab extends AppCompatActivity {
         }
         CopyVocabDialog dialog = new CopyVocabDialog(this, dbHelper, cursorAdapter, fromCategory);
         dialog.show();
-        dialog.changeDialogButtonsColor();
+        dialog.changeButtonsToAppIconColor();
     }
 
-    protected void addVocabAlertDialog(final VocabDbHelper dbHelper, final String category,
+    private void addVocabAlertDialog(final VocabDbHelper dbHelper, final String category,
                                        final VocabCursorAdapter cursorAdapter) {
         AddVocabDialog dialog = new AddVocabDialog(this, dbHelper, cursorAdapter, category);
         dialog.show();
         dialog.setUpTranslationButtonAfterShowDialog();
-        dialog.changeDialogButtonsColor();
+        dialog.changeButtonsToAppIconColor();
     }
 
-    protected void editVocabAlertDialog(final String selectedVocab, final String selectedDefinition,
+    private void editVocabAlertDialog(final String selectedVocab, final String selectedDefinition,
                                         final long id, final VocabDbHelper dbHelper,
                                         final String category, final VocabCursorAdapter cursorAdapter) {
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setTitle("Edit Vocab");
-        builder.setMessage(selectedVocab);
-        // Set up the input
-        LinearLayout layout = new LinearLayout(this);
-        layout.setOrientation(LinearLayout.VERTICAL);
-
-        final EditText definitionInput = new EditText(this);
-        definitionInput.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_FLAG_AUTO_COMPLETE);
-        definitionInput.setHint("New Definition");
-        definitionInput.setText(selectedDefinition);
-        layout.addView(definitionInput);
-
-        builder.setView(layout);
-
-        // Set up the buttons
-        builder.setNeutralButton("Cancel", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                dialog.cancel();
-            }
-        });
-        builder.setPositiveButton("Update", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                String definition = definitionInput.getText().toString();
-                SQLiteDatabase db = dbHelper.getReadableDatabase();
-
-                // new value for one column
-                ContentValues values = new ContentValues();
-                values.put(VocabDbContract.COLUMN_NAME_DEFINITION, definition);
-
-                // which row to update, based on the VOCAB
-                String selectionMyVocab = VocabDbContract.COLUMN_NAME_VOCAB + " = ? AND " +
-                        VocabDbContract.COLUMN_NAME_DEFINITION + " = ?";
-                String[] selectionArgsMyVocab = {selectedVocab, selectedDefinition};
-
-                db.update(
-                        VocabDbContract.TABLE_NAME_MY_VOCAB,
-                        values,
-                        selectionMyVocab,
-                        selectionArgsMyVocab
-                );
-
-                // Update Cursor
-                SharedPreferences sharedPreferences = getSharedPreferences("Sort Order", MODE_PRIVATE);
-                String orderBy = sharedPreferences.getString(category, DATE_ASC);
-
-                Cursor cursor = dbHelper.getVocabCursor(category, orderBy);
-                cursorAdapter.changeCursor(cursor);
-            }
-        });
-        builder.setNegativeButton("Delete Vocab", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                // Delete Vocab from Database*****************************************
-                SQLiteDatabase db = dbHelper.getWritableDatabase();
-                // Define 'where' part of query
-                String selection = VocabDbContract._ID + " LIKE ?";
-                // Specify arguments in placeholder order
-                String[] selectionArgs = {String.valueOf(id)};
-                // Issue SQL statement
-                db.delete(VocabDbContract.TABLE_NAME_MY_VOCAB, selection, selectionArgs);
-
-                // Update Cursor
-                SharedPreferences sharedPreferences = getSharedPreferences("Sort Order", MODE_PRIVATE);
-                String orderBy = sharedPreferences.getString(category, DATE_ASC);
-
-                Cursor cursor = dbHelper.getVocabCursor(category, orderBy);
-                cursorAdapter.changeCursor(cursor);
-            }
-        });
-
-        final AlertDialog dialog = builder.create();
-
+        EditVocabDialog dialog = new EditVocabDialog(this, selectedVocab, selectedDefinition,
+                id, dbHelper, category, cursorAdapter);
         dialog.show();
-
-        changeDialogButtonsColor(dialog);
-
+        dialog.changeButtonsToAppIconColor();
     }
 
-    protected void implementSearchBar(Menu menu, int menuItemId, final String category,
+    private void implementSearchBar(Menu menu, int menuItemId, final String category,
                                       final VocabCursorAdapter cursorAdapter, final VocabDbHelper dbHelper) {
         MenuItem search = menu.findItem(menuItemId);
         SearchView searchView = (SearchView) MenuItemCompat.getActionView(search);

@@ -105,19 +105,19 @@ public class MainActivity extends AppCompatActivity {
     private void createSettingsDialog() {
         TranslationSettingsDialog dialog = new TranslationSettingsDialog(this);
         dialog.show();
-        dialog.changeDialogButtonsColor();
+        dialog.changeButtonsToAppIconColor();
     }
 
     private void createAddCategoryDialog() {
         AddCategoryDialog dialog = new AddCategoryDialog(this, mDbHelper, mCategoryAdapter);
         dialog.show();
-        dialog.changeDialogButtonsColor();
+        dialog.changeButtonsToAppIconColor();
     }
 
     private void createReviewDialog() {
         ReviewDialog dialog = new ReviewDialog(this, mDbHelper);
         dialog.show();
-        dialog.changeDialogButtonsColor();
+        dialog.changeButtonsToAppIconColor();
     }
 
     private void editCategoryAlertDialog(final String selectedCategory, final String selectedDesc,
@@ -125,13 +125,13 @@ public class MainActivity extends AppCompatActivity {
         if (selectedCategory.equals("My Word Bank")) {
             ModifyMyWordBankCategoryDialog dialog = new ModifyMyWordBankCategoryDialog(this);
             dialog.show();
-            dialog.changeDialogButtonsColor();
+            dialog.changeButtonsToAppIconColor();
             return;
         }
 
         EditCategoryDialog dialog = new EditCategoryDialog(this, dbHelper, cursorAdapter, selectedCategory, selectedDesc);
         dialog.show();
-        dialog.changeDialogButtonsColor();
+        dialog.changeButtonsToAppIconColor();
     }
 
 }
