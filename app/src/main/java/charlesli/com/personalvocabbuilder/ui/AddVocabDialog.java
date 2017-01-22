@@ -1,6 +1,5 @@
 package charlesli.com.personalvocabbuilder.ui;
 
-import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
@@ -48,7 +47,6 @@ public class AddVocabDialog extends CustomDialog {
         progressBar = (ProgressBar) promptsView.findViewById(R.id.progressBar);
         setView(promptsView);
 
-        // Set up the buttons
         setButton(BUTTON_POSITIVE, "OK", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
@@ -58,7 +56,6 @@ public class AddVocabDialog extends CustomDialog {
                 if (!category.equals(VocabDbContract.CATEGORY_NAME_MY_WORD_BANK)) {
                     dbHelper.insertVocab(VocabDbContract.CATEGORY_NAME_MY_WORD_BANK, vocab, definition, 0);
                 }
-                // Update Cursor
                 SharedPreferences sharedPreferences = getContext().getSharedPreferences("Sort Order", MODE_PRIVATE);
                 String orderBy = sharedPreferences.getString(category, DATE_ASC);
 
@@ -94,16 +91,6 @@ public class AddVocabDialog extends CustomDialog {
                 String source = LanguageOptions.FROM_LANGUAGE_CODE[sourcePos];
                 String target = LanguageOptions.TO_LANGUAGE_CODE[targetPos];
 
-                final Builder builder = new Builder(getContext());
-                builder.setMessage("Network is unavailable. Please try again later.");
-                builder.setNegativeButton("OK", new OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        dialog.cancel();
-                    }
-                });
-                AlertDialog dialog = builder.create();
-
                 if (isNetworkAvailable()) {
                     String APIKey = getContext().getString(R.string.translateKey);
                     GoogleTranslate googleTranslate = new GoogleTranslate(progressBar, APIKey);
@@ -124,10 +111,9 @@ public class AddVocabDialog extends CustomDialog {
                     googleTranslate.execute(vocab, source, target);
                 }
                 else {
+                    NetworkUnavailableDialog dialog = new NetworkUnavailableDialog(getContext());
                     dialog.show();
-                    //TODO: Change button color
-                    //TODO: FIX ERROR ADD VOCAB
-                    //changeDialogButtonsColor(dialog);
+                    dialog.changeDialogButtonsColor();
                 }
             }
         });
