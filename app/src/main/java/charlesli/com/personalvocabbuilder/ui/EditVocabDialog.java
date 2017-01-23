@@ -15,14 +15,13 @@ import charlesli.com.personalvocabbuilder.sqlDatabase.VocabDbContract;
 import charlesli.com.personalvocabbuilder.sqlDatabase.VocabDbHelper;
 
 import static android.content.Context.MODE_PRIVATE;
+import static charlesli.com.personalvocabbuilder.sqlDatabase.VocabDbContract.DATE_ASC;
 
 /**
  * Created by charles on 2017-01-22.
  */
 
 public class EditVocabDialog extends CustomDialog {
-
-    private final String DATE_ASC = VocabDbContract._ID + " ASC";
 
     public EditVocabDialog(Context context, final String selectedVocab, final String selectedDefinition,
                               final long id, final VocabDbHelper dbHelper,

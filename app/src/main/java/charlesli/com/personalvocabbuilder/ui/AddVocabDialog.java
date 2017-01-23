@@ -22,6 +22,7 @@ import charlesli.com.personalvocabbuilder.sqlDatabase.VocabDbContract;
 import charlesli.com.personalvocabbuilder.sqlDatabase.VocabDbHelper;
 
 import static android.content.Context.MODE_PRIVATE;
+import static charlesli.com.personalvocabbuilder.sqlDatabase.VocabDbContract.DATE_ASC;
 
 /**
  * Created by charles on 2017-01-21.
@@ -29,7 +30,6 @@ import static android.content.Context.MODE_PRIVATE;
 
 public class AddVocabDialog extends CustomDialog {
 
-    private final String DATE_ASC = VocabDbContract._ID + " ASC";
     private EditText vocabInput;
     private EditText definitionInput;
     private ProgressBar progressBar;

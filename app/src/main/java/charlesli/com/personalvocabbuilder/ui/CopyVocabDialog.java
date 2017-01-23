@@ -19,14 +19,13 @@ import charlesli.com.personalvocabbuilder.sqlDatabase.VocabDbContract;
 import charlesli.com.personalvocabbuilder.sqlDatabase.VocabDbHelper;
 
 import static android.content.Context.MODE_PRIVATE;
+import static charlesli.com.personalvocabbuilder.sqlDatabase.VocabDbContract.DATE_ASC;
 
 /**
  * Created by charles on 2017-01-21.
  */
 
 public class CopyVocabDialog extends CustomDialog {
-
-    private final String DATE_ASC = VocabDbContract._ID + " ASC";
 
     public CopyVocabDialog(Context context, final VocabDbHelper dbHelper,
                            final VocabCursorAdapter cursorAdapter, final String fromCategory) {

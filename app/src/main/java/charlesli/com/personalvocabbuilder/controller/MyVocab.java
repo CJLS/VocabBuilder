@@ -32,24 +32,18 @@ import charlesli.com.personalvocabbuilder.ui.AddVocabDialog;
 import charlesli.com.personalvocabbuilder.ui.CopyVocabDialog;
 import charlesli.com.personalvocabbuilder.ui.EditVocabDialog;
 
+import static charlesli.com.personalvocabbuilder.sqlDatabase.VocabDbContract.DATE_ASC;
+import static charlesli.com.personalvocabbuilder.sqlDatabase.VocabDbContract.DATE_DESC;
+import static charlesli.com.personalvocabbuilder.sqlDatabase.VocabDbContract.VOCAB_ASC;
+import static charlesli.com.personalvocabbuilder.sqlDatabase.VocabDbContract.VOCAB_DESC;
+
 
 public class MyVocab extends AppCompatActivity {
-
-    private final String DATE_ASC = VocabDbContract._ID + " ASC";
-    private final String DATE_DESC = VocabDbContract._ID + " DESC";
-    private final String VOCAB_ASC = VocabDbContract.COLUMN_NAME_VOCAB + " COLLATE NOCASE ASC";
-    private final String VOCAB_DESC = VocabDbContract.COLUMN_NAME_VOCAB + " COLLATE NOCASE DESC";
+    // Move some common alert dialog variables to parent class
     private VocabCursorAdapter mVocabAdapter;
     private VocabDbHelper mDbHelper = VocabDbHelper.getDBHelper(MyVocab.this);
     private String mCategory;
     private FloatingActionButton fab;
-
-    // Sort Radio Button
-    private RadioButton rbDateAscending;
-    private RadioButton rbDateDescending;
-    private RadioButton rbVocabAscending;
-    private RadioButton rbVocabDescending;
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -140,10 +134,10 @@ public class MyVocab extends AppCompatActivity {
 
         final AlertDialog dialog = builder.create();
 
-        rbDateAscending = (RadioButton) promptsView.findViewById(R.id.btDateAscending);
-        rbDateDescending = (RadioButton) promptsView.findViewById(R.id.btDateDescending);
-        rbVocabAscending = (RadioButton) promptsView.findViewById(R.id.btVocabAscending);
-        rbVocabDescending = (RadioButton) promptsView.findViewById(R.id.btVocabDescending);
+        final RadioButton rbDateAscending = (RadioButton) promptsView.findViewById(R.id.btDateAscending);
+        final RadioButton rbDateDescending = (RadioButton) promptsView.findViewById(R.id.btDateDescending);
+        final RadioButton rbVocabAscending = (RadioButton) promptsView.findViewById(R.id.btVocabAscending);
+        final RadioButton rbVocabDescending = (RadioButton) promptsView.findViewById(R.id.btVocabDescending);
 
         rbDateAscending.setChecked(false);
         rbDateDescending.setChecked(false);
@@ -199,11 +193,6 @@ public class MyVocab extends AppCompatActivity {
     }
 
     private void setSortByRadioButton(RadioButton selectedButton, String orderBy, AlertDialog dialog) {
-        rbDateAscending.setChecked(false);
-        rbDateDescending.setChecked(false);
-        rbVocabAscending.setChecked(false);
-        rbVocabDescending.setChecked(false);
-
         selectedButton.setChecked(true);
 
         SharedPreferences sharedPreferences = getSharedPreferences("Sort Order", Context.MODE_PRIVATE);
