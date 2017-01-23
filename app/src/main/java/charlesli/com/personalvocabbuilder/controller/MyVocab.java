@@ -1,7 +1,5 @@
 package charlesli.com.personalvocabbuilder.controller;
 
-import android.app.AlertDialog;
-import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
@@ -12,13 +10,11 @@ import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
-import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
-import android.widget.RadioButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -31,11 +27,9 @@ import charlesli.com.personalvocabbuilder.sqlDatabase.VocabDbHelper;
 import charlesli.com.personalvocabbuilder.ui.AddVocabDialog;
 import charlesli.com.personalvocabbuilder.ui.CopyVocabDialog;
 import charlesli.com.personalvocabbuilder.ui.EditVocabDialog;
+import charlesli.com.personalvocabbuilder.ui.SortVocabDialog;
 
 import static charlesli.com.personalvocabbuilder.sqlDatabase.VocabDbContract.DATE_ASC;
-import static charlesli.com.personalvocabbuilder.sqlDatabase.VocabDbContract.DATE_DESC;
-import static charlesli.com.personalvocabbuilder.sqlDatabase.VocabDbContract.VOCAB_ASC;
-import static charlesli.com.personalvocabbuilder.sqlDatabase.VocabDbContract.VOCAB_DESC;
 
 
 public class MyVocab extends AppCompatActivity {
@@ -95,7 +89,6 @@ public class MyVocab extends AppCompatActivity {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_my_vocab, menu);
 
         implementSearchBar(menu, R.id.search_my_vocab_button, mCategory,
@@ -125,84 +118,8 @@ public class MyVocab extends AppCompatActivity {
     }
 
     private void sortVocab() {
-        final AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setTitle("Sort By");
-
-        LayoutInflater li = LayoutInflater.from(MyVocab.this);
-        View promptsView = li.inflate(R.layout.alert_dialog_sort, null);
-        builder.setView(promptsView);
-
-        final AlertDialog dialog = builder.create();
-
-        final RadioButton rbDateAscending = (RadioButton) promptsView.findViewById(R.id.btDateAscending);
-        final RadioButton rbDateDescending = (RadioButton) promptsView.findViewById(R.id.btDateDescending);
-        final RadioButton rbVocabAscending = (RadioButton) promptsView.findViewById(R.id.btVocabAscending);
-        final RadioButton rbVocabDescending = (RadioButton) promptsView.findViewById(R.id.btVocabDescending);
-
-        rbDateAscending.setChecked(false);
-        rbDateDescending.setChecked(false);
-        rbVocabAscending.setChecked(false);
-        rbVocabDescending.setChecked(false);
-
-        final SharedPreferences sharedPreferences = getSharedPreferences("Sort Order", MODE_PRIVATE);
-        String orderBy = sharedPreferences.getString(mCategory, DATE_ASC);
-
-        if (orderBy.equals(DATE_ASC)) {
-            rbDateAscending.setChecked(true);
-        }
-        else if (orderBy.equals(DATE_DESC)) {
-            rbDateDescending.setChecked(true);
-        }
-        else if (orderBy.equals(VOCAB_ASC)) {
-            rbVocabAscending.setChecked(true);
-        }
-        else if (orderBy.equals(VOCAB_DESC)) {
-            rbVocabDescending.setChecked(true);
-        }
-
-
-        rbDateAscending.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                setSortByRadioButton(rbDateAscending, DATE_ASC, dialog);
-            }
-        });
-
-        rbDateDescending.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                setSortByRadioButton(rbDateDescending, DATE_DESC, dialog);
-            }
-        });
-
-        rbVocabAscending.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                setSortByRadioButton(rbVocabAscending, VOCAB_ASC, dialog);
-            }
-        });
-
-        rbVocabDescending.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                setSortByRadioButton(rbVocabDescending, VOCAB_DESC, dialog);
-            }
-        });
-
+        SortVocabDialog dialog = new SortVocabDialog(this, mCategory, mDbHelper, mVocabAdapter);
         dialog.show();
-    }
-
-    private void setSortByRadioButton(RadioButton selectedButton, String orderBy, AlertDialog dialog) {
-        selectedButton.setChecked(true);
-
-        SharedPreferences sharedPreferences = getSharedPreferences("Sort Order", Context.MODE_PRIVATE);
-        SharedPreferences.Editor editor = sharedPreferences.edit();
-        editor.putString(mCategory, orderBy);
-        editor.apply();
-
-        Cursor cursor = mDbHelper.getVocabCursor(mCategory, orderBy);
-        mVocabAdapter.changeCursor(cursor);
-        dialog.dismiss();
     }
 
     private void selectAll(VocabCursorAdapter cursorAdapter, VocabDbHelper dbHelper,
