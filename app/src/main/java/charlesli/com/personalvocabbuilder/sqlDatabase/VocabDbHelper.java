@@ -10,7 +10,6 @@ import android.database.sqlite.SQLiteOpenHelper;
  * Created by Li on 2015/4/13.
  */
 public class VocabDbHelper extends SQLiteOpenHelper {
-
     // If you change the database schema, you must increment the database version.
     public static final int DATABASE_VERSION = 6;
     public static final String DATABASE_NAME = "VocabDatabase.db";
@@ -25,7 +24,7 @@ public class VocabDbHelper extends SQLiteOpenHelper {
     private static final String DELETE_TABLE_CATEGORY =
             "DROP TABLE IF EXISTS " + VocabDbContract.TABLE_NAME_CATEGORY;
     private static VocabDbHelper dbInstance;
-    // Table for My Vocab
+
     private String CREATE_TABLE_MY_VOCAB =
             "CREATE TABLE  " + VocabDbContract.TABLE_NAME_MY_VOCAB +
             " (" + VocabDbContract._ID + " INTEGER PRIMARY KEY," +
@@ -33,7 +32,6 @@ public class VocabDbHelper extends SQLiteOpenHelper {
             VocabDbContract.COLUMN_NAME_DEFINITION + " TEXT, " +
             VocabDbContract.COLUMN_NAME_LEVEL + " INTEGER, " +
                     VocabDbContract.COLUMN_NAME_CATEGORY + " TEXT );";
-    // Table for Category
     private String CREATE_TABLE_CATEGORY =
             "CREATE TABLE  " + VocabDbContract.TABLE_NAME_CATEGORY +
                     " (" + VocabDbContract._ID + " INTEGER PRIMARY KEY," +
@@ -137,7 +135,7 @@ public class VocabDbHelper extends SQLiteOpenHelper {
                     ", " + VocabDbContract.COLUMN_NAME_LEVEL +
                     ", " + VocabDbContract.COLUMN_NAME_CATEGORY +
                     " FROM " + VocabDbContract.TABLE_NAME_GRE);
-            // Delete unnecessary tables
+            // Delete no longer used tables
             db.execSQL(DELETE_TABLE_MY_WORD_BANK);
             db.execSQL(DELETE_TABLE_GMAT);
             db.execSQL(DELETE_TABLE_GRE);

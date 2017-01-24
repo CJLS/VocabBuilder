@@ -33,7 +33,7 @@ import static charlesli.com.personalvocabbuilder.sqlDatabase.VocabDbContract.DAT
 
 
 public class MyVocab extends AppCompatActivity {
-    // Move some common alert dialog variables to parent class
+
     private VocabCursorAdapter mVocabAdapter;
     private VocabDbHelper mDbHelper = VocabDbHelper.getDBHelper(MyVocab.this);
     private String categoryName;
@@ -144,12 +144,9 @@ public class MyVocab extends AppCompatActivity {
             SQLiteDatabase db = dbHelper.getWritableDatabase();
             while (posIt.hasNext()) {
                 Integer posInt = posIt.next();
-                // Define 'where' part of query
                 String selection = VocabDbContract._ID + " LIKE ?" + " AND " +
                         VocabDbContract.COLUMN_NAME_CATEGORY + " LIKE ?";
-                // Specify arguments in placeholder order
                 String[] selectionArgs = {String.valueOf(cursorAdapter.getItemId(posInt)), category};
-                // Issue SQL statement
                 db.delete(VocabDbContract.TABLE_NAME_MY_VOCAB, selection, selectionArgs);
             }
             SharedPreferences sharedPreferences = getSharedPreferences("Sort Order", MODE_PRIVATE);
