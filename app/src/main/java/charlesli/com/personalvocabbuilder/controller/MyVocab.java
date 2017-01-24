@@ -36,8 +36,8 @@ public class MyVocab extends AppCompatActivity {
     // Move some common alert dialog variables to parent class
     private VocabCursorAdapter mVocabAdapter;
     private VocabDbHelper mDbHelper = VocabDbHelper.getDBHelper(MyVocab.this);
-    private String mCategory;
-    private FloatingActionButton fab;
+    private String categoryName;
+    private FloatingActionButton addVocabFAB;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,17 +52,17 @@ public class MyVocab extends AppCompatActivity {
         }
         // Get Category Information
         Intent intent = getIntent();
-        mCategory = intent.getStringExtra("Category");
-        setTitle(mCategory);
+        categoryName = intent.getStringExtra("Category");
+        setTitle(categoryName);
 
         ListView mVocabListView = (ListView) findViewById(R.id.mVocabList);
         TextView emptyTextView = (TextView) findViewById(android.R.id.empty);
         mVocabListView.setEmptyView(emptyTextView);
 
         SharedPreferences sharedPreferences = getSharedPreferences("Sort Order", MODE_PRIVATE);
-        String orderBy = sharedPreferences.getString(mCategory, DATE_ASC);
+        String orderBy = sharedPreferences.getString(categoryName, DATE_ASC);
 
-        Cursor cursor = mDbHelper.getVocabCursor(mCategory, orderBy);
+        Cursor cursor = mDbHelper.getVocabCursor(categoryName, orderBy);
         mVocabAdapter = new VocabCursorAdapter(this, cursor, 0);
         mVocabListView.setAdapter(mVocabAdapter);
         mVocabListView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
@@ -71,17 +71,17 @@ public class MyVocab extends AppCompatActivity {
                 String selectedVocab = (String) ((TextView) view.findViewById(R.id.vocabName)).getText();
                 String selectedDefinition = (String) ((TextView) view.findViewById(R.id.vocabDefinition)).getText();
                 editVocabAlertDialog(selectedVocab, selectedDefinition, id, mDbHelper,
-                        mCategory, mVocabAdapter);
+                        categoryName, mVocabAdapter);
                 return true;
             }
         });
 
-        fab = (FloatingActionButton) findViewById(R.id.vocabFAB);
-        if (fab != null) {
-            fab.setOnClickListener(new View.OnClickListener() {
+        addVocabFAB = (FloatingActionButton) findViewById(R.id.vocabFAB);
+        if (addVocabFAB != null) {
+            addVocabFAB.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    addVocabAlertDialog(mDbHelper, mCategory, mVocabAdapter);
+                    addVocabAlertDialog(mDbHelper, categoryName, mVocabAdapter);
                 }
             });
         }
@@ -91,7 +91,7 @@ public class MyVocab extends AppCompatActivity {
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu_my_vocab, menu);
 
-        implementSearchBar(menu, R.id.search_my_vocab_button, mCategory,
+        implementSearchBar(menu, R.id.search_my_vocab_button, categoryName,
                 mVocabAdapter, mDbHelper);
 
         return true;
@@ -102,13 +102,13 @@ public class MyVocab extends AppCompatActivity {
         int id = item.getItemId();
 
         if (id == R.id.del_my_vocab_button) {
-            deleteVocab(mDbHelper, mCategory, mVocabAdapter);
+            deleteVocab(mDbHelper, categoryName, mVocabAdapter);
         }
         else if (id == R.id.label_my_vocab_button) {
-            selectTableToAddVocabTo(mVocabAdapter, mDbHelper, mCategory);
+            selectTableToAddVocabTo(mVocabAdapter, mDbHelper, categoryName);
         }
         else if (id == R.id.select_all_my_vocab_button) {
-            selectAll(mVocabAdapter, mDbHelper, mCategory);
+            selectAll(mVocabAdapter, mDbHelper, categoryName);
         }
         else if (id == R.id.sort_my_vocab_button) {
             sortVocab();
@@ -118,14 +118,14 @@ public class MyVocab extends AppCompatActivity {
     }
 
     private void sortVocab() {
-        SortVocabDialog dialog = new SortVocabDialog(this, mCategory, mDbHelper, mVocabAdapter);
+        SortVocabDialog dialog = new SortVocabDialog(this, categoryName, mDbHelper, mVocabAdapter);
         dialog.show();
     }
 
     private void selectAll(VocabCursorAdapter cursorAdapter, VocabDbHelper dbHelper,
                              String category) {
         SharedPreferences sharedPreferences = getSharedPreferences("Sort Order", MODE_PRIVATE);
-        String orderBy = sharedPreferences.getString(mCategory, DATE_ASC);
+        String orderBy = sharedPreferences.getString(categoryName, DATE_ASC);
 
         Cursor cursor = dbHelper.getVocabCursor(category, orderBy);
         int numOfRows = cursor.getCount();
@@ -198,7 +198,7 @@ public class MyVocab extends AppCompatActivity {
             @Override
             public boolean onQueryTextSubmit(String s) {
                 SharedPreferences sharedPreferences = getSharedPreferences("Sort Order", MODE_PRIVATE);
-                String orderBy = sharedPreferences.getString(mCategory, DATE_ASC);
+                String orderBy = sharedPreferences.getString(categoryName, DATE_ASC);
                 Cursor cursor = dbHelper.getVocabCursorWithStringPattern(category, s, orderBy);
                 cursorAdapter.changeCursor(cursor);
                 return true;
@@ -207,7 +207,7 @@ public class MyVocab extends AppCompatActivity {
             @Override
             public boolean onQueryTextChange(String s) {
                 SharedPreferences sharedPreferences = getSharedPreferences("Sort Order", MODE_PRIVATE);
-                String orderBy = sharedPreferences.getString(mCategory, DATE_ASC);
+                String orderBy = sharedPreferences.getString(categoryName, DATE_ASC);
                 Cursor cursor = dbHelper.getVocabCursorWithStringPattern(category, s, orderBy);
                 cursorAdapter.changeCursor(cursor);
                 return true;
@@ -218,14 +218,14 @@ public class MyVocab extends AppCompatActivity {
         searchView.addOnAttachStateChangeListener(new View.OnAttachStateChangeListener() {
             @Override
             public void onViewAttachedToWindow(View v) {
-                fab.setVisibility(View.INVISIBLE);
+                addVocabFAB.setVisibility(View.INVISIBLE);
             }
 
             @Override
             public void onViewDetachedFromWindow(View v) {
-                fab.setVisibility(View.VISIBLE);
+                addVocabFAB.setVisibility(View.VISIBLE);
                 SharedPreferences sharedPreferences = getSharedPreferences("Sort Order", MODE_PRIVATE);
-                String orderBy = sharedPreferences.getString(mCategory, DATE_ASC);
+                String orderBy = sharedPreferences.getString(categoryName, DATE_ASC);
                 cursorAdapter.changeCursor(dbHelper.getVocabCursor(category, orderBy));
             }
         });

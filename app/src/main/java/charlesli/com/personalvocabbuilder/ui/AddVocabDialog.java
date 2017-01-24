@@ -22,6 +22,8 @@ import charlesli.com.personalvocabbuilder.sqlDatabase.VocabDbContract;
 import charlesli.com.personalvocabbuilder.sqlDatabase.VocabDbHelper;
 
 import static android.content.Context.MODE_PRIVATE;
+import static charlesli.com.personalvocabbuilder.sqlDatabase.LanguageOptions.DEFAULT_TARGET_LANGUAGE_ENGLISH;
+import static charlesli.com.personalvocabbuilder.sqlDatabase.LanguageOptions.DETECT_LANGUAGE;
 import static charlesli.com.personalvocabbuilder.sqlDatabase.VocabDbContract.DATE_ASC;
 
 /**
@@ -85,8 +87,8 @@ public class AddVocabDialog extends CustomDialog {
                 String vocab = vocabInput.getText().toString();
 
                 SharedPreferences sharedPreferences = getContext().getSharedPreferences("Translation", MODE_PRIVATE);
-                int sourcePos = sharedPreferences.getInt("Source", 0); // 0 is for Detect Language
-                int targetPos = sharedPreferences.getInt("Target", 19); // 19 is for English
+                int sourcePos = sharedPreferences.getInt("Source", DETECT_LANGUAGE);
+                int targetPos = sharedPreferences.getInt("Target", DEFAULT_TARGET_LANGUAGE_ENGLISH);
 
                 String source = LanguageOptions.FROM_LANGUAGE_CODE[sourcePos];
                 String target = LanguageOptions.TO_LANGUAGE_CODE[targetPos];

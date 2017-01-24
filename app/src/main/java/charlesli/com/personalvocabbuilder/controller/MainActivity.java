@@ -65,12 +65,12 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.categoryFAB);
-        if (fab != null) {
-            fab.setOnClickListener(new View.OnClickListener() {
+        FloatingActionButton reviewFAB = (FloatingActionButton) findViewById(R.id.categoryFAB);
+        if (reviewFAB != null) {
+            reviewFAB.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    createReviewDialog();
+                    selectReviewType();
                 }
             });
         }
@@ -94,27 +94,27 @@ public class MainActivity extends AppCompatActivity {
         int id = item.getItemId();
 
         if (id == R.id.add_category_button) {
-            createAddCategoryDialog();
+            addCategory();
         }
         else if (id == R.id.settings_button) {
-            createSettingsDialog();
+            setTranslationLanguage();
         }
         return super.onOptionsItemSelected(item);
     }
 
-    private void createSettingsDialog() {
+    private void setTranslationLanguage() {
         TranslationSettingsDialog dialog = new TranslationSettingsDialog(this);
         dialog.show();
         dialog.changeButtonsToAppIconColor();
     }
 
-    private void createAddCategoryDialog() {
+    private void addCategory() {
         AddCategoryDialog dialog = new AddCategoryDialog(this, mDbHelper, mCategoryAdapter);
         dialog.show();
         dialog.changeButtonsToAppIconColor();
     }
 
-    private void createReviewDialog() {
+    private void selectReviewType() {
         ReviewDialog dialog = new ReviewDialog(this, mDbHelper);
         dialog.show();
         dialog.changeButtonsToAppIconColor();
