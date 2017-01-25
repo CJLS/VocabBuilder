@@ -24,17 +24,17 @@ import static charlesli.com.personalvocabbuilder.sqlDatabase.VocabDbContract.VOC
 
 public class SortVocabDialog extends CustomDialog {
 
-    private String mCategory;
-    private VocabDbHelper mDbHelper;
-    private VocabCursorAdapter mVocabAdapter;
+    private String categoryName;
+    private VocabDbHelper dbHelper;
+    private VocabCursorAdapter vocabAdapter;
 
-    public SortVocabDialog(Context context, String mCategory, VocabDbHelper dbHelper,
+    public SortVocabDialog(Context context, String categoryName, VocabDbHelper dbHelper,
                            VocabCursorAdapter cursorAdapter) {
         super(context);
 
-        this.mCategory = mCategory;
-        this.mDbHelper = dbHelper;
-        this.mVocabAdapter = cursorAdapter;
+        this.categoryName = categoryName;
+        this.dbHelper = dbHelper;
+        this.vocabAdapter = cursorAdapter;
 
         setTitle("Sort By");
 
@@ -53,7 +53,7 @@ public class SortVocabDialog extends CustomDialog {
         rbVocabDescending.setChecked(false);
 
         final SharedPreferences sharedPreferences = getContext().getSharedPreferences("Sort Order", MODE_PRIVATE);
-        String orderBy = sharedPreferences.getString(mCategory, DATE_ASC);
+        String orderBy = sharedPreferences.getString(categoryName, DATE_ASC);
 
         if (orderBy.equals(DATE_ASC)) {
             rbDateAscending.setChecked(true);
@@ -103,11 +103,11 @@ public class SortVocabDialog extends CustomDialog {
 
         SharedPreferences sharedPreferences = getContext().getSharedPreferences("Sort Order", MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPreferences.edit();
-        editor.putString(mCategory, orderBy);
+        editor.putString(categoryName, orderBy);
         editor.apply();
 
-        Cursor cursor = mDbHelper.getVocabCursor(mCategory, orderBy);
-        mVocabAdapter.changeCursor(cursor);
+        Cursor cursor = dbHelper.getVocabCursor(categoryName, orderBy);
+        vocabAdapter.changeCursor(cursor);
         dialog.dismiss();
     }
 }
