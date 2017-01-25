@@ -29,4 +29,6 @@ public final class VocabDbContract implements BaseColumns{
     public static final String DATE_DESC = _ID + " DESC";
     public static final String VOCAB_ASC = COLUMN_NAME_VOCAB + " COLLATE NOCASE ASC";
     public static final String VOCAB_DESC = COLUMN_NAME_VOCAB + " COLLATE NOCASE DESC";
+    public static final String LEVEL_ASC = COLUMN_NAME_LEVEL + " ASC";
+    public static final String LEVEL_DESC = COLUMN_NAME_LEVEL + " DESC";
 }

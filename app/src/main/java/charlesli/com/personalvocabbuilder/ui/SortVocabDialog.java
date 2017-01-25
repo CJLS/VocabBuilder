@@ -15,6 +15,8 @@ import charlesli.com.personalvocabbuilder.sqlDatabase.VocabDbHelper;
 import static android.content.Context.MODE_PRIVATE;
 import static charlesli.com.personalvocabbuilder.sqlDatabase.VocabDbContract.DATE_ASC;
 import static charlesli.com.personalvocabbuilder.sqlDatabase.VocabDbContract.DATE_DESC;
+import static charlesli.com.personalvocabbuilder.sqlDatabase.VocabDbContract.LEVEL_ASC;
+import static charlesli.com.personalvocabbuilder.sqlDatabase.VocabDbContract.LEVEL_DESC;
 import static charlesli.com.personalvocabbuilder.sqlDatabase.VocabDbContract.VOCAB_ASC;
 import static charlesli.com.personalvocabbuilder.sqlDatabase.VocabDbContract.VOCAB_DESC;
 
@@ -46,26 +48,38 @@ public class SortVocabDialog extends CustomDialog {
         final RadioButton rbDateDescending = (RadioButton) promptsView.findViewById(R.id.btDateDescending);
         final RadioButton rbVocabAscending = (RadioButton) promptsView.findViewById(R.id.btVocabAscending);
         final RadioButton rbVocabDescending = (RadioButton) promptsView.findViewById(R.id.btVocabDescending);
+        final RadioButton rbLevelAscending = (RadioButton) promptsView.findViewById(R.id.btLevelAscending);
+        final RadioButton rbLevelDescending = (RadioButton) promptsView.findViewById(R.id.btLevelDescending);
 
         rbDateAscending.setChecked(false);
         rbDateDescending.setChecked(false);
         rbVocabAscending.setChecked(false);
         rbVocabDescending.setChecked(false);
+        rbLevelAscending.setChecked(false);
+        rbLevelDescending.setChecked(false);
 
         final SharedPreferences sharedPreferences = getContext().getSharedPreferences("Sort Order", MODE_PRIVATE);
         String orderBy = sharedPreferences.getString(categoryName, DATE_ASC);
 
-        if (orderBy.equals(DATE_ASC)) {
-            rbDateAscending.setChecked(true);
-        }
-        else if (orderBy.equals(DATE_DESC)) {
-            rbDateDescending.setChecked(true);
-        }
-        else if (orderBy.equals(VOCAB_ASC)) {
-            rbVocabAscending.setChecked(true);
-        }
-        else if (orderBy.equals(VOCAB_DESC)) {
-            rbVocabDescending.setChecked(true);
+        switch (orderBy) {
+            case DATE_ASC:
+                rbDateAscending.setChecked(true);
+                break;
+            case DATE_DESC:
+                rbDateDescending.setChecked(true);
+                break;
+            case VOCAB_ASC:
+                rbVocabAscending.setChecked(true);
+                break;
+            case VOCAB_DESC:
+                rbVocabDescending.setChecked(true);
+                break;
+            case LEVEL_ASC:
+                rbLevelAscending.setChecked(true);
+                break;
+            case LEVEL_DESC:
+                rbLevelDescending.setChecked(true);
+                break;
         }
 
 
@@ -94,6 +108,20 @@ public class SortVocabDialog extends CustomDialog {
             @Override
             public void onClick(View v) {
                 setSortByRadioButton(rbVocabDescending, VOCAB_DESC, SortVocabDialog.this);
+            }
+        });
+
+        rbLevelAscending.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                setSortByRadioButton(rbLevelAscending, LEVEL_ASC, SortVocabDialog.this);
+            }
+        });
+
+        rbLevelDescending.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                setSortByRadioButton(rbLevelDescending, LEVEL_DESC, SortVocabDialog.this);
             }
         });
     }

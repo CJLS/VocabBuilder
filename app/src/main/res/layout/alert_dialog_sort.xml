@@ -41,4 +41,22 @@
         android:checked="false"
         android:text="Vocab (Z - A)"
         android:textSize="16sp"/>
+
+    <RadioButton
+        android:id="@+id/btLevelAscending"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="2dp"
+        android:checked="false"
+        android:text="Progress (Difficult)"
+        android:textSize="16sp"/>
+
+    <RadioButton
+        android:id="@+id/btLevelDescending"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="2dp"
+        android:checked="false"
+        android:text="Progress (Perfect)"
+        android:textSize="16sp"/>
 </LinearLayout>
