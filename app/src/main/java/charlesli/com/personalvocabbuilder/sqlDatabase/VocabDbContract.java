@@ -9,14 +9,17 @@ public final class VocabDbContract implements BaseColumns{
 
     // table names
     public static final String TABLE_NAME_MY_VOCAB = "my_vocab_table";
+    public static final String TABLE_NAME_CATEGORY = "category_table";
+    // deprecated (for DB version <= 3) tables
     public static final String TABLE_NAME_MY_WORD_BANK = "my_word_bank_table";
     public static final String TABLE_NAME_GMAT = "gmat_table";
     public static final String TABLE_NAME_GRE = "gre_table";
-    public static final String TABLE_NAME_CATEGORY = "category_table";
+
     // column names
     public static final String COLUMN_NAME_VOCAB = "vocab";
     public static final String COLUMN_NAME_DEFINITION = "definition";
     public static final String COLUMN_NAME_LEVEL = "level";
+
     public static final String COLUMN_NAME_CATEGORY = "category";
     public static final String COLUMN_NAME_DESCRIPTION = "description";
     // category names

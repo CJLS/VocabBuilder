@@ -5,6 +5,7 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.util.Log;
 
 /**
  * Created by Li on 2015/4/13.
@@ -135,7 +136,6 @@ public class VocabDbHelper extends SQLiteOpenHelper {
                     ", " + VocabDbContract.COLUMN_NAME_LEVEL +
                     ", " + VocabDbContract.COLUMN_NAME_CATEGORY +
                     " FROM " + VocabDbContract.TABLE_NAME_GRE);
-            // Delete no longer used tables
             db.execSQL(DELETE_TABLE_MY_WORD_BANK);
             db.execSQL(DELETE_TABLE_GMAT);
             db.execSQL(DELETE_TABLE_GRE);
@@ -292,6 +292,19 @@ public class VocabDbHelper extends SQLiteOpenHelper {
         return cursor;
     }
 
+    public boolean checkIfVocabExists(String vocab, String definition) {
+        SQLiteDatabase db = this.getReadableDatabase();
+        String query = "SELECT * FROM " + VocabDbContract.TABLE_NAME_MY_VOCAB + " WHERE " +
+                VocabDbContract.COLUMN_NAME_VOCAB + " = " + "'" + vocab + "' AND " +
+                VocabDbContract.COLUMN_NAME_DEFINITION + " = " + "'" + definition + "'";
+        Cursor cursor = db.rawQuery(query, null);
+        if (cursor.getCount() > 0) {
+            cursor.close();
+            return true;
+        }
+        return false;
+    }
+
     public boolean checkIfCategoryExists(String pattern) {
         SQLiteDatabase db = this.getReadableDatabase();
         String query = "SELECT * FROM " + VocabDbContract.TABLE_NAME_CATEGORY + " WHERE " +
@@ -302,6 +315,26 @@ public class VocabDbHelper extends SQLiteOpenHelper {
             return true;
         }
         return false;
+    }
+
+    public String findVocabFirstCategory(String vocab, String definition) {
+        SQLiteDatabase db = this.getReadableDatabase();
+        String query = "SELECT " + VocabDbContract.COLUMN_NAME_CATEGORY + " FROM " + VocabDbContract.TABLE_NAME_MY_VOCAB + " WHERE " +
+                VocabDbContract.COLUMN_NAME_VOCAB + " = " + "'" + vocab + "' AND " +
+                VocabDbContract.COLUMN_NAME_DEFINITION + " = " + "'" + definition + "'";
+        Cursor cursor = db.rawQuery(query, null);
+        // If the vocab exists
+        if (cursor.getCount() > 0) {
+            cursor.moveToFirst();
+            String category = cursor.getString(cursor.getColumnIndex(VocabDbContract.COLUMN_NAME_CATEGORY));
+            Log.d("Compare", category + " : " + VocabDbContract.CATEGORY_NAME_MY_WORD_BANK);
+            while (category.equals(VocabDbContract.CATEGORY_NAME_MY_WORD_BANK) && cursor.moveToNext()) {
+                category = cursor.getString(cursor.getColumnIndex(VocabDbContract.COLUMN_NAME_CATEGORY));
+                Log.d("Compare", category + " : " + VocabDbContract.CATEGORY_NAME_MY_WORD_BANK);
+            }
+            return category;
+        }
+        return null;
     }
 
 

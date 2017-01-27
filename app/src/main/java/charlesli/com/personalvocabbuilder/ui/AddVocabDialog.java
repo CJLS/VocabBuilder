@@ -54,15 +54,23 @@ public class AddVocabDialog extends CustomDialog {
             public void onClick(DialogInterface dialog, int which) {
                 String vocab = vocabInput.getText().toString();
                 String definition = definitionInput.getText().toString();
-                dbHelper.insertVocab(category, vocab, definition, 0);
-                if (!category.equals(VocabDbContract.CATEGORY_NAME_MY_WORD_BANK)) {
-                    dbHelper.insertVocab(VocabDbContract.CATEGORY_NAME_MY_WORD_BANK, vocab, definition, 0);
+                if (dbHelper.checkIfVocabExists(vocab, definition)) {
+                    DuplicateVocabEntryDialog alertDialog =
+                            new DuplicateVocabEntryDialog(getContext(), dbHelper, cursorAdapter,
+                                    category, vocab, definition);
+                    alertDialog.show();
                 }
-                SharedPreferences sharedPreferences = getContext().getSharedPreferences("Sort Order", MODE_PRIVATE);
-                String orderBy = sharedPreferences.getString(category, DATE_ASC);
+                else {
+                    dbHelper.insertVocab(category, vocab, definition, 0);
+                    if (!category.equals(VocabDbContract.CATEGORY_NAME_MY_WORD_BANK)) {
+                        dbHelper.insertVocab(VocabDbContract.CATEGORY_NAME_MY_WORD_BANK, vocab, definition, 0);
+                    }
+                    SharedPreferences sharedPreferences = getContext().getSharedPreferences("Sort Order", MODE_PRIVATE);
+                    String orderBy = sharedPreferences.getString(category, DATE_ASC);
 
-                Cursor cursor = dbHelper.getVocabCursor(category, orderBy);
-                cursorAdapter.changeCursor(cursor);
+                    Cursor cursor = dbHelper.getVocabCursor(category, orderBy);
+                    cursorAdapter.changeCursor(cursor);
+                }
             }
         });
         setButton(BUTTON_NEGATIVE, "Cancel", new DialogInterface.OnClickListener() {
