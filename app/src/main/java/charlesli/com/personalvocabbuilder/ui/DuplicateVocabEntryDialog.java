@@ -18,19 +18,19 @@ import static charlesli.com.personalvocabbuilder.sqlDatabase.VocabDbContract.DAT
 class DuplicateVocabEntryDialog extends CustomDialog {
 
     DuplicateVocabEntryDialog(Context context, final VocabDbHelper dbHelper,
-                              final VocabCursorAdapter cursorAdapter, final String category,
+                              final VocabCursorAdapter cursorAdapter, final String currentCategory,
                               final String vocab, final String definition) {
         super(context);
         setTitle("Do you still want to add this vocab?");
-        setMessage("This vocab already exists in " + dbHelper.findVocabFirstCategory(vocab, definition) + ".");
+        setMessage("This vocab already exists in " + dbHelper.findVocabFirstCategory(vocab, definition, currentCategory) + ".");
         setButton(BUTTON_POSITIVE, "YES", new OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                dbHelper.insertVocab(category, vocab, definition, 0);
+                dbHelper.insertVocab(currentCategory, vocab, definition, 0);
                 SharedPreferences sharedPreferences = getContext().getSharedPreferences("Sort Order", MODE_PRIVATE);
-                String orderBy = sharedPreferences.getString(category, DATE_ASC);
+                String orderBy = sharedPreferences.getString(currentCategory, DATE_ASC);
 
-                Cursor cursor = dbHelper.getVocabCursor(category, orderBy);
+                Cursor cursor = dbHelper.getVocabCursor(currentCategory, orderBy);
                 cursorAdapter.changeCursor(cursor);
             }
         });

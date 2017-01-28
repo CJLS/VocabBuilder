@@ -5,7 +5,6 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
-import android.util.Log;
 
 /**
  * Created by Li on 2015/4/13.
@@ -317,20 +316,34 @@ public class VocabDbHelper extends SQLiteOpenHelper {
         return false;
     }
 
-    public String findVocabFirstCategory(String vocab, String definition) {
+    public String findVocabFirstCategory(String vocab, String definition, String currentCategory) {
         SQLiteDatabase db = this.getReadableDatabase();
-        String query = "SELECT " + VocabDbContract.COLUMN_NAME_CATEGORY + " FROM " + VocabDbContract.TABLE_NAME_MY_VOCAB + " WHERE " +
-                VocabDbContract.COLUMN_NAME_VOCAB + " = " + "'" + vocab + "' AND " +
-                VocabDbContract.COLUMN_NAME_DEFINITION + " = " + "'" + definition + "'";
-        Cursor cursor = db.rawQuery(query, null);
-        // If the vocab exists
-        if (cursor.getCount() > 0) {
-            cursor.moveToFirst();
-            String category = cursor.getString(cursor.getColumnIndex(VocabDbContract.COLUMN_NAME_CATEGORY));
-            Log.d("Compare", category + " : " + VocabDbContract.CATEGORY_NAME_MY_WORD_BANK);
-            while (category.equals(VocabDbContract.CATEGORY_NAME_MY_WORD_BANK) && cursor.moveToNext()) {
-                category = cursor.getString(cursor.getColumnIndex(VocabDbContract.COLUMN_NAME_CATEGORY));
-                Log.d("Compare", category + " : " + VocabDbContract.CATEGORY_NAME_MY_WORD_BANK);
+        // Check current category first
+        String currentCategoryQuery = "SELECT " + VocabDbContract.COLUMN_NAME_CATEGORY + " FROM "
+                + VocabDbContract.TABLE_NAME_MY_VOCAB + " WHERE " + VocabDbContract.COLUMN_NAME_VOCAB
+                + " = " + "'" + vocab + "' AND " + VocabDbContract.COLUMN_NAME_DEFINITION
+                + " = " + "'" + definition + "' AND " + VocabDbContract.COLUMN_NAME_CATEGORY
+                + " = " + "'" + currentCategory + "'";
+        Cursor currentCategoryCursor = db.rawQuery(currentCategoryQuery, null);
+        if (currentCategoryCursor.getCount() > 0) {
+            currentCategoryCursor.moveToFirst();
+            String category = currentCategoryCursor.getString(currentCategoryCursor.getColumnIndex(VocabDbContract.COLUMN_NAME_CATEGORY));
+            while (category.equals(VocabDbContract.CATEGORY_NAME_MY_WORD_BANK) && currentCategoryCursor.moveToNext()) {
+                category = currentCategoryCursor.getString(currentCategoryCursor.getColumnIndex(VocabDbContract.COLUMN_NAME_CATEGORY));
+            }
+            return category;
+        }
+        // Check other categories
+        String allCategoriesQuery = "SELECT " + VocabDbContract.COLUMN_NAME_CATEGORY + " FROM "
+                + VocabDbContract.TABLE_NAME_MY_VOCAB + " WHERE " + VocabDbContract.COLUMN_NAME_VOCAB
+                + " = " + "'" + vocab + "' AND " + VocabDbContract.COLUMN_NAME_DEFINITION
+                + " = " + "'" + definition + "'";
+        Cursor allCategoriesCursor = db.rawQuery(allCategoriesQuery, null);
+        if (allCategoriesCursor.getCount() > 0) {
+            allCategoriesCursor.moveToFirst();
+            String category = allCategoriesCursor.getString(allCategoriesCursor.getColumnIndex(VocabDbContract.COLUMN_NAME_CATEGORY));
+            while (category.equals(VocabDbContract.CATEGORY_NAME_MY_WORD_BANK) && allCategoriesCursor.moveToNext()) {
+                category = allCategoriesCursor.getString(allCategoriesCursor.getColumnIndex(VocabDbContract.COLUMN_NAME_CATEGORY));
             }
             return category;
         }
