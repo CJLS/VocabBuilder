@@ -13,7 +13,7 @@
         android:spinnerMode="dropdown" />
 
     <RadioButton
-        android:id="@+id/wordDefReview"
+        android:id="@+id/vocabDefReview"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@id/spinner"
@@ -21,20 +21,19 @@
         android:checked="true"
         android:paddingLeft="5dp"
         android:paddingRight="5dp"
-        android:text="Word -> Definition" />
+        android:text="Vocab -> Definition" />
 
     <RadioButton
-        android:id="@+id/defWordReview"
+        android:id="@+id/defVocabReview"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
-        android:layout_below="@+id/wordDefReview"
-        android:layout_marginBottom="5dp"
+        android:layout_below="@+id/vocabDefReview"
         android:checked="false"
         android:paddingLeft="5dp"
         android:paddingRight="5dp"
-        android:text="Definition -> Word" />
+        android:text="Definition -> Vocab" />
 
     <RadioButton
         android:id="@+id/mixReview"
@@ -42,12 +41,12 @@
         android:layout_height="wrap_content"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
-        android:layout_below="@+id/defWordReview"
+        android:layout_below="@+id/defVocabReview"
         android:layout_marginBottom="5dp"
         android:checked="false"
         android:paddingLeft="5dp"
         android:paddingRight="5dp"
-        android:text="Mix" />
+        android:text="Vocab/Definition -> Definition/Vocab" />
 
     <LinearLayout
         android:id="@+id/reviewLayout"

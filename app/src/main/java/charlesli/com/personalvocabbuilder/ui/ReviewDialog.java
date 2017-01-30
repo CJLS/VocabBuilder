@@ -22,9 +22,9 @@ import charlesli.com.personalvocabbuilder.controller.Review;
 import charlesli.com.personalvocabbuilder.sqlDatabase.VocabDbContract;
 import charlesli.com.personalvocabbuilder.sqlDatabase.VocabDbHelper;
 
-import static charlesli.com.personalvocabbuilder.controller.Review.DEF_TO_WORD_REVIEW_MODE;
+import static charlesli.com.personalvocabbuilder.controller.Review.DEF_TO_VOCAB_REVIEW_MODE;
 import static charlesli.com.personalvocabbuilder.controller.Review.MIX_REVIEW_MODE;
-import static charlesli.com.personalvocabbuilder.controller.Review.WORD_TO_DEF_REVIEW_MODE;
+import static charlesli.com.personalvocabbuilder.controller.Review.VOCAB_TO_DEF_REVIEW_MODE;
 
 /**
  * Created by charles on 2017-01-01.
@@ -40,7 +40,7 @@ public class ReviewDialog extends CustomDialog {
         setTitle("Review Vocab");
 
         final Cursor categoryCursor = dbHelper.getCategoryCursor();
-        final int[] reviewMode = {WORD_TO_DEF_REVIEW_MODE};
+        final int[] reviewMode = {VOCAB_TO_DEF_REVIEW_MODE};
 
         categoryCursor.moveToFirst();
         String firstCategoryInCategoryCursor =
@@ -48,35 +48,35 @@ public class ReviewDialog extends CustomDialog {
         final String[] reviewCategory = {firstCategoryInCategoryCursor};
 
         Cursor cursor = dbHelper.getVocabCursor(firstCategoryInCategoryCursor);
-        final int[] reviewNumOfWords = {cursor.getCount()};
+        final int[] reviewNumOfVocab = {cursor.getCount()};
 
         LayoutInflater li = LayoutInflater.from(context);
         View promptsView = li.inflate(R.layout.alert_dialog_review, null);
 
         final EditText reviewNumET = (EditText) promptsView.findViewById(R.id.numberText);
         Spinner spinner = (Spinner) promptsView.findViewById(R.id.spinner);
-        final RadioButton wordDefReview = (RadioButton) promptsView.findViewById(R.id.wordDefReview);
-        final RadioButton defWordReview = (RadioButton) promptsView.findViewById(R.id.defWordReview);
+        final RadioButton vocabDefReview = (RadioButton) promptsView.findViewById(R.id.vocabDefReview);
+        final RadioButton defVocabReview = (RadioButton) promptsView.findViewById(R.id.defVocabReview);
         final RadioButton mixReview = (RadioButton) promptsView.findViewById(R.id.mixReview);
         final SeekBar seekBar = (SeekBar) promptsView.findViewById(R.id.seekBar);
 
-        setUpReviewNumEditText(reviewNumOfWords, reviewNumET, seekBar);
-        setUpSpinner(categoryCursor, reviewNumET, spinner, seekBar, reviewCategory, reviewNumOfWords);
-        setUpRadioButtons(reviewMode, wordDefReview, defWordReview, mixReview);
-        setUpSeekBar(reviewNumOfWords, reviewNumET, seekBar);
+        setUpReviewNumEditText(reviewNumOfVocab, reviewNumET, seekBar);
+        setUpSpinner(categoryCursor, reviewNumET, spinner, seekBar, reviewCategory, reviewNumOfVocab);
+        setUpRadioButtons(reviewMode, vocabDefReview, defVocabReview, mixReview);
+        setUpSeekBar(reviewNumOfVocab, reviewNumET, seekBar);
 
         setView(promptsView);
 
         setButton(BUTTON_POSITIVE, "OK", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                if (reviewNumOfWords[0] == 0) {
-                    Toast.makeText(getContext(), "There are no words to be reviewed", Toast.LENGTH_LONG).show();
+                if (reviewNumOfVocab[0] == 0) {
+                    Toast.makeText(getContext(), "There are no vocab to be reviewed", Toast.LENGTH_LONG).show();
                 } else {
                     Intent intent = new Intent(getContext(), Review.class);
                     intent.putExtra("Mode", reviewMode[0]);
                     intent.putExtra("Category", reviewCategory[0]);
-                    intent.putExtra("NumOfWords", reviewNumOfWords[0]);
+                    intent.putExtra("NumOfVocab", reviewNumOfVocab[0]);
                     getContext().startActivity(intent);
                 }
             }
@@ -91,9 +91,9 @@ public class ReviewDialog extends CustomDialog {
 
     }
 
-    private void setUpReviewNumEditText(final int[] reviewNumOfWords,
+    private void setUpReviewNumEditText(final int[] reviewNumOfVocab,
                                         EditText reviewNum, final SeekBar seekBar) {
-        reviewNum.setText(String.valueOf(reviewNumOfWords[0]));
+        reviewNum.setText(String.valueOf(reviewNumOfVocab[0]));
 
         reviewNum.addTextChangedListener(new TextWatcher() {
             @Override
@@ -110,26 +110,26 @@ public class ReviewDialog extends CustomDialog {
             public void afterTextChanged(Editable s) {
                 if (textChangeFromUser && !s.toString().equals("")) {
                     int inputNum = Integer.parseInt(s.toString());
-                    if (inputNum > reviewNumOfWords[0]) {
-                        inputNum = reviewNumOfWords[0];
+                    if (inputNum > reviewNumOfVocab[0]) {
+                        inputNum = reviewNumOfVocab[0];
                     }
-                    reviewNumOfWords[0] = inputNum;
+                    reviewNumOfVocab[0] = inputNum;
                     seekBar.setProgress(inputNum);
                 }
             }
         });
     }
 
-    private void setUpSeekBar(final int[] reviewNumOfWords,
+    private void setUpSeekBar(final int[] reviewNumOfVocab,
                               final TextView numText, SeekBar seekBar) {
-        seekBar.setMax(reviewNumOfWords[0]);
-        seekBar.setProgress(reviewNumOfWords[0]);
+        seekBar.setMax(reviewNumOfVocab[0]);
+        seekBar.setProgress(reviewNumOfVocab[0]);
 
         seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
                 if (fromUser) {
-                    reviewNumOfWords[0] = progress;
+                    reviewNumOfVocab[0] = progress;
                     textChangeFromUser = false;
                     numText.setText(String.valueOf(progress));
                     textChangeFromUser = true;
@@ -156,7 +156,7 @@ public class ReviewDialog extends CustomDialog {
                 wordDef.setChecked(true);
                 defWord.setChecked(false);
                 mix.setChecked(false);
-                reviewMode[0] = WORD_TO_DEF_REVIEW_MODE;
+                reviewMode[0] = VOCAB_TO_DEF_REVIEW_MODE;
             }
         });
 
@@ -166,7 +166,7 @@ public class ReviewDialog extends CustomDialog {
                 wordDef.setChecked(false);
                 defWord.setChecked(true);
                 mix.setChecked(false);
-                reviewMode[0] = DEF_TO_WORD_REVIEW_MODE;
+                reviewMode[0] = DEF_TO_VOCAB_REVIEW_MODE;
             }
         });
 
@@ -182,7 +182,7 @@ public class ReviewDialog extends CustomDialog {
     }
 
     private void setUpSpinner(final Cursor categoryCursor, final TextView numText, Spinner spinner,
-                              final SeekBar seekBar, final String[] reviewCategory, final int[] reviewNumOfWords) {
+                              final SeekBar seekBar, final String[] reviewCategory, final int[] reviewNumOfVocab) {
         String[] from = {VocabDbContract.COLUMN_NAME_CATEGORY};
         int[] to = {android.R.id.text1};
 
@@ -198,7 +198,7 @@ public class ReviewDialog extends CustomDialog {
                 VocabDbHelper dbHelper = VocabDbHelper.getDBHelper(getContext());
                 Cursor cursor = dbHelper.getVocabCursor(reviewCategory[0]);
                 Integer maxRow = cursor.getCount();
-                reviewNumOfWords[0] = maxRow;
+                reviewNumOfVocab[0] = maxRow;
                 textChangeFromUser = false;
                 numText.setText(String.valueOf(maxRow));
                 textChangeFromUser = true;

@@ -23,8 +23,8 @@ import charlesli.com.personalvocabbuilder.sqlDatabase.VocabDbHelper;
 
 public class Review extends AppCompatActivity {
 
-    public static final int WORD_TO_DEF_REVIEW_MODE = 0;
-    public static final int DEF_TO_WORD_REVIEW_MODE = 1;
+    public static final int VOCAB_TO_DEF_REVIEW_MODE = 0;
+    public static final int DEF_TO_VOCAB_REVIEW_MODE = 1;
     public static final int MIX_REVIEW_MODE = 2;
     private static final int DIFFICULT = 0;
     private static final int FAMILIAR = 1;
@@ -32,7 +32,7 @@ public class Review extends AppCompatActivity {
     private static final int PERFECT = 3;
     private int mReviewMode;
     private String mReviewCategory;
-    private int mReviewNumOfWords;
+    private int mReviewNumOfVocab;
     private TextView mTopTextView;
     private TextView mBottomTextView;
     private Button mRevealButton;
@@ -62,9 +62,9 @@ public class Review extends AppCompatActivity {
 
         Intent intent = getIntent();
 
-        mReviewMode = intent.getIntExtra("Mode", WORD_TO_DEF_REVIEW_MODE);
+        mReviewMode = intent.getIntExtra("Mode", VOCAB_TO_DEF_REVIEW_MODE);
         mReviewCategory = intent.getStringExtra("Category");
-        mReviewNumOfWords = intent.getIntExtra("NumOfWords", 0);
+        mReviewNumOfVocab = intent.getIntExtra("NumOfVocab", 0);
 
 
         mTopTextView = (TextView) findViewById(R.id.topTextView);
@@ -78,7 +78,7 @@ public class Review extends AppCompatActivity {
         mReviewProgressBar = (ProgressBar) findViewById(R.id.reviewProgressBar);
 
         mCursor = mDbHelper.getVocabCursor(mReviewCategory);
-        mReviewProgressBar.setMax(mReviewNumOfWords);
+        mReviewProgressBar.setMax(mReviewNumOfVocab);
 
         loadVocabInRandomOrder();
     }
@@ -98,11 +98,11 @@ public class Review extends AppCompatActivity {
         String word = mCursor.getString(mCursor.getColumnIndexOrThrow(VocabDbContract.COLUMN_NAME_VOCAB));
         String definition = mCursor.getString(mCursor.getColumnIndexOrThrow(VocabDbContract.COLUMN_NAME_DEFINITION));
 
-        if (mReviewMode == WORD_TO_DEF_REVIEW_MODE) {
+        if (mReviewMode == VOCAB_TO_DEF_REVIEW_MODE) {
             mTopTextView.setText(word);
             mBottomTextView.setText(definition);
         }
-        else if (mReviewMode == DEF_TO_WORD_REVIEW_MODE) {
+        else if (mReviewMode == DEF_TO_VOCAB_REVIEW_MODE) {
             mTopTextView.setText(definition);
             mBottomTextView.setText(word);
         }
@@ -200,7 +200,7 @@ public class Review extends AppCompatActivity {
                 selectionArgsWordBank
         );
         // If this is not last word to be reviewed
-        if (mTracker.size() < mReviewNumOfWords) {
+        if (mTracker.size() < mReviewNumOfVocab) {
             // load the next vocab to be reviewed
             loadVocabInRandomOrder();
 
