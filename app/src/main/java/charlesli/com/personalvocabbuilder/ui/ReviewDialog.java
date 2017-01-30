@@ -22,8 +22,9 @@ import charlesli.com.personalvocabbuilder.controller.Review;
 import charlesli.com.personalvocabbuilder.sqlDatabase.VocabDbContract;
 import charlesli.com.personalvocabbuilder.sqlDatabase.VocabDbHelper;
 
-import static charlesli.com.personalvocabbuilder.controller.Review.DEFTOWORD;
-import static charlesli.com.personalvocabbuilder.controller.Review.WORDTODEF;
+import static charlesli.com.personalvocabbuilder.controller.Review.DEF_TO_WORD_REVIEW_MODE;
+import static charlesli.com.personalvocabbuilder.controller.Review.MIX_REVIEW_MODE;
+import static charlesli.com.personalvocabbuilder.controller.Review.WORD_TO_DEF_REVIEW_MODE;
 
 /**
  * Created by charles on 2017-01-01.
@@ -39,7 +40,7 @@ public class ReviewDialog extends CustomDialog {
         setTitle("Review Vocab");
 
         final Cursor categoryCursor = dbHelper.getCategoryCursor();
-        final int[] reviewMode = {WORDTODEF};
+        final int[] reviewMode = {WORD_TO_DEF_REVIEW_MODE};
 
         categoryCursor.moveToFirst();
         String firstCategoryInCategoryCursor =
@@ -54,13 +55,14 @@ public class ReviewDialog extends CustomDialog {
 
         final EditText reviewNumET = (EditText) promptsView.findViewById(R.id.numberText);
         Spinner spinner = (Spinner) promptsView.findViewById(R.id.spinner);
-        final RadioButton wordDef = (RadioButton) promptsView.findViewById(R.id.wordDef);
-        final RadioButton defWord = (RadioButton) promptsView.findViewById(R.id.defWord);
+        final RadioButton wordDefReview = (RadioButton) promptsView.findViewById(R.id.wordDefReview);
+        final RadioButton defWordReview = (RadioButton) promptsView.findViewById(R.id.defWordReview);
+        final RadioButton mixReview = (RadioButton) promptsView.findViewById(R.id.mixReview);
         final SeekBar seekBar = (SeekBar) promptsView.findViewById(R.id.seekBar);
 
         setUpReviewNumEditText(reviewNumOfWords, reviewNumET, seekBar);
         setUpSpinner(categoryCursor, reviewNumET, spinner, seekBar, reviewCategory, reviewNumOfWords);
-        setUpRadioButtons(reviewMode, wordDef, defWord);
+        setUpRadioButtons(reviewMode, wordDefReview, defWordReview, mixReview);
         setUpSeekBar(reviewNumOfWords, reviewNumET, seekBar);
 
         setView(promptsView);
@@ -146,13 +148,15 @@ public class ReviewDialog extends CustomDialog {
         });
     }
 
-    private void setUpRadioButtons(final int[] reviewMode, final RadioButton wordDef, final RadioButton defWord) {
+    private void setUpRadioButtons(final int[] reviewMode, final RadioButton wordDef,
+                                   final RadioButton defWord, final RadioButton mix) {
         wordDef.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 wordDef.setChecked(true);
                 defWord.setChecked(false);
-                reviewMode[0] = WORDTODEF;
+                mix.setChecked(false);
+                reviewMode[0] = WORD_TO_DEF_REVIEW_MODE;
             }
         });
 
@@ -161,7 +165,18 @@ public class ReviewDialog extends CustomDialog {
             public void onClick(View v) {
                 wordDef.setChecked(false);
                 defWord.setChecked(true);
-                reviewMode[0] = DEFTOWORD;
+                mix.setChecked(false);
+                reviewMode[0] = DEF_TO_WORD_REVIEW_MODE;
+            }
+        });
+
+        mix.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                wordDef.setChecked(false);
+                defWord.setChecked(false);
+                mix.setChecked(true);
+                reviewMode[0] = MIX_REVIEW_MODE;
             }
         });
     }

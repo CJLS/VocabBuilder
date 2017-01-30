@@ -23,8 +23,9 @@ import charlesli.com.personalvocabbuilder.sqlDatabase.VocabDbHelper;
 
 public class Review extends AppCompatActivity {
 
-    public static final int WORDTODEF = 0;
-    public static final int DEFTOWORD = 1;
+    public static final int WORD_TO_DEF_REVIEW_MODE = 0;
+    public static final int DEF_TO_WORD_REVIEW_MODE = 1;
+    public static final int MIX_REVIEW_MODE = 2;
     private static final int DIFFICULT = 0;
     private static final int FAMILIAR = 1;
     private static final int EASY = 2;
@@ -61,7 +62,7 @@ public class Review extends AppCompatActivity {
 
         Intent intent = getIntent();
 
-        mReviewMode = intent.getIntExtra("Mode", WORDTODEF);
+        mReviewMode = intent.getIntExtra("Mode", WORD_TO_DEF_REVIEW_MODE);
         mReviewCategory = intent.getStringExtra("Category");
         mReviewNumOfWords = intent.getIntExtra("NumOfWords", 0);
 
@@ -97,13 +98,23 @@ public class Review extends AppCompatActivity {
         String word = mCursor.getString(mCursor.getColumnIndexOrThrow(VocabDbContract.COLUMN_NAME_VOCAB));
         String definition = mCursor.getString(mCursor.getColumnIndexOrThrow(VocabDbContract.COLUMN_NAME_DEFINITION));
 
-        if (mReviewMode == WORDTODEF) {
+        if (mReviewMode == WORD_TO_DEF_REVIEW_MODE) {
             mTopTextView.setText(word);
             mBottomTextView.setText(definition);
         }
-        else {
+        else if (mReviewMode == DEF_TO_WORD_REVIEW_MODE) {
             mTopTextView.setText(definition);
             mBottomTextView.setText(word);
+        }
+        else {
+            if (mRandom.nextBoolean()) {
+                mTopTextView.setText(word);
+                mBottomTextView.setText(definition);
+            }
+            else {
+                mTopTextView.setText(definition);
+                mBottomTextView.setText(word);
+            }
         }
 
         mDifLvlButton.setVisibility(View.INVISIBLE);
