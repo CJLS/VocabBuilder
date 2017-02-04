@@ -18,13 +18,13 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import charlesli.com.personalvocabbuilder.R;
-import charlesli.com.personalvocabbuilder.controller.Review;
+import charlesli.com.personalvocabbuilder.controller.ReviewSession;
 import charlesli.com.personalvocabbuilder.sqlDatabase.VocabDbContract;
 import charlesli.com.personalvocabbuilder.sqlDatabase.VocabDbHelper;
 
-import static charlesli.com.personalvocabbuilder.controller.Review.DEF_TO_VOCAB_REVIEW_MODE;
-import static charlesli.com.personalvocabbuilder.controller.Review.MIX_REVIEW_MODE;
-import static charlesli.com.personalvocabbuilder.controller.Review.VOCAB_TO_DEF_REVIEW_MODE;
+import static charlesli.com.personalvocabbuilder.controller.ReviewSession.DEF_TO_VOCAB_REVIEW_MODE;
+import static charlesli.com.personalvocabbuilder.controller.ReviewSession.MIX_REVIEW_MODE;
+import static charlesli.com.personalvocabbuilder.controller.ReviewSession.VOCAB_TO_DEF_REVIEW_MODE;
 
 /**
  * Created by charles on 2017-01-01.
@@ -73,7 +73,7 @@ public class ReviewDialog extends CustomDialog {
                 if (reviewNumOfVocab[0] == 0) {
                     Toast.makeText(getContext(), "There are no vocab to be reviewed", Toast.LENGTH_LONG).show();
                 } else {
-                    Intent intent = new Intent(getContext(), Review.class);
+                    Intent intent = new Intent(getContext(), ReviewSession.class);
                     intent.putExtra("Mode", reviewMode[0]);
                     intent.putExtra("Category", reviewCategory[0]);
                     intent.putExtra("NumOfVocab", reviewNumOfVocab[0]);

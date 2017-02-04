@@ -1,18 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="charlesli.com.personalvocabbuilder" >
+    package="charlesli.com.personalvocabbuilder">
 
-    <uses-permission android:name="android.permission.INTERNET"/>
-    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 
     <application
         android:allowBackup="true"
         android:icon="@drawable/icon_vocabbuilder"
         android:label="@string/app_name"
-        android:theme="@style/AppTheme" >
+        android:theme="@style/AppTheme">
         <activity
             android:name=".controller.MainActivity"
-            android:label="@string/app_name" >
+            android:label="@string/app_name">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -23,14 +23,23 @@
             android:name=".controller.MyVocab"
             android:configChanges="orientation|screenSize"
             android:label="@string/title_activity_my_vocab"
-            android:parentActivityName=".controller.MainActivity" >
+            android:parentActivityName=".controller.MainActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".controller.MainActivity" />
         </activity>
         <activity
-            android:name=".controller.Review"
+            android:name=".controller.ReviewSession"
             android:label="@string/title_activity_word_definition"
+            android:parentActivityName=".controller.MainActivity"
+            android:screenOrientation="portrait">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".controller.MainActivity" />
+        </activity>
+        <activity
+            android:name=".controller.ReviewResult"
+            android:label="Result"
             android:parentActivityName=".controller.MainActivity"
             android:screenOrientation="portrait">
             <meta-data

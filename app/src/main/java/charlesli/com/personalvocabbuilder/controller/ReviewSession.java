@@ -21,7 +21,7 @@ import charlesli.com.personalvocabbuilder.sqlDatabase.VocabDbHelper;
 
 
 
-public class Review extends AppCompatActivity {
+public class ReviewSession extends AppCompatActivity {
 
     public static final int VOCAB_TO_DEF_REVIEW_MODE = 0;
     public static final int DEF_TO_VOCAB_REVIEW_MODE = 1;
@@ -43,14 +43,14 @@ public class Review extends AppCompatActivity {
     private Button mAgaLvlButton;
     private ProgressBar mReviewProgressBar;
     private Cursor mCursor;
-    private VocabDbHelper mDbHelper = VocabDbHelper.getDBHelper(Review.this);
+    private VocabDbHelper mDbHelper = VocabDbHelper.getDBHelper(ReviewSession.this);
     private Random mRandom = new Random();
     private ArrayList<Integer> mTracker = new ArrayList<Integer>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_review);
+        setContentView(R.layout.activity_review_session);
 
         Toolbar myToolbar = (Toolbar) findViewById(R.id.my_toolbar);
         setSupportActionBar(myToolbar);
@@ -210,6 +210,11 @@ public class Review extends AppCompatActivity {
             // Exit the interface and go back to Review
             mTracker.clear();
             finish();
+
+            // Review Result
+            Intent intent = new Intent(this, ReviewResult.class);
+            startActivity(intent);
+
         }
     }
 
