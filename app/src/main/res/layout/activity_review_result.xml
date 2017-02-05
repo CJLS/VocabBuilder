@@ -23,4 +23,93 @@
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"
         android:text="CONTINUE" />
+
+    <TextView
+        android:id="@+id/perfectCount"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/reviewCompletion"
+        android:layout_marginTop="65dp"
+        android:layout_toLeftOf="@+id/reviewCompletion"
+        android:layout_toStartOf="@+id/reviewCompletion"
+        android:text="Perfect" />
+
+    <TextView
+        android:id="@+id/easyCount"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/perfectCount"
+        android:layout_alignStart="@+id/perfectCount"
+        android:layout_below="@+id/perfectCount"
+        android:layout_marginTop="50dp"
+        android:text="Easy" />
+
+    <TextView
+        android:id="@+id/familiarCount"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/easyCount"
+        android:layout_alignStart="@+id/easyCount"
+        android:layout_below="@+id/easyCount"
+        android:layout_marginTop="50dp"
+        android:text="Familiar" />
+
+    <TextView
+        android:id="@+id/difficultCount"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/familiarCount"
+        android:layout_alignStart="@+id/familiarCount"
+        android:layout_below="@+id/familiarCount"
+        android:layout_marginTop="50dp"
+        android:text="Difficult" />
+
+    <ProgressBar
+        android:id="@+id/easyProgressBar"
+        style="?android:attr/progressBarStyleHorizontal"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignEnd="@+id/perfectProgressBar"
+        android:layout_alignLeft="@+id/perfectProgressBar"
+        android:layout_alignRight="@+id/perfectProgressBar"
+        android:layout_alignStart="@+id/perfectProgressBar"
+        android:layout_alignTop="@+id/easyCount"
+        android:progress="10" />
+
+    <ProgressBar
+        android:id="@+id/familiarProgressBar"
+        style="?android:attr/progressBarStyleHorizontal"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignEnd="@+id/easyProgressBar"
+        android:layout_alignLeft="@+id/easyProgressBar"
+        android:layout_alignRight="@+id/easyProgressBar"
+        android:layout_alignStart="@+id/easyProgressBar"
+        android:layout_alignTop="@+id/familiarCount"
+        android:progress="10" />
+
+    <ProgressBar
+        android:id="@+id/difficultProgressBar"
+        style="?android:attr/progressBarStyleHorizontal"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignEnd="@+id/familiarProgressBar"
+        android:layout_alignLeft="@+id/familiarProgressBar"
+        android:layout_alignRight="@+id/familiarProgressBar"
+        android:layout_alignStart="@+id/familiarProgressBar"
+        android:layout_alignTop="@+id/difficultCount"
+        android:progress="20" />
+
+    <ProgressBar
+        android:id="@+id/perfectProgressBar"
+        style="?android:attr/progressBarStyleHorizontal"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@+id/perfectCount"
+        android:layout_alignEnd="@+id/reviewCompletion"
+        android:layout_alignRight="@+id/reviewCompletion"
+        android:layout_marginLeft="22dp"
+        android:layout_marginStart="22dp"
+        android:layout_toRightOf="@+id/familiarCount"
+        android:progress="600" />
 </RelativeLayout>
