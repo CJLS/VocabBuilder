@@ -1,19 +1,30 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/activity_review_result"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context="charlesli.com.personalvocabbuilder.controller.ReviewResult">
 
+    <android.support.v7.widget.Toolbar
+        android:id="@+id/result_toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        android:background="?attr/colorPrimary"
+        android:elevation="4dp"
+        android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
+        app:popupTheme="@style/ThemeOverlay.AppCompat.Light"/>
+
     <TextView
         android:id="@+id/reviewCompletion"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentTop="true"
+        android:layout_below="@id/result_toolbar"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="44dp"
         android:text="Review Complete!"
+        android:textColor="#000000"
         android:textSize="24sp" />
 
     <LinearLayout
@@ -31,7 +42,8 @@
             android:id="@+id/perfectTV"
             android:layout_width="80dp"
             android:layout_height="wrap_content"
-            android:text="Perfect" />
+            android:text="Perfect"
+            android:textColor="@color/black"/>
 
         <ProgressBar
             android:id="@+id/perfectProgress"
@@ -57,7 +69,8 @@
             android:id="@+id/easyTV"
             android:layout_width="80dp"
             android:layout_height="wrap_content"
-            android:text="Easy" />
+            android:text="Easy"
+            android:textColor="@color/black"/>
 
         <ProgressBar
             android:id="@+id/easyProgress"
@@ -83,7 +96,8 @@
             android:id="@+id/familiarTV"
             android:layout_width="80dp"
             android:layout_height="wrap_content"
-            android:text="Familiar" />
+            android:text="Familiar"
+            android:textColor="@color/black"/>
 
         <ProgressBar
             android:id="@+id/familiarProgress"
@@ -109,7 +123,8 @@
             android:id="@+id/difficultTV"
             android:layout_width="80dp"
             android:layout_height="wrap_content"
-            android:text="Difficult" />
+            android:text="Difficult"
+            android:textColor="@color/black"/>
 
         <ProgressBar
             android:id="@+id/difficultProgress"
@@ -128,26 +143,18 @@
         android:layout_centerHorizontal="true"
         android:layout_marginTop="50dp"
         android:text="You are more familiar with 2 vocab!"
-        android:textSize="18sp" />
+        android:textColor="@color/black"
+        android:textSize="18sp"/>
 
     <Button
         android:id="@+id/continueButton"
+        style="@style/Widget.AppCompat.Button.Colored"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"
-        android:text="CONTINUE" />
-
-    <me.zhanghai.android.materialprogressbar.MaterialProgressBar
-        android:id="@+id/progressBar2"
-        style="?android:attr/progressBarStyleLarge"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_above="@+id/continueButton"
-        android:layout_centerHorizontal="true"
-        android:layout_marginBottom="14dp"
-        android:indeterminate="false"
-        android:progress="100" />
+        android:text="CONTINUE"
+        android:theme="@style/AppColor.Button" />
 
 
 </RelativeLayout>

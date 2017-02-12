@@ -10,4 +10,8 @@
         <item name="colorControlHighlight">@color/light_primary_color</item>
     </style>
 
+    <style name="AppColor.Button" parent="ThemeOverlay.AppCompat">
+        <item name="colorAccent">@color/app_icon_color</item>
+    </style>
+
 </resources>

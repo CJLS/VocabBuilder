@@ -48,6 +48,7 @@
     <string name="add_category">Add Category</string>
     <string name="sort_vocab_button">Sort Vocab</string>
     <color name="white">#ffffff</color>
+    <color name="black">#000000</color>
     <color name="app_icon_color">#2b5ea2</color>
     <color name="dark_primary_color">#244f88</color>
     <color name="light_primary_color">#5e8ed1</color>
