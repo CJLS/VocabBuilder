@@ -48,7 +48,8 @@ public class ReviewDialog extends CustomDialog {
         final String[] reviewCategory = {firstCategoryInCategoryCursor};
 
         Cursor cursor = dbHelper.getVocabCursor(firstCategoryInCategoryCursor);
-        final int[] reviewNumOfVocab = {cursor.getCount()};
+        final int[] totalNum = {cursor.getCount()};
+        final int[] reviewNum = {cursor.getCount()};
 
         LayoutInflater li = LayoutInflater.from(context);
         View promptsView = li.inflate(R.layout.alert_dialog_review, null);
@@ -60,23 +61,23 @@ public class ReviewDialog extends CustomDialog {
         final RadioButton mixReview = (RadioButton) promptsView.findViewById(R.id.mixReview);
         final SeekBar seekBar = (SeekBar) promptsView.findViewById(R.id.seekBar);
 
-        setUpReviewNumEditText(reviewNumOfVocab, reviewNumET, seekBar);
-        setUpSpinner(categoryCursor, reviewNumET, spinner, seekBar, reviewCategory, reviewNumOfVocab);
+        setUpReviewNumEditText(totalNum, reviewNum, reviewNumET, seekBar);
+        setUpSpinner(categoryCursor, reviewNumET, spinner, seekBar, reviewCategory, totalNum, reviewNum);
         setUpRadioButtons(reviewMode, vocabDefReview, defVocabReview, mixReview);
-        setUpSeekBar(reviewNumOfVocab, reviewNumET, seekBar);
+        setUpSeekBar(totalNum, reviewNum, reviewNumET, seekBar);
 
         setView(promptsView);
 
         setButton(BUTTON_POSITIVE, "OK", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                if (reviewNumOfVocab[0] == 0) {
+                if (reviewNum[0] == 0) {
                     Toast.makeText(getContext(), "There are no vocab to be reviewed", Toast.LENGTH_LONG).show();
                 } else {
                     Intent intent = new Intent(getContext(), ReviewSession.class);
                     intent.putExtra("Mode", reviewMode[0]);
                     intent.putExtra("Category", reviewCategory[0]);
-                    intent.putExtra("NumOfVocab", reviewNumOfVocab[0]);
+                    intent.putExtra("NumOfVocab", reviewNum[0]);
                     getContext().startActivity(intent);
                 }
             }
@@ -91,45 +92,42 @@ public class ReviewDialog extends CustomDialog {
 
     }
 
-    private void setUpReviewNumEditText(final int[] reviewNumOfVocab,
-                                        EditText reviewNum, final SeekBar seekBar) {
-        reviewNum.setText(String.valueOf(reviewNumOfVocab[0]));
+    private void setUpReviewNumEditText(final int[] totalNum, final int[] reviewNum,
+                                        EditText reviewNumET, final SeekBar seekBar) {
+        reviewNumET.setText(String.valueOf(reviewNum[0]));
 
-        reviewNum.addTextChangedListener(new TextWatcher() {
+        reviewNumET.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
             }
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-
+                if (textChangeFromUser && !s.toString().equals("")) {
+                    reviewNum[0] = Integer.parseInt(s.toString());
+                    if (reviewNum[0] > totalNum[0]) {
+                        reviewNum[0] = totalNum[0];
+                    }
+                    seekBar.setProgress(reviewNum[0]);
+                }
             }
 
             @Override
             public void afterTextChanged(Editable s) {
-                if (textChangeFromUser && !s.toString().equals("")) {
-                    int inputNum = Integer.parseInt(s.toString());
-                    if (inputNum > reviewNumOfVocab[0]) {
-                        inputNum = reviewNumOfVocab[0];
-                    }
-                    reviewNumOfVocab[0] = inputNum;
-                    seekBar.setProgress(inputNum);
-                }
             }
         });
     }
 
-    private void setUpSeekBar(final int[] reviewNumOfVocab,
+    private void setUpSeekBar(final int[] totalNum, final int[] reviewNum,
                               final TextView numText, SeekBar seekBar) {
-        seekBar.setMax(reviewNumOfVocab[0]);
-        seekBar.setProgress(reviewNumOfVocab[0]);
+        seekBar.setMax(totalNum[0]);
+        seekBar.setProgress(reviewNum[0]);
 
         seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
                 if (fromUser) {
-                    reviewNumOfVocab[0] = progress;
+                    reviewNum[0] = progress;
                     textChangeFromUser = false;
                     numText.setText(String.valueOf(progress));
                     textChangeFromUser = true;
@@ -182,7 +180,8 @@ public class ReviewDialog extends CustomDialog {
     }
 
     private void setUpSpinner(final Cursor categoryCursor, final TextView numText, Spinner spinner,
-                              final SeekBar seekBar, final String[] reviewCategory, final int[] reviewNumOfVocab) {
+                              final SeekBar seekBar, final String[] reviewCategory,
+                              final int[] totalNum, final int[] reviewNum) {
         String[] from = {VocabDbContract.COLUMN_NAME_CATEGORY};
         int[] to = {android.R.id.text1};
 
@@ -197,13 +196,13 @@ public class ReviewDialog extends CustomDialog {
                 reviewCategory[0] = categoryCursor.getString(categoryCursor.getColumnIndex(VocabDbContract.COLUMN_NAME_CATEGORY));
                 VocabDbHelper dbHelper = VocabDbHelper.getDBHelper(getContext());
                 Cursor cursor = dbHelper.getVocabCursor(reviewCategory[0]);
-                Integer maxRow = cursor.getCount();
-                reviewNumOfVocab[0] = maxRow;
+                totalNum[0] = cursor.getCount();
+                reviewNum[0] = cursor.getCount();
                 textChangeFromUser = false;
-                numText.setText(String.valueOf(maxRow));
+                numText.setText(String.valueOf(reviewNum[0]));
                 textChangeFromUser = true;
-                seekBar.setMax(maxRow);
-                seekBar.setProgress(maxRow);
+                seekBar.setMax(totalNum[0]);
+                seekBar.setProgress(reviewNum[0]);
             }
 
             @Override
