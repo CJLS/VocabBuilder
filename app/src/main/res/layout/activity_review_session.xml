@@ -51,53 +51,58 @@
 
     <Button
         android:id="@+id/lvl_again_button"
-        style="?android:attr/buttonStyleSmall"
+        style="@style/Widget.AppCompat.Button.Colored"
         android:layout_width="@dimen/level_button_width"
         android:layout_height="wrap_content"
         android:layout_below="@+id/lvl_difficult_button"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="5dp"
-        android:text="@string/level_again"/>
+        android:text="@string/level_again"
+        android:theme="@style/LightAppColor.Button"/>
 
     <Button
         android:id="@+id/lvl_difficult_button"
-        style="?android:attr/buttonStyleSmall"
+        style="@style/Widget.AppCompat.Button.Colored"
         android:layout_width="@dimen/level_button_width"
         android:layout_height="wrap_content"
         android:layout_below="@+id/lvl_familiar_button"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="@dimen/button_top_margin"
-        android:text="@string/level_difficult"/>
+        android:text="@string/level_difficult"
+        android:theme="@style/LightAppColor.Button"/>
 
     <Button
         android:id="@+id/lvl_familiar_button"
-        style="?android:attr/buttonStyleSmall"
+        style="@style/Widget.AppCompat.Button.Colored"
         android:layout_width="@dimen/level_button_width"
         android:layout_height="wrap_content"
         android:layout_below="@+id/lvl_easy_button"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="@dimen/button_top_margin"
-        android:text="@string/level_familiar"/>
+        android:text="@string/level_familiar"
+        android:theme="@style/LightAppColor.Button"/>
 
     <Button
         android:id="@+id/lvl_easy_button"
-        style="?android:attr/buttonStyleSmall"
+        style="@style/Widget.AppCompat.Button.Colored"
         android:layout_width="@dimen/level_button_width"
         android:layout_height="wrap_content"
         android:layout_below="@+id/lvl_perfect_button"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="@dimen/button_top_margin"
-        android:text="@string/level_easy"/>
+        android:text="@string/level_easy"
+        android:theme="@style/LightAppColor.Button"/>
 
     <Button
         android:id="@+id/lvl_perfect_button"
-        style="?android:attr/buttonStyleSmall"
+        style="@style/Widget.AppCompat.Button.Colored"
         android:layout_width="@dimen/level_button_width"
         android:layout_height="wrap_content"
         android:layout_below="@+id/bottomTextView"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="20dp"
-        android:text="@string/level_perfect"/>
+        android:text="@string/level_perfect"
+        android:theme="@style/LightAppColor.Button"/>
 
     <me.zhanghai.android.materialprogressbar.MaterialProgressBar
         android:id="@+id/reviewProgressBar"

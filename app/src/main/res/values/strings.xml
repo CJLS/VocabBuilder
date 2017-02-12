@@ -52,6 +52,8 @@
     <color name="app_icon_color">#2b5ea2</color>
     <color name="dark_primary_color">#244f88</color>
     <color name="light_primary_color">#5e8ed1</color>
+    <color name="light_app_icon_color">#4A78B5</color>
+    <color name="level_color">#FFB84F</color>
 
 
     <string-array name="table_array">
