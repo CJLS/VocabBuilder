@@ -25,6 +25,8 @@ public class ReviewResult extends AppCompatActivity {
                 finish();
             }
         });
+
+        // Get data for screen from ReviewSession through Intents
     }
 
 }

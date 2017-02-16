@@ -33,6 +33,10 @@ public class ReviewSession extends AppCompatActivity {
     private int mReviewMode;
     private String mReviewCategory;
     private int mReviewNumOfVocab;
+    private int mDifficultCount = 0;
+    private int mFamiliarCount = 0;
+    private int mEasyCount = 0;
+    private int mPerfectCount = 0;
     private TextView mTopTextView;
     private TextView mBottomTextView;
     private Button mRevealButton;
@@ -141,6 +145,7 @@ public class ReviewSession extends AppCompatActivity {
                 mDifLvlButton.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
+                        mDifficultCount++;
                         mTracker.add(finalRandomNum);
                         selectVocabFamiliarityLevel(DIFFICULT);
                     }
@@ -148,6 +153,7 @@ public class ReviewSession extends AppCompatActivity {
                 mFamLvlButton.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
+                        mFamiliarCount++;
                         mTracker.add(finalRandomNum);
                         selectVocabFamiliarityLevel(FAMILIAR);
                     }
@@ -155,6 +161,7 @@ public class ReviewSession extends AppCompatActivity {
                 mEasLvlButton.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
+                        mEasyCount++;
                         mTracker.add(finalRandomNum);
                         selectVocabFamiliarityLevel(EASY);
                     }
@@ -162,6 +169,7 @@ public class ReviewSession extends AppCompatActivity {
                 mPerLvlButton.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
+                        mPerfectCount++;
                         mTracker.add(finalRandomNum);
                         selectVocabFamiliarityLevel(PERFECT);
                     }
