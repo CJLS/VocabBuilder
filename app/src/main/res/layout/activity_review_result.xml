@@ -181,42 +181,16 @@
 
     </LinearLayout>
 
-
-    <LinearLayout
-        android:id="@+id/vocabImprovementLayout"
+    <TextView
+        android:id="@+id/vocabImprovementText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@id/difficultLayout"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="50dp"
-        android:gravity="center"
-        android:orientation="horizontal">
-
-        <TextView
-            android:id="@+id/vocabImprovementBeforeText"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="You are more familiar with "
-            android:textColor="@color/black"
-            android:textSize="20sp" />
-
-        <TextView
-            android:id="@+id/vocabImprovementNum"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="1"
-            android:textColor="@color/black"
-            android:textSize="20sp" />
-
-        <TextView
-            android:id="@+id/vocabImprovementAfterText"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text=" vocab!"
-            android:textColor="@color/black"
-            android:textSize="20sp" />
-
-    </LinearLayout>
+        android:text="You are more familiar with 2 vocab!"
+        android:textColor="@color/black"
+        android:textSize="20sp" />
 
     <Button
         android:id="@+id/continueButton"

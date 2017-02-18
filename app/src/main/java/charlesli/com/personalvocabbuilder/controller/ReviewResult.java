@@ -7,6 +7,7 @@ import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 
 import charlesli.com.personalvocabbuilder.R;
 
@@ -32,18 +33,24 @@ public class ReviewResult extends AppCompatActivity {
         ProgressBar familiarProgress = (ProgressBar) findViewById(R.id.familiarProgress);
         ProgressBar easyProgress = (ProgressBar) findViewById(R.id.easyProgress);
         ProgressBar perfectProgress = (ProgressBar) findViewById(R.id.perfectProgress);
+        TextView moreFamiliarVocabCountTV = (TextView) findViewById(R.id.vocabImprovementText);
 
         Intent intent = getIntent();
         int difficultPercent = intent.getIntExtra(getString(R.string.difficultPercent), 0);
         int familiarPercent = intent.getIntExtra(getString(R.string.familiarPercent), 0);
         int easyPercent = intent.getIntExtra(getString(R.string.easyPercent), 0);
         int perfectPercent = intent.getIntExtra(getString(R.string.perfectPercent), 0);
+        int moreFamiliarVocabCount = intent.getIntExtra(getString(R.string.moreFamiliarVocabCount), 0);
 
         difficultProgress.setProgress(difficultPercent);
         familiarProgress.setProgress(familiarPercent);
         easyProgress.setProgress(easyPercent);
         perfectProgress.setProgress(perfectPercent);
-
+        if (moreFamiliarVocabCount == 0) {
+            moreFamiliarVocabCountTV.setText("Keep up the good work!");
+        } else {
+            moreFamiliarVocabCountTV.setText("You are more familiar with " + moreFamiliarVocabCount + " vocab!");
+        }
     }
 
 }

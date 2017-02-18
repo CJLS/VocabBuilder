@@ -37,6 +37,7 @@ public class ReviewSession extends AppCompatActivity {
     private int mFamiliarCount = 0;
     private int mEasyCount = 0;
     private int mPerfectCount = 0;
+    private int mMoreFamiliarVocabCount = 0;
     private TextView mTopTextView;
     private TextView mBottomTextView;
     private Button mRevealButton;
@@ -101,6 +102,7 @@ public class ReviewSession extends AppCompatActivity {
         // Get word and definition from Desired Random Row
         String word = mCursor.getString(mCursor.getColumnIndexOrThrow(VocabDbContract.COLUMN_NAME_VOCAB));
         String definition = mCursor.getString(mCursor.getColumnIndexOrThrow(VocabDbContract.COLUMN_NAME_DEFINITION));
+        final int curLevel = mCursor.getInt(mCursor.getColumnIndexOrThrow(VocabDbContract.COLUMN_NAME_LEVEL));
 
         if (mReviewMode == VOCAB_TO_DEF_REVIEW_MODE) {
             mTopTextView.setText(word);
@@ -155,6 +157,9 @@ public class ReviewSession extends AppCompatActivity {
                     public void onClick(View v) {
                         mFamiliarCount++;
                         mTracker.add(finalRandomNum);
+                        if (FAMILIAR > curLevel) {
+                            mMoreFamiliarVocabCount++;
+                        }
                         selectVocabFamiliarityLevel(FAMILIAR);
                     }
                 });
@@ -163,6 +168,9 @@ public class ReviewSession extends AppCompatActivity {
                     public void onClick(View v) {
                         mEasyCount++;
                         mTracker.add(finalRandomNum);
+                        if (EASY > curLevel) {
+                            mMoreFamiliarVocabCount++;
+                        }
                         selectVocabFamiliarityLevel(EASY);
                     }
                 });
@@ -171,6 +179,9 @@ public class ReviewSession extends AppCompatActivity {
                     public void onClick(View v) {
                         mPerfectCount++;
                         mTracker.add(finalRandomNum);
+                        if (PERFECT > curLevel) {
+                            mMoreFamiliarVocabCount++;
+                        }
                         selectVocabFamiliarityLevel(PERFECT);
                     }
                 });
@@ -225,6 +236,7 @@ public class ReviewSession extends AppCompatActivity {
             intent.putExtra(getString(R.string.familiarPercent), mFamiliarCount * 100 / mReviewNumOfVocab);
             intent.putExtra(getString(R.string.easyPercent), mEasyCount * 100 / mReviewNumOfVocab);
             intent.putExtra(getString(R.string.perfectPercent), mPerfectCount * 100 / mReviewNumOfVocab);
+            intent.putExtra(getString(R.string.moreFamiliarVocabCount), mMoreFamiliarVocabCount);
             startActivity(intent);
 
         }

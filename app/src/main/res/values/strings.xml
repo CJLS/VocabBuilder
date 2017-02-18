@@ -51,6 +51,7 @@
     <string name="familiarPercent">familiarPercent</string>
     <string name="easyPercent">easyPercent</string>
     <string name="perfectPercent">perfectPercent</string>
+    <string name="moreFamiliarVocabCount">moreFamiliarVocabCount</string>
     <color name="white">#ffffff</color>
     <color name="black">#000000</color>
     <color name="app_icon_color">#2b5ea2</color>
