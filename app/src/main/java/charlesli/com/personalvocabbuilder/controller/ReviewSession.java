@@ -221,6 +221,10 @@ public class ReviewSession extends AppCompatActivity {
 
             // Review Result
             Intent intent = new Intent(this, ReviewResult.class);
+            intent.putExtra(getString(R.string.difficultPercent), mDifficultCount * 100 / mReviewNumOfVocab);
+            intent.putExtra(getString(R.string.familiarPercent), mFamiliarCount * 100 / mReviewNumOfVocab);
+            intent.putExtra(getString(R.string.easyPercent), mEasyCount * 100 / mReviewNumOfVocab);
+            intent.putExtra(getString(R.string.perfectPercent), mPerfectCount * 100 / mReviewNumOfVocab);
             startActivity(intent);
 
         }

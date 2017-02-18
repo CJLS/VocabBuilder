@@ -78,6 +78,7 @@
             android:layout_width="160dp"
             android:layout_height="5dp"
             android:indeterminate="false"
+            android:max="100"
             android:progress="80"
             app:mpb_progressStyle="horizontal"
             app:mpb_useIntrinsicPadding="false"/>
@@ -109,6 +110,7 @@
             android:layout_width="160dp"
             android:layout_height="5dp"
             android:indeterminate="false"
+            android:max="100"
             android:progress="10"
             app:mpb_progressStyle="horizontal"
             app:mpb_useIntrinsicPadding="false"/>
@@ -140,6 +142,7 @@
             android:layout_width="160dp"
             android:layout_height="5dp"
             android:indeterminate="false"
+            android:max="100"
             android:progress="5"
             app:mpb_progressStyle="horizontal"
             app:mpb_useIntrinsicPadding="false"/>
@@ -171,6 +174,7 @@
             android:layout_width="160dp"
             android:layout_height="5dp"
             android:indeterminate="false"
+            android:max="100"
             android:progress="5"
             app:mpb_progressStyle="horizontal"
             app:mpb_useIntrinsicPadding="false"/>
