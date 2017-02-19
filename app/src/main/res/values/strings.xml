@@ -52,6 +52,10 @@
     <string name="easyPercent">easyPercent</string>
     <string name="perfectPercent">perfectPercent</string>
     <string name="moreFamiliarVocabCount">moreFamiliarVocabCount</string>
+    <string name="dayStreakSharedPreferences">Day Streak</string>
+    <string name="yearKeySP">yearKeySP</string>
+    <string name="dayOfYearKeySP">dayOfYearKeySP</string>
+    <string name="dayStreakCountKeySP">dayStreakCountKeySP</string>
     <color name="white">#ffffff</color>
     <color name="black">#000000</color>
     <color name="app_icon_color">#2b5ea2</color>
