@@ -103,7 +103,7 @@ public class ReviewResult extends AppCompatActivity {
     private void setMoreFamiliarVocabCountFeedback(int moreFamiliarVocabCount) {
         TextView moreFamiliarVocabCountTV = (TextView) findViewById(R.id.vocabImprovementText);
         if (moreFamiliarVocabCount == 0) {
-            moreFamiliarVocabCountTV.setText("Keep up the good work!");
+            moreFamiliarVocabCountTV.setText("Keep learning and improving!");
         } else {
             moreFamiliarVocabCountTV.setText("You are more familiar with " + moreFamiliarVocabCount + " vocab!");
         }

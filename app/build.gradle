@@ -8,8 +8,8 @@ android {
         applicationId "charlesli.com.personalvocabbuilder"
         minSdkVersion 14
         targetSdkVersion 23
-        versionCode 28
-        versionName "2.2"
+        versionCode 29
+        versionName "2.3"
     }
     buildTypes {
         release {
@@ -30,4 +30,5 @@ dependencies {
     compile 'com.android.support:design:23.2.1'
     compile 'com.github.PhilJay:MPAndroidChart:v3.0.1'
     compile 'me.zhanghai.android.materialprogressbar:library:1.1.7'
+    compile 'com.android.support.constraint:constraint-layout:1.0.0-beta5'
 }
