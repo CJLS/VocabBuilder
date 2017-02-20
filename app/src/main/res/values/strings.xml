@@ -47,10 +47,10 @@
     <string name="review_button">Review</string>
     <string name="add_category">Add Category</string>
     <string name="sort_vocab_button">Sort Vocab</string>
-    <string name="difficultPercent">difficultPercent</string>
-    <string name="familiarPercent">familiarPercent</string>
-    <string name="easyPercent">easyPercent</string>
-    <string name="perfectPercent">perfectPercent</string>
+    <string name="difficultCount">difficultCount</string>
+    <string name="familiarCount">familiarCount</string>
+    <string name="easyCount">easyCount</string>
+    <string name="perfectCount">perfectCount</string>
     <string name="moreFamiliarVocabCount">moreFamiliarVocabCount</string>
     <string name="dayStreakSharedPreferences">Day Streak</string>
     <string name="yearKeySP">yearKeySP</string>

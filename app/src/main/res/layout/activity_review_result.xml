@@ -27,6 +27,7 @@
         android:textColor="#000000"
         android:textSize="24sp" />
 
+    <!--
     <LinearLayout
         android:id="@+id/dayStreakLayout"
         android:layout_width="wrap_content"
@@ -181,11 +182,21 @@
 
     </LinearLayout>
 
+    -->
+
+    <com.github.mikephil.charting.charts.PieChart
+        android:id="@+id/pieChart"
+        android:layout_width="300dp"
+        android:layout_height="300dp"
+        android:layout_below="@+id/reviewCompletion"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="50dp"/>
+
     <TextView
         android:id="@+id/vocabImprovementText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@id/difficultLayout"
+        android:layout_below="@id/pieChart"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="50dp"
         android:text="You are more familiar with 2 vocab!"
