@@ -9,6 +9,7 @@ import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.RadioButton;
 import android.widget.SeekBar;
@@ -24,6 +25,7 @@ import charlesli.com.personalvocabbuilder.sqlDatabase.VocabDbHelper;
 
 import static charlesli.com.personalvocabbuilder.controller.ReviewSession.DEF_TO_VOCAB_REVIEW_MODE;
 import static charlesli.com.personalvocabbuilder.controller.ReviewSession.MIX_REVIEW_MODE;
+import static charlesli.com.personalvocabbuilder.controller.ReviewSession.RANDOM_REVIEW_TYPE;
 import static charlesli.com.personalvocabbuilder.controller.ReviewSession.VOCAB_TO_DEF_REVIEW_MODE;
 
 /**
@@ -41,6 +43,7 @@ public class ReviewDialog extends CustomDialog {
 
         final Cursor categoryCursor = dbHelper.getCategoryCursor();
         final int[] reviewMode = {VOCAB_TO_DEF_REVIEW_MODE};
+        final int[] reviewType = {RANDOM_REVIEW_TYPE};
 
         categoryCursor.moveToFirst();
         String firstCategoryInCategoryCursor =
@@ -55,14 +58,16 @@ public class ReviewDialog extends CustomDialog {
         View promptsView = li.inflate(R.layout.alert_dialog_review, null);
 
         final EditText reviewNumET = (EditText) promptsView.findViewById(R.id.numberText);
-        Spinner spinner = (Spinner) promptsView.findViewById(R.id.spinner);
+        Spinner categorySpinner = (Spinner) promptsView.findViewById(R.id.categorySpinner);
+        Spinner reviewTypeSpinner = (Spinner) promptsView.findViewById(R.id.reviewTypeSpinner);
         final RadioButton vocabDefReview = (RadioButton) promptsView.findViewById(R.id.vocabDefReview);
         final RadioButton defVocabReview = (RadioButton) promptsView.findViewById(R.id.defVocabReview);
         final RadioButton mixReview = (RadioButton) promptsView.findViewById(R.id.mixReview);
         final SeekBar seekBar = (SeekBar) promptsView.findViewById(R.id.seekBar);
 
         setUpReviewNumEditText(totalNum, reviewNum, reviewNumET, seekBar);
-        setUpSpinner(categoryCursor, reviewNumET, spinner, seekBar, reviewCategory, totalNum, reviewNum);
+        setUpCategorySpinner(categoryCursor, reviewNumET, categorySpinner, seekBar, reviewCategory, totalNum, reviewNum);
+        setUpReviewTypeSpinner(reviewTypeSpinner, reviewType);
         setUpRadioButtons(reviewMode, vocabDefReview, defVocabReview, mixReview);
         setUpSeekBar(totalNum, reviewNum, reviewNumET, seekBar);
 
@@ -78,6 +83,7 @@ public class ReviewDialog extends CustomDialog {
                     intent.putExtra("Mode", reviewMode[0]);
                     intent.putExtra("Category", reviewCategory[0]);
                     intent.putExtra("NumOfVocab", reviewNum[0]);
+                    intent.putExtra("Type", reviewType[0]);
                     getContext().startActivity(intent);
                 }
             }
@@ -179,9 +185,9 @@ public class ReviewDialog extends CustomDialog {
         });
     }
 
-    private void setUpSpinner(final Cursor categoryCursor, final TextView numText, Spinner spinner,
-                              final SeekBar seekBar, final String[] reviewCategory,
-                              final int[] totalNum, final int[] reviewNum) {
+    private void setUpCategorySpinner(final Cursor categoryCursor, final TextView numText, Spinner spinner,
+                                      final SeekBar seekBar, final String[] reviewCategory,
+                                      final int[] totalNum, final int[] reviewNum) {
         String[] from = {VocabDbContract.COLUMN_NAME_CATEGORY};
         int[] to = {android.R.id.text1};
 
@@ -211,5 +217,23 @@ public class ReviewDialog extends CustomDialog {
             }
         });
 
+    }
+
+    private void setUpReviewTypeSpinner(Spinner spinner, final int[] reviewType) {
+        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(getContext(), R.array.review_type_array,
+                android.R.layout.simple_spinner_dropdown_item);
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spinner.setAdapter(adapter);
+        spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                reviewType[0] = position;
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
+            }
+        });
     }
 }

@@ -26,6 +26,9 @@ public class ReviewSession extends AppCompatActivity {
     public static final int VOCAB_TO_DEF_REVIEW_MODE = 0;
     public static final int DEF_TO_VOCAB_REVIEW_MODE = 1;
     public static final int MIX_REVIEW_MODE = 2;
+    public static final int RANDOM_REVIEW_TYPE = 0;
+    public static final int MOST_DIFFICULT_REVIEW_TYPE = 1;
+    public static final int MOST_RECENT_REVIEW_TYPE = 2;
     private static final int DIFFICULT = 0;
     private static final int FAMILIAR = 1;
     private static final int EASY = 2;
@@ -33,6 +36,7 @@ public class ReviewSession extends AppCompatActivity {
     private int mReviewMode;
     private String mReviewCategory;
     private int mReviewNumOfVocab;
+    private int mReviewType;
     private int mDifficultCount = 0;
     private int mFamiliarCount = 0;
     private int mEasyCount = 0;
@@ -70,7 +74,7 @@ public class ReviewSession extends AppCompatActivity {
         mReviewMode = intent.getIntExtra("Mode", VOCAB_TO_DEF_REVIEW_MODE);
         mReviewCategory = intent.getStringExtra("Category");
         mReviewNumOfVocab = intent.getIntExtra("NumOfVocab", 0);
-
+        mReviewType = intent.getIntExtra("Type", RANDOM_REVIEW_TYPE);
 
         mTopTextView = (TextView) findViewById(R.id.topTextView);
         mBottomTextView = (TextView) findViewById(R.id.bottomTextView);

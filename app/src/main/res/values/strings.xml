@@ -72,5 +72,11 @@
         <item>GRE</item>
     </string-array>
 
+    <string-array name="review_type_array">
+        <item>Random</item>
+        <item>Most difficult</item>
+        <item>Most recent</item>
+    </string-array>
+
 
 </resources>
