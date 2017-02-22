@@ -19,6 +19,10 @@ import charlesli.com.personalvocabbuilder.R;
 import charlesli.com.personalvocabbuilder.sqlDatabase.VocabDbContract;
 import charlesli.com.personalvocabbuilder.sqlDatabase.VocabDbHelper;
 
+import static charlesli.com.personalvocabbuilder.sqlDatabase.VocabDbContract.DATE_ASC;
+import static charlesli.com.personalvocabbuilder.sqlDatabase.VocabDbContract.DATE_DESC;
+import static charlesli.com.personalvocabbuilder.sqlDatabase.VocabDbContract.LEVEL_ASC;
+import static charlesli.com.personalvocabbuilder.sqlDatabase.VocabDbContract.LEVEL_DESC;
 
 
 public class ReviewSession extends AppCompatActivity {
@@ -27,8 +31,10 @@ public class ReviewSession extends AppCompatActivity {
     public static final int DEF_TO_VOCAB_REVIEW_MODE = 1;
     public static final int MIX_REVIEW_MODE = 2;
     public static final int RANDOM_REVIEW_TYPE = 0;
-    public static final int MOST_DIFFICULT_REVIEW_TYPE = 1;
-    public static final int MOST_RECENT_REVIEW_TYPE = 2;
+    public static final int MOST_FAMILIAR_REVIEW_TYPE = 1;
+    public static final int LEAST_FAMILIAR_REVIEW_TYPE = 2;
+    public static final int MOST_RECENT_REVIEW_TYPE = 3;
+    public static final int LEAST_RECENT_REVIEW_TYPE = 4;
     private static final int DIFFICULT = 0;
     private static final int FAMILIAR = 1;
     private static final int EASY = 2;
@@ -86,9 +92,28 @@ public class ReviewSession extends AppCompatActivity {
         mAgaLvlButton = (Button) findViewById(R.id.lvl_again_button);
         mReviewProgressBar = (ProgressBar) findViewById(R.id.reviewProgressBar);
 
-        mCursor = mDbHelper.getVocabCursor(mReviewCategory);
-        mReviewProgressBar.setMax(mReviewNumOfVocab);
 
+        switch (mReviewType) {
+            case RANDOM_REVIEW_TYPE:
+                mCursor = mDbHelper.getVocabCursor(mReviewCategory);
+                break;
+            case MOST_FAMILIAR_REVIEW_TYPE:
+                mCursor = mDbHelper.getVocabCursor(mReviewCategory, LEVEL_DESC, mReviewNumOfVocab);
+                break;
+            case LEAST_FAMILIAR_REVIEW_TYPE:
+                mCursor = mDbHelper.getVocabCursor(mReviewCategory, LEVEL_ASC, mReviewNumOfVocab);
+                break;
+            case MOST_RECENT_REVIEW_TYPE:
+                mCursor = mDbHelper.getVocabCursor(mReviewCategory, DATE_DESC, mReviewNumOfVocab);
+                break;
+            case LEAST_RECENT_REVIEW_TYPE:
+                mCursor = mDbHelper.getVocabCursor(mReviewCategory, DATE_ASC, mReviewNumOfVocab);
+                break;
+            default:
+                mCursor = mDbHelper.getVocabCursor(mReviewCategory);
+        }
+
+        mReviewProgressBar.setMax(mReviewNumOfVocab);
         loadVocabInRandomOrder();
     }
 

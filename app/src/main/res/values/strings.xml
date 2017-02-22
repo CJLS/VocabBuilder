@@ -74,8 +74,10 @@
 
     <string-array name="review_type_array">
         <item>Random</item>
-        <item>Most difficult</item>
+        <item>Most familiar</item>
+        <item>Least familiar</item>
         <item>Most recent</item>
+        <item>Least recent</item>
     </string-array>
 
 

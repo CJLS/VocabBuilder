@@ -232,6 +232,31 @@ public class VocabDbHelper extends SQLiteOpenHelper {
         return cursor;
     }
 
+    public Cursor getVocabCursor(String category, String orderBy, int limit) {
+        SQLiteDatabase db = this.getReadableDatabase();
+
+        String[] projection = {
+                VocabDbContract._ID,
+                VocabDbContract.COLUMN_NAME_VOCAB,
+                VocabDbContract.COLUMN_NAME_DEFINITION,
+                VocabDbContract.COLUMN_NAME_LEVEL
+        };
+
+        String selection = VocabDbContract.COLUMN_NAME_CATEGORY + " = " + "'" + category + "'";
+
+        Cursor cursor = db.query(
+                VocabDbContract.TABLE_NAME_MY_VOCAB, // The table to query
+                projection,                                 // The columns for the WHERE clause
+                selection,                                   // The rows to return for the WHERE clause
+                null,                                        // selectionArgs
+                null,                                        // groupBy
+                null,                                        // having
+                orderBy,                                        // orderBy
+                String.valueOf(limit)                           // limit (the number of rows)
+        );
+        return cursor;
+    }
+
     public Cursor getVocabCursorWithStringPattern(String category, String pattern, String orderBy) {
         SQLiteDatabase db = this.getReadableDatabase();
 
