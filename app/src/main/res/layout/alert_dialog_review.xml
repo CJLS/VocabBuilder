@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:padding="5dp">
@@ -7,127 +8,88 @@
     <Spinner
         android:id="@+id/categorySpinner"
         android:layout_width="150dp"
-        android:layout_height="wrap_content"
-        android:paddingLeft="2dp"
-        android:paddingRight="2dp"
-        android:spinnerMode="dropdown" />
+        android:layout_height="48dp"
+        android:spinnerMode="dropdown"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <Spinner
         android:id="@+id/reviewTypeSpinner"
         android:layout_width="150dp"
-        android:layout_height="wrap_content"
-        android:layout_alignTop="@id/categorySpinner"
-        android:layout_toEndOf="@id/categorySpinner"
-        android:layout_toRightOf="@id/categorySpinner"
-        android:paddingLeft="2dp"
-        android:paddingRight="2dp"
-        android:spinnerMode="dropdown" />
+        android:layout_height="48dp"
+        android:spinnerMode="dropdown"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/categorySpinner" />
 
     <RadioButton
         android:id="@+id/vocabDefReview"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@id/categorySpinner"
-        android:layout_marginTop="5dp"
         android:checked="true"
-        android:paddingLeft="5dp"
-        android:paddingRight="5dp"
-        android:text="Vocab -> Definition" />
+        android:text="Vocab -> Definition"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/reviewTypeSpinner" />
 
     <RadioButton
         android:id="@+id/defVocabReview"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"
         android:layout_below="@+id/vocabDefReview"
         android:checked="false"
-        android:paddingLeft="5dp"
-        android:paddingRight="5dp"
-        android:text="Definition -> Vocab" />
+        android:text="Definition -> Vocab"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/vocabDefReview" />
 
     <RadioButton
         android:id="@+id/mixReview"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"
         android:layout_below="@+id/defVocabReview"
-        android:layout_marginBottom="5dp"
         android:checked="false"
-        android:paddingLeft="5dp"
-        android:paddingRight="5dp"
-        android:text="Vocab/Definition -> Definition/Vocab" />
-
-    <!--
-    <LinearLayout
-        android:id="@+id/optionsLayout"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/mixReview"
-        android:orientation="horizontal">
-
-        <Button
-            android:id="@+id/randomOption"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Random"/>
-
-        <Button
-            android:id="@+id/mostDifficultOption"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Most Difficult"/>
-
-        <Button
-            android:id="@+id/mostRecentOption"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Most Recent"/>
-
-    </LinearLayout>
-    -->
-
-    <LinearLayout
-        android:id="@+id/reviewLayout"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/mixReview"
-        android:orientation="horizontal">
-
-        <TextView
-            android:id="@+id/reviewText"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="  Review "
-            android:textAppearance="?android:attr/textAppearanceMedium"/>
-
-        <EditText
-            android:id="@+id/numberText"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:inputType="number"
-            android:maxLength="5"
-            android:text="100"
-            android:textAppearance="?android:attr/textAppearanceMedium" />
-
-        <TextView
-            android:id="@+id/wordsText"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text=" words"
-            android:textAppearance="?android:attr/textAppearanceMedium"/>
-
-    </LinearLayout>
+        android:text="Vocab/Definition -> Definition/Vocab"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/defVocabReview" />
 
     <SeekBar
         android:id="@+id/seekBar"
+        android:layout_width="358dp"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="16dp"
+        android:layout_marginLeft="16dp"
+        android:layout_marginRight="16dp"
+        android:layout_marginStart="16dp"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/numberText" />
+
+    <EditText
+        android:id="@+id/numberText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentEnd="true"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentStart="true"
-        android:layout_below="@+id/reviewLayout" />
+        android:inputType="number"
+        android:maxLength="5"
+        android:text="100"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        app:layout_constraintLeft_toRightOf="@+id/reviewText"
+        app:layout_constraintTop_toBottomOf="@+id/mixReview" />
 
-</RelativeLayout>
+    <TextView
+        android:id="@+id/wordsText"
+        android:layout_width="wrap_content"
+        android:layout_height="22dp"
+        android:text=" words"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        app:layout_constraintBaseline_toBaselineOf="@+id/numberText"
+        app:layout_constraintLeft_toRightOf="@+id/numberText" />
+
+    <TextView
+        android:id="@+id/reviewText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="  Review "
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        app:layout_constraintBaseline_toBaselineOf="@+id/numberText"
+        app:layout_constraintLeft_toLeftOf="parent" />
+
+</android.support.constraint.ConstraintLayout>
