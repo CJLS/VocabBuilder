@@ -23,6 +23,7 @@ import static charlesli.com.personalvocabbuilder.sqlDatabase.VocabDbContract.DAT
 import static charlesli.com.personalvocabbuilder.sqlDatabase.VocabDbContract.DATE_DESC;
 import static charlesli.com.personalvocabbuilder.sqlDatabase.VocabDbContract.LEVEL_ASC;
 import static charlesli.com.personalvocabbuilder.sqlDatabase.VocabDbContract.LEVEL_DESC;
+import static charlesli.com.personalvocabbuilder.sqlDatabase.VocabDbContract.RANDOM;
 
 
 public class ReviewSession extends AppCompatActivity {
@@ -95,7 +96,7 @@ public class ReviewSession extends AppCompatActivity {
 
         switch (mReviewType) {
             case RANDOM_REVIEW_TYPE:
-                mCursor = mDbHelper.getVocabCursor(mReviewCategory);
+                mCursor = mDbHelper.getVocabCursor(mReviewCategory, RANDOM, mReviewNumOfVocab);
                 break;
             case MOST_FAMILIAR_REVIEW_TYPE:
                 mCursor = mDbHelper.getVocabCursor(mReviewCategory, LEVEL_DESC, mReviewNumOfVocab);
@@ -110,7 +111,7 @@ public class ReviewSession extends AppCompatActivity {
                 mCursor = mDbHelper.getVocabCursor(mReviewCategory, DATE_ASC, mReviewNumOfVocab);
                 break;
             default:
-                mCursor = mDbHelper.getVocabCursor(mReviewCategory);
+                mCursor = mDbHelper.getVocabCursor(mReviewCategory, RANDOM, mReviewNumOfVocab);
         }
 
         mReviewProgressBar.setMax(mReviewNumOfVocab);

@@ -28,6 +28,7 @@ public final class VocabDbContract implements BaseColumns{
     public static final String CATEGORY_NAME_GMAT = "GMAT";
     public static final String CATEGORY_NAME_GRE = "GRE";
     // sort by orders
+    public static final String RANDOM = "Random()";
     public static final String DATE_ASC = _ID + " ASC";
     public static final String DATE_DESC = _ID + " DESC";
     public static final String VOCAB_ASC = COLUMN_NAME_VOCAB + " COLLATE NOCASE ASC";
