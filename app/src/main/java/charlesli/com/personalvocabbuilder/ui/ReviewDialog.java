@@ -39,7 +39,7 @@ public class ReviewDialog extends CustomDialog {
     public ReviewDialog(Context context, VocabDbHelper dbHelper) {
         super(context);
 
-        setTitle("Review Vocab");
+        setTitle("Review Session");
 
         final Cursor categoryCursor = dbHelper.getCategoryCursor();
         final int[] reviewMode = {VOCAB_TO_DEF_REVIEW_MODE};
@@ -73,7 +73,7 @@ public class ReviewDialog extends CustomDialog {
 
         setView(promptsView);
 
-        setButton(BUTTON_POSITIVE, "OK", new DialogInterface.OnClickListener() {
+        setButton(BUTTON_POSITIVE, "Start", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 if (reviewNum[0] == 0) {

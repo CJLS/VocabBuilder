@@ -10,7 +10,7 @@
         android:layout_width="150dp"
         android:layout_height="48dp"
         android:spinnerMode="dropdown"
-        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintLeft_toRightOf="@+id/categoryTV"
         app:layout_constraintTop_toTopOf="parent" />
 
     <Spinner
@@ -18,7 +18,7 @@
         android:layout_width="150dp"
         android:layout_height="48dp"
         android:spinnerMode="dropdown"
-        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintLeft_toRightOf="@+id/vocabTypeTV"
         app:layout_constraintTop_toBottomOf="@+id/categorySpinner" />
 
     <RadioButton
@@ -91,5 +91,27 @@
         android:textAppearance="?android:attr/textAppearanceMedium"
         app:layout_constraintBaseline_toBaselineOf="@+id/numberText"
         app:layout_constraintLeft_toLeftOf="parent" />
+
+    <TextView
+        android:id="@+id/categoryTV"
+        android:layout_width="80dp"
+        android:layout_height="48dp"
+        android:layout_marginLeft="5dp"
+        android:layout_marginStart="5dp"
+        android:gravity="center_vertical"
+        android:text="Category"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/vocabTypeTV"
+        android:layout_width="80dp"
+        android:layout_height="48dp"
+        android:layout_marginLeft="5dp"
+        android:layout_marginStart="5dp"
+        android:gravity="center_vertical"
+        android:text="Vocab Type"
+        app:layout_constraintLeft_toLeftOf="@+id/vocabDefReview"
+        app:layout_constraintTop_toBottomOf="@+id/categoryTV" />
 
 </android.support.constraint.ConstraintLayout>
