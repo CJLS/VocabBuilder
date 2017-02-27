@@ -8,8 +8,8 @@ android {
         applicationId "charlesli.com.personalvocabbuilder"
         minSdkVersion 14
         targetSdkVersion 23
-        versionCode 30
-        versionName "2.4"
+        versionCode 32
+        versionName "2.6"
     }
     buildTypes {
         release {
