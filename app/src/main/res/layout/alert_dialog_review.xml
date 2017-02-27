@@ -78,7 +78,7 @@
         android:id="@+id/wordsText"
         android:layout_width="wrap_content"
         android:layout_height="22dp"
-        android:text=" words"
+        android:text=" vocab"
         android:textAppearance="?android:attr/textAppearanceMedium"
         app:layout_constraintBaseline_toBaselineOf="@+id/numberText"
         app:layout_constraintLeft_toRightOf="@+id/numberText" />
