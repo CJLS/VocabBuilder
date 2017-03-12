@@ -18,6 +18,7 @@ import charlesli.com.personalvocabbuilder.sqlDatabase.VocabDbContract;
 import charlesli.com.personalvocabbuilder.sqlDatabase.VocabDbHelper;
 import charlesli.com.personalvocabbuilder.ui.AddCategoryDialog;
 import charlesli.com.personalvocabbuilder.ui.EditCategoryDialog;
+import charlesli.com.personalvocabbuilder.ui.ExportCategoryDialog;
 import charlesli.com.personalvocabbuilder.ui.ModifyMyWordBankCategoryDialog;
 import charlesli.com.personalvocabbuilder.ui.ReviewDialog;
 import charlesli.com.personalvocabbuilder.ui.TranslationSettingsDialog;
@@ -99,7 +100,16 @@ public class MainActivity extends AppCompatActivity {
         else if (id == R.id.settings_button) {
             setTranslationLanguage();
         }
+        else if (id == R.id.export_button) {
+            exportCategory();
+        }
         return super.onOptionsItemSelected(item);
+    }
+
+    private void exportCategory() {
+        ExportCategoryDialog dialog = new ExportCategoryDialog(this, mDbHelper);
+        dialog.show();
+        dialog.changeButtonsToAppIconColor();
     }
 
     private void setTranslationLanguage() {

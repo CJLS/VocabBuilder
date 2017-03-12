@@ -4,15 +4,21 @@
     tools:context=".MainActivity">
 
     <item android:id="@+id/add_category_button"
-        android:title="@string/add_category"
         android:icon="@drawable/ic_add_white_48dp"
         android:orderInCategory="50"
+        android:title="@string/add_category"
         app:showAsAction="always"/>
 
     <item android:id="@+id/settings_button"
-        android:title="@string/action_settings"
         android:icon="@drawable/ic_settings_white_48dp"
         android:orderInCategory="150"
+        android:title="@string/action_settings"
+        app:showAsAction="never"/>
+
+    <item android:id="@+id/export_button"
+        android:icon="@drawable/ic_file_upload_white_48dp"
+        android:orderInCategory="250"
+        android:title="@string/export"
         app:showAsAction="never"/>
 
 </menu>
