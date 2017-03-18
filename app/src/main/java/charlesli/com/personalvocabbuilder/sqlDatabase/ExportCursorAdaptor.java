@@ -62,4 +62,8 @@ public class ExportCursorAdaptor extends CursorAdapter {
         else
             box.setChecked(false);
     }
+
+    public List<Integer> getSelectedCategoryPositionList() {
+        return selectedItemsPositions;
+    }
 }

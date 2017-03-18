@@ -5,6 +5,11 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.text.TextUtils;
+
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 
 /**
  * Created by Li on 2015/4/13.
@@ -311,6 +316,45 @@ public class VocabDbHelper extends SQLiteOpenHelper {
                 null,                                        // groupBy
                 null,                                        // having
                 null,                                        // orderBy
+                null                                         // limit (the number of rows)
+        );
+        return cursor;
+    }
+
+    public Cursor getCategoryCursor(List<Integer> categoryPosList) {
+        Cursor categoryCursor = getCategoryCursor();
+        Iterator<Integer> categoryIterator = categoryPosList.iterator();
+
+        ArrayList<String> selectedCategories = new ArrayList<String>();
+        while (categoryIterator.hasNext()) {
+            int position = categoryIterator.next();
+            categoryCursor.moveToPosition(position);
+            String categoryName =
+                    categoryCursor.getString(categoryCursor.getColumnIndexOrThrow(VocabDbContract.COLUMN_NAME_CATEGORY));
+            selectedCategories.add(categoryName);
+        }
+
+        String categoryArg = "('" + TextUtils.join("','", selectedCategories.toArray()) + "')";
+        String selection = VocabDbContract.COLUMN_NAME_CATEGORY + " IN " + categoryArg;
+
+        SQLiteDatabase db = this.getReadableDatabase();
+
+        String[] projection = {
+                VocabDbContract._ID,
+                VocabDbContract.COLUMN_NAME_VOCAB,
+                VocabDbContract.COLUMN_NAME_DEFINITION,
+                VocabDbContract.COLUMN_NAME_LEVEL,
+                VocabDbContract.COLUMN_NAME_CATEGORY
+        };
+
+        Cursor cursor = db.query(
+                VocabDbContract.TABLE_NAME_MY_VOCAB, // The table to query
+                projection,                                 // The columns for the WHERE clause
+                selection,                                   // The rows to return for the WHERE clause
+                null,                                        // selectionArgs
+                null,                                        // groupBy
+                null,                                        // having
+                VocabDbContract.CATEGORY_ASC,                // orderBy
                 null                                         // limit (the number of rows)
         );
         return cursor;
