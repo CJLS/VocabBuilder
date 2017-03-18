@@ -5,12 +5,10 @@ import android.content.DialogInterface;
 import android.database.Cursor;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.widget.AdapterView;
-import android.widget.SimpleCursorAdapter;
-import android.widget.Spinner;
+import android.widget.ListView;
 
 import charlesli.com.personalvocabbuilder.R;
-import charlesli.com.personalvocabbuilder.sqlDatabase.VocabDbContract;
+import charlesli.com.personalvocabbuilder.sqlDatabase.ExportCursorAdaptor;
 import charlesli.com.personalvocabbuilder.sqlDatabase.VocabDbHelper;
 
 /**
@@ -27,8 +25,10 @@ public class ExportCategoryDialog extends CustomDialog {
         View promptsView = li.inflate(R.layout.alert_dialog_export, null);
 
         Cursor categoryCursor = dbHelper.getCategoryCursor();
-        Spinner categorySpinner = (Spinner) promptsView.findViewById(R.id.exportSpinner);
-        setUpExportSpinner(categoryCursor, categorySpinner);
+
+        ListView exportListView = (ListView) promptsView.findViewById(R.id.exportListView);
+        ExportCursorAdaptor cursorAdaptor = new ExportCursorAdaptor(context, categoryCursor, 0);
+        exportListView.setAdapter(cursorAdaptor);
 
         setView(promptsView);
 
@@ -38,27 +38,5 @@ public class ExportCategoryDialog extends CustomDialog {
                 dialog.cancel();
             }
         });
-    }
-
-    private void setUpExportSpinner(final Cursor categoryCursor, Spinner spinner) {
-        String[] from = {VocabDbContract.COLUMN_NAME_CATEGORY};
-        int[] to = {android.R.id.text1};
-
-        SimpleCursorAdapter spinnerAdapter = new SimpleCursorAdapter(getContext(), android.R.layout.simple_spinner_item,
-                categoryCursor, from, to, 0);
-        spinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        spinner.setAdapter(spinnerAdapter);
-        spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> parent) {
-
-            }
-        });
-
     }
 }

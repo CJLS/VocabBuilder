@@ -15,7 +15,6 @@ import charlesli.com.personalvocabbuilder.R;
  */
 public class CategoryCursorAdapter extends CursorAdapter {
 
-    //private VocabDbHelper mDBHelper;
     public CategoryCursorAdapter(Context context, Cursor c, int flags) {
         super(context, c, 0);
     }

@@ -8,6 +8,7 @@ import android.view.ViewGroup;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.CursorAdapter;
+import android.widget.TextView;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -30,18 +31,16 @@ public class ExportCursorAdaptor extends CursorAdapter {
 
     @Override
     public View newView(Context context, Cursor cursor, ViewGroup parent) {
-        View view = LayoutInflater.from(context).inflate(R.layout.item_category, parent, false);
+        View view = LayoutInflater.from(context).inflate(R.layout.item_export, parent, false);
         CheckBox box = (CheckBox) view.findViewById(R.id.exportCheckbox);
         box.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
                 int position = (int) compoundButton.getTag();
                 if (b) {
-                    //check whether its already selected or not
                     if (!selectedItemsPositions.contains(position))
                         selectedItemsPositions.add(position);
                 } else {
-                    //remove position if unchecked checked item
                     selectedItemsPositions.remove((Object) position);
                 }
             }
@@ -53,6 +52,10 @@ public class ExportCursorAdaptor extends CursorAdapter {
     public void bindView(View view, Context context, Cursor cursor) {
         CheckBox box = (CheckBox) view.findViewById(R.id.exportCheckbox);
         box.setTag(cursor.getPosition());
+
+        TextView exportCategory = (TextView) view.findViewById(R.id.exportCategory);
+        String categoryName = cursor.getString(cursor.getColumnIndexOrThrow(VocabDbContract.COLUMN_NAME_CATEGORY));
+        exportCategory.setText(categoryName);
 
         if (selectedItemsPositions.contains(cursor.getPosition()))
             box.setChecked(true);
