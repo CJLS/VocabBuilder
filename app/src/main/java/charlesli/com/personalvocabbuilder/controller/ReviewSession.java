@@ -36,10 +36,10 @@ public class ReviewSession extends AppCompatActivity {
     public static final int LEAST_FAMILIAR_REVIEW_TYPE = 2;
     public static final int MOST_RECENT_REVIEW_TYPE = 3;
     public static final int LEAST_RECENT_REVIEW_TYPE = 4;
-    private static final int DIFFICULT = 0;
-    private static final int FAMILIAR = 1;
-    private static final int EASY = 2;
-    private static final int PERFECT = 3;
+    public static final int DIFFICULT = 0;
+    public static final int FAMILIAR = 1;
+    public static final int EASY = 2;
+    public static final int PERFECT = 3;
     private int mReviewMode;
     private String mReviewCategory;
     private int mReviewNumOfVocab;

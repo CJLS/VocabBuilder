@@ -321,7 +321,32 @@ public class VocabDbHelper extends SQLiteOpenHelper {
         return cursor;
     }
 
-    public Cursor getCategoryCursor(List<Integer> categoryPosList) {
+    public String getCategoryDefinition(String categoryName) {
+        String categoryDefinition = "";
+        SQLiteDatabase db = this.getReadableDatabase();
+
+        String[] projection = {
+                VocabDbContract.COLUMN_NAME_DESCRIPTION
+        };
+
+        String selection = VocabDbContract.COLUMN_NAME_CATEGORY + " = '" + categoryName + "'";
+
+        Cursor cursor = db.query(
+                VocabDbContract.TABLE_NAME_CATEGORY, // The table to query
+                projection,                                 // The columns for the WHERE clause
+                selection,                                   // The rows to return for the WHERE clause
+                null,                                        // selectionArgs
+                null,                                        // groupBy
+                null,                                        // having
+                null,                                        // orderBy
+                null                                         // limit (the number of rows)
+        );
+        cursor.moveToFirst();
+        categoryDefinition = cursor.getString(cursor.getColumnIndexOrThrow(VocabDbContract.COLUMN_NAME_DESCRIPTION));
+        return categoryDefinition;
+    }
+
+    public Cursor getExportCursor(List<Integer> categoryPosList) {
         Cursor categoryCursor = getCategoryCursor();
         Iterator<Integer> categoryIterator = categoryPosList.iterator();
 
