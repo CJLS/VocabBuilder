@@ -321,8 +321,7 @@ public class VocabDbHelper extends SQLiteOpenHelper {
         return cursor;
     }
 
-    public String getCategoryDefinition(String categoryName) {
-        String categoryDefinition = "";
+    public String getCategoryDefinition(String categoryName) throws Exception {
         SQLiteDatabase db = this.getReadableDatabase();
 
         String[] projection = {
@@ -341,9 +340,10 @@ public class VocabDbHelper extends SQLiteOpenHelper {
                 null,                                        // orderBy
                 null                                         // limit (the number of rows)
         );
-        cursor.moveToFirst();
-        categoryDefinition = cursor.getString(cursor.getColumnIndexOrThrow(VocabDbContract.COLUMN_NAME_DESCRIPTION));
-        return categoryDefinition;
+        if (!cursor.moveToFirst()) {
+            throw new Exception();
+        }
+        return cursor.getString(cursor.getColumnIndexOrThrow(VocabDbContract.COLUMN_NAME_DESCRIPTION));
     }
 
     public Cursor getExportCursor(List<Integer> categoryPosList) {
