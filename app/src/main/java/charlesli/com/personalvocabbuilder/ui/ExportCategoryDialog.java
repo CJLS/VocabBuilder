@@ -12,10 +12,10 @@ import android.os.Environment;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import java.io.BufferedWriter;
 import java.io.File;
@@ -43,6 +43,8 @@ public class ExportCategoryDialog extends CustomDialog implements ActivityCompat
     //T1: Chinese, spanish, korean characters
     //T2: Permission enabled
     //T3: Permission disabled
+
+    // Check all possible excpetions toast message cases, can manually throw exceptions for testing
 
 
     public ExportCategoryDialog(final Context context, final VocabDbHelper dbHelper) {
@@ -82,7 +84,8 @@ public class ExportCategoryDialog extends CustomDialog implements ActivityCompat
         shareExportFile(exportFile);
     }
 
-    private void shareExportFile(File exportFile) {
+    private boolean shareExportFile(File exportFile) {
+        boolean exportFileSent = true;
         Intent sendFileIntent = new Intent();
         sendFileIntent.setAction(Intent.ACTION_SEND);
         sendFileIntent.setType("text/csv");
@@ -93,41 +96,36 @@ public class ExportCategoryDialog extends CustomDialog implements ActivityCompat
             context.startActivity(Intent.createChooser(sendFileIntent, "Send to"));
         }
         else {
-            Log.d("Test: ", "no apps to handle intent");
+            exportFileSent = false;
         }
+        return exportFileSent;
     }
 
     private boolean getExternalStoragePermission() {
         if (!isExternalStorageWritable()) {
-            Log.d("Test: ", "External Storage is not writable");
+            Toast.makeText(getContext(), "External storage is unavailable. Please check your device's external storage.", Toast.LENGTH_LONG).show();
             return false;
         }
         if (getOwnerActivity() == null) {
-            Log.d("Test: ", "Owner Activity is null");
+            Toast.makeText(getContext(), "Sorry, the export operation did not go through. Please try again later.", Toast.LENGTH_LONG).show();
             return false;
         }
         int permissionCheck = ContextCompat.checkSelfPermission(getOwnerActivity(),
                 Manifest.permission.WRITE_EXTERNAL_STORAGE);
         if (permissionCheck != PackageManager.PERMISSION_GRANTED) {
-            Log.d("Test: ", "Permission Denied");
-
             ActivityCompat.requestPermissions(getOwnerActivity(),
                     new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
                     MY_PERMISSIONS_REQUEST_WRITE_EXTERNAL_STORAGE);
-
             return false;
         }
-        else {
-            Log.d("Test: ", "Permission Granted");
-            return true;
-        }
+        return true;
     }
 
     private File writeToExportFile(List<Integer> categoryPositionList) {
         File path = Environment.getExternalStoragePublicDirectory(
                 Environment.DIRECTORY_DOWNLOADS);
         path.mkdirs();
-        File file = new File(path, "MyVocabExportFile2.csv");
+        File file = new File(path, "MyVocabExportFile.csv");
 
         try {
             FileWriter fileWriter = new FileWriter(file);
@@ -175,17 +173,14 @@ public class ExportCategoryDialog extends CustomDialog implements ActivityCompat
             bufferedWriter.close();
         }
         catch (Exception e) {
-            Log.w("ExternalStorage", "Error writing " + file, e);
+            Toast.makeText(getContext(), "Sorry, an error has occurred when writing to the export file. Please try again later.", Toast.LENGTH_LONG).show();
         }
         return file;
     }
 
     private boolean isExternalStorageWritable() {
         String state = Environment.getExternalStorageState();
-        if (Environment.MEDIA_MOUNTED.equals(state)) {
-            return true;
-        }
-        return false;
+        return Environment.MEDIA_MOUNTED.equals(state);
     }
 
     @Override
@@ -193,12 +188,10 @@ public class ExportCategoryDialog extends CustomDialog implements ActivityCompat
         switch (requestCode) {
             case MY_PERMISSIONS_REQUEST_WRITE_EXTERNAL_STORAGE: {
                 if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    Log.d("OnRequestPermission: ", "Permission Granted");
                     exportCategory();
                 } else {
-                    Log.d("OnRequestPermission: ", "Permission Denied");
+                    Toast.makeText(getContext(), "Export functionality can't be carried out without permission to write to external storage.", Toast.LENGTH_LONG).show();
                 }
-                return;
             }
         }
     }
