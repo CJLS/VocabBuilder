@@ -4,8 +4,10 @@ import android.Manifest;
 import android.app.Activity;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
+import android.net.Uri;
 import android.os.Environment;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
@@ -35,11 +37,19 @@ public class ExportCategoryDialog extends CustomDialog implements ActivityCompat
     private static final int MY_PERMISSIONS_REQUEST_WRITE_EXTERNAL_STORAGE = 1;
     private VocabDbHelper mDBHelper;
     private ExportCursorAdaptor mCursorAdapter;
+    private Context context;
 
-    public ExportCategoryDialog(Context context, final VocabDbHelper dbHelper) {
+    //TODO: Add TEST cases
+    //T1: Chinese, spanish, korean characters
+    //T2: Permission enabled
+    //T3: Permission disabled
+
+
+    public ExportCategoryDialog(final Context context, final VocabDbHelper dbHelper) {
         super(context);
 
         mDBHelper = dbHelper;
+        this.context = context;
 
         if (context instanceof Activity) {
             setOwnerActivity((Activity) context);
@@ -61,10 +71,30 @@ public class ExportCategoryDialog extends CustomDialog implements ActivityCompat
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 if (getExternalStoragePermission()) {
-                    exportCategory(dbHelper, mCursorAdapter.getSelectedCategoryPositionList());
+                    exportCategory();
                 }
             }
         });
+    }
+
+    private void exportCategory() {
+        File exportFile = writeToExportFile(mCursorAdapter.getSelectedCategoryPositionList());
+        shareExportFile(exportFile);
+    }
+
+    private void shareExportFile(File exportFile) {
+        Intent sendFileIntent = new Intent();
+        sendFileIntent.setAction(Intent.ACTION_SEND);
+        sendFileIntent.setType("text/csv");
+        sendFileIntent.putExtra(Intent.EXTRA_SUBJECT, "My Vocab Export File");
+        sendFileIntent.putExtra(Intent.EXTRA_STREAM, Uri.fromFile(exportFile));
+
+        if (sendFileIntent.resolveActivity(context.getPackageManager()) != null) {
+            context.startActivity(Intent.createChooser(sendFileIntent, "Send to"));
+        }
+        else {
+            Log.d("Test: ", "no apps to handle intent");
+        }
     }
 
     private boolean getExternalStoragePermission() {
@@ -93,7 +123,7 @@ public class ExportCategoryDialog extends CustomDialog implements ActivityCompat
         }
     }
 
-    private void exportCategory(VocabDbHelper dbHelper, List<Integer> categoryPositionList) {
+    private File writeToExportFile(List<Integer> categoryPositionList) {
         File path = Environment.getExternalStoragePublicDirectory(
                 Environment.DIRECTORY_DOWNLOADS);
         path.mkdirs();
@@ -107,7 +137,7 @@ public class ExportCategoryDialog extends CustomDialog implements ActivityCompat
 
             bufferedWriter.newLine();
 
-            Cursor cursor = dbHelper.getExportCursor(categoryPositionList);
+            Cursor cursor = mDBHelper.getExportCursor(categoryPositionList);
             for (int i = 0; i < cursor.getCount(); i++) {
                 cursor.moveToPosition(i);
                 String vocab = cursor.getString(cursor.getColumnIndexOrThrow(VocabDbContract.COLUMN_NAME_VOCAB));
@@ -134,7 +164,7 @@ public class ExportCategoryDialog extends CustomDialog implements ActivityCompat
                         break;
                 }
                 String category = cursor.getString(cursor.getColumnIndexOrThrow(VocabDbContract.COLUMN_NAME_CATEGORY));
-                String description = dbHelper.getCategoryDefinition(category);
+                String description = mDBHelper.getCategoryDefinition(category);
                 category = category.replace(",", "\\,");
                 description = description.replace(",", "\\,");
                 String lineToWrite = vocab + "," + definition + "," + level + "," + category + "," + description;
@@ -147,7 +177,7 @@ public class ExportCategoryDialog extends CustomDialog implements ActivityCompat
         catch (Exception e) {
             Log.w("ExternalStorage", "Error writing " + file, e);
         }
-
+        return file;
     }
 
     private boolean isExternalStorageWritable() {
@@ -164,7 +194,7 @@ public class ExportCategoryDialog extends CustomDialog implements ActivityCompat
             case MY_PERMISSIONS_REQUEST_WRITE_EXTERNAL_STORAGE: {
                 if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                     Log.d("OnRequestPermission: ", "Permission Granted");
-                    exportCategory(mDBHelper, mCursorAdapter.getSelectedCategoryPositionList());
+                    exportCategory();
                 } else {
                     Log.d("OnRequestPermission: ", "Permission Denied");
                 }
