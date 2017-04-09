@@ -40,11 +40,10 @@ public class ExportCategoryDialog extends CustomDialog implements ActivityCompat
     private Context context;
 
     //TODO: Add TEST cases
-    //T1: Chinese, spanish, korean characters
-    //T2: Permission enabled
-    //T3: Permission disabled
-
-    // Check all possible excpetions toast message cases, can manually throw exceptions for testing
+    //T1: Permission enabled
+    //T1: Permission disabled
+    //Check different apps that can send file intent
+    //Check all possible exceptions toast message cases, can manually throw exceptions for testing
 
 
     public ExportCategoryDialog(final Context context, final VocabDbHelper dbHelper) {
@@ -77,11 +76,19 @@ public class ExportCategoryDialog extends CustomDialog implements ActivityCompat
                 }
             }
         });
+        setButton(BUTTON_NEUTRAL, "Cancel", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.cancel();
+            }
+        });
     }
 
     private void exportCategory() {
         File exportFile = writeToExportFile(mCursorAdapter.getSelectedCategoryPositionList());
-        shareExportFile(exportFile);
+        if (!shareExportFile(exportFile)) {
+            Toast.makeText(getContext(), "Your export file is located in your external storage's downloads folder.", Toast.LENGTH_LONG).show();
+        }
     }
 
     private boolean shareExportFile(File exportFile) {
@@ -90,6 +97,7 @@ public class ExportCategoryDialog extends CustomDialog implements ActivityCompat
         sendFileIntent.setAction(Intent.ACTION_SEND);
         sendFileIntent.setType("text/csv");
         sendFileIntent.putExtra(Intent.EXTRA_SUBJECT, "My Vocab Export File");
+        sendFileIntent.putExtra(Intent.EXTRA_TEXT, "The export file can be viewed in a text editor.");
         sendFileIntent.putExtra(Intent.EXTRA_STREAM, Uri.fromFile(exportFile));
 
         if (sendFileIntent.resolveActivity(context.getPackageManager()) != null) {
@@ -163,9 +171,14 @@ public class ExportCategoryDialog extends CustomDialog implements ActivityCompat
                 }
                 String category = cursor.getString(cursor.getColumnIndexOrThrow(VocabDbContract.COLUMN_NAME_CATEGORY));
                 String description = mDBHelper.getCategoryDefinition(category);
+
                 category = category.replace(",", "\\,");
                 description = description.replace(",", "\\,");
                 String lineToWrite = vocab + "," + definition + "," + level + "," + category + "," + description;
+
+                /* For TSV option
+                String lineToWrite = vocab + "\t" + definition + "\t" + level + "\t" + category + "\t" + description;
+                */
 
                 bufferedWriter.write(lineToWrite);
                 bufferedWriter.newLine();
