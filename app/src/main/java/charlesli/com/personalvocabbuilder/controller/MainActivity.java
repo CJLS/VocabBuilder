@@ -1,9 +1,12 @@
 package charlesli.com.personalvocabbuilder.controller;
 
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
+import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
@@ -11,9 +14,11 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import charlesli.com.personalvocabbuilder.R;
 import charlesli.com.personalvocabbuilder.sqlDatabase.CategoryCursorAdapter;
+import charlesli.com.personalvocabbuilder.sqlDatabase.ExportCursorAdaptor;
 import charlesli.com.personalvocabbuilder.sqlDatabase.VocabDbContract;
 import charlesli.com.personalvocabbuilder.sqlDatabase.VocabDbHelper;
 import charlesli.com.personalvocabbuilder.ui.AddCategoryDialog;
@@ -23,8 +28,10 @@ import charlesli.com.personalvocabbuilder.ui.ModifyMyWordBankCategoryDialog;
 import charlesli.com.personalvocabbuilder.ui.ReviewDialog;
 import charlesli.com.personalvocabbuilder.ui.TranslationSettingsDialog;
 
+import static charlesli.com.personalvocabbuilder.controller.ExportUtils.MY_PERMISSIONS_REQUEST_WRITE_EXTERNAL_STORAGE;
 
-public class MainActivity extends AppCompatActivity {
+
+public class MainActivity extends AppCompatActivity implements ActivityCompat.OnRequestPermissionsResultCallback {
 
     private CategoryCursorAdapter mCategoryAdapter;
     private VocabDbHelper mDbHelper = VocabDbHelper.getDBHelper(MainActivity.this);
@@ -101,12 +108,12 @@ public class MainActivity extends AppCompatActivity {
             setTranslationLanguage();
         }
         else if (id == R.id.export_button) {
-            exportCategory();
+            selectCategoriesToExport();
         }
         return super.onOptionsItemSelected(item);
     }
 
-    private void exportCategory() {
+    private void selectCategoriesToExport() {
         ExportCategoryDialog dialog = new ExportCategoryDialog(this, mDbHelper);
         dialog.show();
         dialog.changeButtonsToAppIconColor();
@@ -144,4 +151,19 @@ public class MainActivity extends AppCompatActivity {
         dialog.changeButtonsToAppIconColor();
     }
 
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        switch (requestCode) {
+            case MY_PERMISSIONS_REQUEST_WRITE_EXTERNAL_STORAGE: {
+                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    Cursor categoryCursor = mDbHelper.getCategoryCursor();
+                    ExportCursorAdaptor mCursorAdapter = new ExportCursorAdaptor(this, categoryCursor, 0);
+                    ExportUtils.exportCategory(this, mDbHelper, mCursorAdapter);
+                } else {
+                    Toast.makeText(this, "No external storage permission to export categories.", Toast.LENGTH_LONG).show();
+                }
+            }
+        }
+    }
 }
