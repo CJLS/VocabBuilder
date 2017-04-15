@@ -1,16 +1,10 @@
 package charlesli.com.personalvocabbuilder.controller;
 
-import android.Manifest;
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Environment;
-import android.support.v4.app.ActivityCompat;
-import android.support.v4.content.ContextCompat;
-import android.util.Log;
 import android.widget.Toast;
 
 import java.io.BufferedWriter;
@@ -30,8 +24,11 @@ public class ExportUtils {
 
     public static final int MY_PERMISSIONS_REQUEST_WRITE_EXTERNAL_STORAGE = 1;
 
-    public static void exportCategory(Context context, VocabDbHelper dbHelper, ExportCursorAdaptor cursorAdaptor) {
-        File exportFile = writeToExportFile(context, dbHelper, cursorAdaptor.getSelectedCategoryPositionList());
+    public static void exportCategory(Context context) {
+        Cursor categoryCursor = VocabDbHelper.getDBHelper(context).getCategoryCursor();
+        ExportCursorAdaptor exportCursorAdaptor = new ExportCursorAdaptor(context, categoryCursor, 0);
+
+        File exportFile = writeToExportFile(context, exportCursorAdaptor.getSelectedCategoryPositionList());
         if (!shareExportFile(context, exportFile)) {
             Toast.makeText(context, "Your export file is located in your external storage's downloads folder.", Toast.LENGTH_LONG).show();
         }
@@ -55,7 +52,9 @@ public class ExportUtils {
         return exportFileSent;
     }
 
-    private static File writeToExportFile(Context context, VocabDbHelper dbHelper, List<Integer> categoryPositionList) {
+    private static File writeToExportFile(Context context, List<Integer> categoryPositionList) {
+        VocabDbHelper dbHelper = VocabDbHelper.getDBHelper(context);
+
         File path = Environment.getExternalStoragePublicDirectory(
                 Environment.DIRECTORY_DOWNLOADS);
         path.mkdirs();
@@ -117,30 +116,4 @@ public class ExportUtils {
         return file;
     }
 
-    private boolean getExternalStoragePermission(Context context) {
-        if (!isExternalStorageWritable()) {
-            Toast.makeText(context, "External storage is unavailable. Please check your device's external storage.", Toast.LENGTH_LONG).show();
-            return false;
-        }
-        if (context == null) {
-            Toast.makeText(context, "Sorry, the export operation did not go through. Please try again later.", Toast.LENGTH_LONG).show();
-            return false;
-        }
-        int permissionCheck = ContextCompat.checkSelfPermission(context,
-                Manifest.permission.WRITE_EXTERNAL_STORAGE);
-        if (permissionCheck != PackageManager.PERMISSION_GRANTED) {
-            Log.d("Test: ", "Get External Storage Permission denied");
-            ActivityCompat.requestPermissions((Activity) context,
-                    new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
-                    MY_PERMISSIONS_REQUEST_WRITE_EXTERNAL_STORAGE);
-            Log.d("Test: ", "After request permission");
-            return false;
-        }
-        return true;
-    }
-
-    private boolean isExternalStorageWritable() {
-        String state = Environment.getExternalStorageState();
-        return Environment.MEDIA_MOUNTED.equals(state);
-    }
 }
