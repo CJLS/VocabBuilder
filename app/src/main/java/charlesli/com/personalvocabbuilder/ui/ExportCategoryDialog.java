@@ -20,8 +20,6 @@ import charlesli.com.personalvocabbuilder.sqlDatabase.VocabDbHelper;
 
 public class ExportCategoryDialog extends CustomDialog {
 
-    private ExportCursorAdaptor mCursorAdapter;
-
     //TODO: Add TEST cases
     //T1: No apps can send intent
     //T2: External Storage is unavailable
@@ -45,7 +43,7 @@ public class ExportCategoryDialog extends CustomDialog {
         Cursor categoryCursor = dbHelper.getCategoryCursor();
 
         ListView exportListView = (ListView) promptsView.findViewById(R.id.exportListView);
-        mCursorAdapter = new ExportCursorAdaptor(context, categoryCursor, 0);
+        ExportCursorAdaptor mCursorAdapter = new ExportCursorAdaptor(context, categoryCursor, 0);
         exportListView.setAdapter(mCursorAdapter);
 
         setView(promptsView);
