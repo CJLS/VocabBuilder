@@ -43,4 +43,6 @@ dependencies {
     // Espresso core
     androidTestCompile 'com.android.support.test.espresso:espresso-core:2.2.2'
     compile('com.google.code.findbugs:jsr305:2.0.1')
+    // UIAutomator
+    androidTestCompile 'com.android.support.test.uiautomator:uiautomator-v18:2.1.2'
 }

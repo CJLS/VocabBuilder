@@ -20,15 +20,6 @@ import charlesli.com.personalvocabbuilder.sqlDatabase.VocabDbHelper;
 
 public class ExportCategoryDialog extends CustomDialog {
 
-    //TODO: Add TEST cases
-    //T1: No apps can send intent
-    //T2: External Storage is unavailable
-    //T5: Permission request is denied **
-    //T6: Permission request is denied, enabled, and export file
-    //T7: Permission request granted at first but disabled later
-    //T8: Permission request is denied, export file
-    //T9: Check if all apps can send file intent properly with file
-
     public ExportCategoryDialog(final Context context, final VocabDbHelper dbHelper) {
         super(context);
 

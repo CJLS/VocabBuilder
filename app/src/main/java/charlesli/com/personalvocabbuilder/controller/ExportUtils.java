@@ -22,7 +22,7 @@ import charlesli.com.personalvocabbuilder.sqlDatabase.VocabDbHelper;
 
 public class ExportUtils {
 
-    public static final int MY_PERMISSIONS_REQUEST_WRITE_EXTERNAL_STORAGE = 1;
+    static final int MY_PERMISSIONS_REQUEST_WRITE_EXTERNAL_STORAGE = 1;
 
     public static void exportCategory(Context context) {
         Cursor categoryCursor = VocabDbHelper.getDBHelper(context).getCategoryCursor();

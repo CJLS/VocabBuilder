@@ -158,7 +158,7 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
                 if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                     ExportUtils.exportCategory(this);
                 } else {
-                    Toast.makeText(this, "No external storage permission to export categories.", Toast.LENGTH_LONG).show();
+                    Toast.makeText(this, R.string.externalStoragePermissionDenied, Toast.LENGTH_LONG).show();
                 }
             }
         }
