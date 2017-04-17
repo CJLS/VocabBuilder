@@ -1,7 +1,9 @@
 package charlesli.com.personalvocabbuilder;
 
+import android.content.Intent;
 import android.os.Build;
 import android.support.test.InstrumentationRegistry;
+import android.support.test.espresso.intent.Intents;
 import android.support.test.rule.ActivityTestRule;
 import android.support.test.runner.AndroidJUnit4;
 import android.support.test.uiautomator.UiDevice;
@@ -23,6 +25,8 @@ import static android.support.test.espresso.Espresso.onView;
 import static android.support.test.espresso.Espresso.openActionBarOverflowOrOptionsMenu;
 import static android.support.test.espresso.action.ViewActions.click;
 import static android.support.test.espresso.assertion.ViewAssertions.matches;
+import static android.support.test.espresso.intent.Intents.intended;
+import static android.support.test.espresso.intent.matcher.IntentMatchers.hasAction;
 import static android.support.test.espresso.matcher.RootMatchers.withDecorView;
 import static android.support.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static android.support.test.espresso.matcher.ViewMatchers.withId;
@@ -39,6 +43,7 @@ public class ExportTest {
 
     private static String TEXT_DENY = "Deny";
     private static String TEXT_ALLOW = "Allow";
+
     @Rule
     public ActivityTestRule<MainActivity> mainActivityActivityTestRule =
             new ActivityTestRule<MainActivity>(MainActivity.class);
@@ -47,10 +52,9 @@ public class ExportTest {
     //TODO: Add TEST cases
     //T1: No apps can send intent
     //T2: External Storage is unavailable
-    //T6: Permission request is denied, enabled, and export file
-    //T7: Permission request granted at first but disabled later
-    //T8: Permission request is denied, export file
-    //T9: Check if all apps can send file intent properly with file
+    //T3: Permission request is denied with never show again
+    //T4: Check if all apps can send file intent properly with file
+    //Make sure that test start with permission revoked
     UiDevice uiDevice;
 
     public static void assertViewWithTextIsVisible(UiDevice device, String text) {
@@ -63,6 +67,11 @@ public class ExportTest {
     public static void denyCurrentPermission(UiDevice device) throws UiObjectNotFoundException {
         UiObject denyButton = device.findObject(new UiSelector().text(TEXT_DENY));
         denyButton.click();
+    }
+
+    public static void allowCurrentPermission(UiDevice device) throws UiObjectNotFoundException {
+        UiObject allowButton = device.findObject(new UiSelector().text(TEXT_ALLOW));
+        allowButton.click();
     }
 
     @Before
@@ -78,11 +87,7 @@ public class ExportTest {
 
     @After
     public void tearDown() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            getInstrumentation().getUiAutomation().executeShellCommand(
-                    "pm revoke " + getTargetContext().getPackageName()
-                            + " android.permission.WRITE_EXTERNAL_STORAGE");
-        }
+
     }
 
     @Test
@@ -110,8 +115,22 @@ public class ExportTest {
 
         MainActivity activity = mainActivityActivityTestRule.getActivity();
         onView(withText(getTargetContext().getString(R.string.externalStoragePermissionDenied)))
-        .inRoot(withDecorView(not(is(activity.getWindow().getDecorView()))))
-        .check(matches(isDisplayed()));
+                .inRoot(withDecorView(not(is(activity.getWindow().getDecorView()))))
+                .check(matches(isDisplayed()));
+    }
+
+    @Test
+    public void allowExternalStoragePermissionRequest_fireActionSendIntent() throws Exception {
+        Intents.init();
+        openActionBarOverflowOrOptionsMenu(getTargetContext());
+        onView(withText(getTargetContext().getString(R.string.export)))
+                .perform(click());
+        UiObject okButton = uiDevice.findObject(new UiSelector().text("OK"));
+        okButton.clickAndWaitForNewWindow();
+        allowCurrentPermission(uiDevice);
+
+        intended(hasAction(Intent.ACTION_CHOOSER));
+        Intents.release();
     }
 
 }
