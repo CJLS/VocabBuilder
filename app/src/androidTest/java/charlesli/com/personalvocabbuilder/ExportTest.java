@@ -1,5 +1,6 @@
 package charlesli.com.personalvocabbuilder;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.os.Build;
 import android.support.test.InstrumentationRegistry;
@@ -11,7 +12,6 @@ import android.support.test.uiautomator.UiObject;
 import android.support.test.uiautomator.UiObjectNotFoundException;
 import android.support.test.uiautomator.UiSelector;
 
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -19,6 +19,7 @@ import org.junit.runner.RunWith;
 
 import charlesli.com.personalvocabbuilder.controller.MainActivity;
 
+import static android.app.Instrumentation.ActivityResult;
 import static android.support.test.InstrumentationRegistry.getInstrumentation;
 import static android.support.test.InstrumentationRegistry.getTargetContext;
 import static android.support.test.espresso.Espresso.onView;
@@ -26,6 +27,7 @@ import static android.support.test.espresso.Espresso.openActionBarOverflowOrOpti
 import static android.support.test.espresso.action.ViewActions.click;
 import static android.support.test.espresso.assertion.ViewAssertions.matches;
 import static android.support.test.espresso.intent.Intents.intended;
+import static android.support.test.espresso.intent.Intents.intending;
 import static android.support.test.espresso.intent.matcher.IntentMatchers.hasAction;
 import static android.support.test.espresso.matcher.RootMatchers.withDecorView;
 import static android.support.test.espresso.matcher.ViewMatchers.isDisplayed;
@@ -33,6 +35,7 @@ import static android.support.test.espresso.matcher.ViewMatchers.withId;
 import static android.support.test.espresso.matcher.ViewMatchers.withText;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
+
 
 
 /**
@@ -85,10 +88,6 @@ public class ExportTest {
         }
     }
 
-    @After
-    public void tearDown() {
-
-    }
 
     @Test
     public void clickExportOKButton_requestExternalStoragePermission() throws Exception {
@@ -122,6 +121,7 @@ public class ExportTest {
     @Test
     public void allowExternalStoragePermissionRequest_fireActionSendIntent() throws Exception {
         Intents.init();
+        intending(hasAction(Intent.ACTION_CHOOSER)).respondWith(new ActivityResult(Activity.RESULT_OK, null));
         openActionBarOverflowOrOptionsMenu(getTargetContext());
         onView(withText(getTargetContext().getString(R.string.export)))
                 .perform(click());
