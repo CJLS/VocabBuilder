@@ -103,7 +103,7 @@ public class ExportTest {
     @Test
     public void clickExportOKButton_requestExternalStoragePermission() throws Exception {
         openActionBarOverflowOrOptionsMenu(getTargetContext());
-        onView(withText(getTargetContext().getString(R.string.export)))
+        onView(withText(getTargetContext().getString(R.string.exportTitle)))
                 .perform(click());
         onView(withId(R.id.exportListView))
                 .check(matches(isDisplayed()));
@@ -117,7 +117,7 @@ public class ExportTest {
     @Test
     public void denyExternalStoragePermissionRequest_showRequestDeniedToastMessage() throws Exception {
         openActionBarOverflowOrOptionsMenu(getTargetContext());
-        onView(withText(getTargetContext().getString(R.string.export)))
+        onView(withText(getTargetContext().getString(R.string.exportTitle)))
                 .perform(click());
         UiObject okButton = uiDevice.findObject(new UiSelector().text("OK"));
         okButton.clickAndWaitForNewWindow();
@@ -132,7 +132,7 @@ public class ExportTest {
     @Test
     public void z_allowExternalStoragePermissionRequest_fireActionSendIntent() throws Exception {
         openActionBarOverflowOrOptionsMenu(getTargetContext());
-        onView(withText(getTargetContext().getString(R.string.export)))
+        onView(withText(getTargetContext().getString(R.string.exportTitle)))
                 .perform(click());
         UiObject okButton = uiDevice.findObject(new UiSelector().text("OK"));
         okButton.clickAndWaitForNewWindow();

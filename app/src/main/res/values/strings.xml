@@ -56,8 +56,9 @@
     <string name="yearKeySP">yearKeySP</string>
     <string name="dayOfYearKeySP">dayOfYearKeySP</string>
     <string name="dayStreakCountKeySP">dayStreakCountKeySP</string>
-    <string name="export">Export</string>
+    <string name="exportTitle">Export</string>
     <string name="externalStoragePermissionDenied">No external storage permission to export categories.</string>
+    <string name="importTitle">Import</string>
     <color name="white">#ffffff</color>
     <color name="black">#000000</color>
     <color name="app_icon_color">#2b5ea2</color>

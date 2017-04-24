@@ -22,7 +22,8 @@ import charlesli.com.personalvocabbuilder.sqlDatabase.VocabDbContract;
 import charlesli.com.personalvocabbuilder.sqlDatabase.VocabDbHelper;
 import charlesli.com.personalvocabbuilder.ui.AddCategoryDialog;
 import charlesli.com.personalvocabbuilder.ui.EditCategoryDialog;
-import charlesli.com.personalvocabbuilder.ui.ExportCategoryDialog;
+import charlesli.com.personalvocabbuilder.ui.ExportDialog;
+import charlesli.com.personalvocabbuilder.ui.ImportDialog;
 import charlesli.com.personalvocabbuilder.ui.ModifyMyWordBankCategoryDialog;
 import charlesli.com.personalvocabbuilder.ui.ReviewDialog;
 import charlesli.com.personalvocabbuilder.ui.TranslationSettingsDialog;
@@ -67,7 +68,7 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
                 categoryCursor.moveToPosition(position);
                 String categoryName = categoryCursor.getString(categoryCursor.getColumnIndex(VocabDbContract.COLUMN_NAME_CATEGORY));
                 String categoryDesc = categoryCursor.getString(categoryCursor.getColumnIndex(VocabDbContract.COLUMN_NAME_DESCRIPTION));
-                editCategoryAlertDialog(categoryName, categoryDesc, mDbHelper, mCategoryAdapter);
+                editCategoryAlertDialog(categoryName, categoryDesc);
                 return true;
             }
         });
@@ -109,11 +110,20 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
         else if (id == R.id.export_button) {
             selectCategoriesToExport();
         }
+        else if (id == R.id.import_button) {
+            selectExportFileToImport();
+        }
         return super.onOptionsItemSelected(item);
     }
 
+    private void selectExportFileToImport() {
+        ImportDialog dialog = new ImportDialog(this);
+        dialog.show();
+        dialog.changeButtonsToAppIconColor();
+    }
+
     private void selectCategoriesToExport() {
-        ExportCategoryDialog dialog = new ExportCategoryDialog(this, mDbHelper);
+        ExportDialog dialog = new ExportDialog(this);
         dialog.show();
         dialog.changeButtonsToAppIconColor();
     }
@@ -125,19 +135,18 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
     }
 
     private void addCategory() {
-        AddCategoryDialog dialog = new AddCategoryDialog(this, mDbHelper, mCategoryAdapter);
+        AddCategoryDialog dialog = new AddCategoryDialog(this);
         dialog.show();
         dialog.changeButtonsToAppIconColor();
     }
 
     private void selectReviewType() {
-        ReviewDialog dialog = new ReviewDialog(this, mDbHelper);
+        ReviewDialog dialog = new ReviewDialog(this);
         dialog.show();
         dialog.changeButtonsToAppIconColor();
     }
 
-    private void editCategoryAlertDialog(final String selectedCategory, final String selectedDesc,
-                                         final VocabDbHelper dbHelper, final CategoryCursorAdapter cursorAdapter) {
+    private void editCategoryAlertDialog(final String selectedCategory, final String selectedDesc) {
         if (selectedCategory.equals("My Word Bank")) {
             ModifyMyWordBankCategoryDialog dialog = new ModifyMyWordBankCategoryDialog(this);
             dialog.show();
@@ -145,7 +154,7 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
             return;
         }
 
-        EditCategoryDialog dialog = new EditCategoryDialog(this, dbHelper, cursorAdapter, selectedCategory, selectedDesc);
+        EditCategoryDialog dialog = new EditCategoryDialog(this, selectedCategory, selectedDesc);
         dialog.show();
         dialog.changeButtonsToAppIconColor();
     }

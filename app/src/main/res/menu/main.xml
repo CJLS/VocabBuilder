@@ -18,7 +18,13 @@
     <item android:id="@+id/export_button"
         android:icon="@drawable/ic_file_upload_white_48dp"
         android:orderInCategory="250"
-        android:title="@string/export"
+        android:title="@string/exportTitle"
+        app:showAsAction="never"/>
+
+    <item android:id="@+id/import_button"
+        android:icon="@drawable/ic_file_download_white_48dp"
+        android:orderInCategory="350"
+        android:title="@string/importTitle"
         app:showAsAction="never"/>
 
 </menu>

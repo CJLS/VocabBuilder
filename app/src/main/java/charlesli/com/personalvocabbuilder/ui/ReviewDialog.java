@@ -36,11 +36,12 @@ public class ReviewDialog extends CustomDialog {
 
     private boolean textChangeFromUser = true;
 
-    public ReviewDialog(Context context, VocabDbHelper dbHelper) {
+    public ReviewDialog(Context context) {
         super(context);
 
         setTitle("Review Session");
 
+        VocabDbHelper dbHelper = VocabDbHelper.getDBHelper(context);
         final Cursor categoryCursor = dbHelper.getCategoryCursor();
         final int[] reviewMode = {VOCAB_TO_DEF_REVIEW_MODE};
         final int[] reviewType = {RANDOM_REVIEW_TYPE};

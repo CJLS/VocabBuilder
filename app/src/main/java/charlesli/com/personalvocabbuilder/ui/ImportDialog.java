@@ -1,6 +1,5 @@
 package charlesli.com.personalvocabbuilder.ui;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.database.Cursor;
@@ -15,22 +14,20 @@ import charlesli.com.personalvocabbuilder.sqlDatabase.ExportCursorAdaptor;
 import charlesli.com.personalvocabbuilder.sqlDatabase.VocabDbHelper;
 
 /**
- * Created by charles on 2017-03-12.
+ * Created by charles on 2017-04-23.
  */
 
-public class ExportCategoryDialog extends CustomDialog {
+public class ImportDialog extends CustomDialog {
 
-    public ExportCategoryDialog(final Context context, final VocabDbHelper dbHelper) {
+    public ImportDialog(final Context context) {
         super(context);
 
-        if (context instanceof Activity) {
-            setOwnerActivity((Activity) context);
-        }
-
-        setTitle("Export");
+        setTitle("Import");
         LayoutInflater li = LayoutInflater.from(context);
+        // TODO: Replace placeholder
         View promptsView = li.inflate(R.layout.alert_dialog_export, null);
 
+        VocabDbHelper dbHelper = VocabDbHelper.getDBHelper(context);
         Cursor categoryCursor = dbHelper.getCategoryCursor();
 
         ListView exportListView = (ListView) promptsView.findViewById(R.id.exportListView);
@@ -54,5 +51,4 @@ public class ExportCategoryDialog extends CustomDialog {
             }
         });
     }
-
 }
