@@ -2,7 +2,6 @@ package charlesli.com.personalvocabbuilder;
 
 import android.app.Activity;
 import android.content.Intent;
-import android.support.test.InstrumentationRegistry;
 import android.support.test.espresso.intent.Intents;
 import android.support.test.rule.ActivityTestRule;
 import android.support.test.runner.AndroidJUnit4;
@@ -13,13 +12,16 @@ import android.support.test.uiautomator.UiSelector;
 
 import org.junit.After;
 import org.junit.Before;
+import org.junit.FixMethodOrder;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.junit.runners.MethodSorters;
 
 import charlesli.com.personalvocabbuilder.controller.MainActivity;
 
 import static android.app.Instrumentation.ActivityResult;
+import static android.support.test.InstrumentationRegistry.getInstrumentation;
 import static android.support.test.InstrumentationRegistry.getTargetContext;
 import static android.support.test.espresso.Espresso.onView;
 import static android.support.test.espresso.Espresso.openActionBarOverflowOrOptionsMenu;
@@ -41,6 +43,7 @@ import static org.hamcrest.Matchers.not;
  * Created by charles on 2017-04-15.
  */
 @RunWith(AndroidJUnit4.class)
+@FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class ExportTest {
 
     private static String TEXT_DENY = "Deny";
@@ -77,7 +80,7 @@ public class ExportTest {
 
     @Before
     public void setUp() {
-        uiDevice = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation());
+        uiDevice = UiDevice.getInstance(getInstrumentation());
 
         Intents.init();
         intending(hasAction(Intent.ACTION_CHOOSER)).respondWith(new ActivityResult(Activity.RESULT_OK, null));
@@ -127,7 +130,7 @@ public class ExportTest {
     }
 
     @Test
-    public void allowExternalStoragePermissionRequest_fireActionSendIntent() throws Exception {
+    public void z_allowExternalStoragePermissionRequest_fireActionSendIntent() throws Exception {
         openActionBarOverflowOrOptionsMenu(getTargetContext());
         onView(withText(getTargetContext().getString(R.string.export)))
                 .perform(click());
