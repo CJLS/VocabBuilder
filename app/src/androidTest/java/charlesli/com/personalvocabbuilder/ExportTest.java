@@ -2,7 +2,6 @@ package charlesli.com.personalvocabbuilder;
 
 import android.app.Activity;
 import android.content.Intent;
-import android.os.Build;
 import android.support.test.InstrumentationRegistry;
 import android.support.test.espresso.intent.Intents;
 import android.support.test.rule.ActivityTestRule;
@@ -12,6 +11,7 @@ import android.support.test.uiautomator.UiObject;
 import android.support.test.uiautomator.UiObjectNotFoundException;
 import android.support.test.uiautomator.UiSelector;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -20,7 +20,6 @@ import org.junit.runner.RunWith;
 import charlesli.com.personalvocabbuilder.controller.MainActivity;
 
 import static android.app.Instrumentation.ActivityResult;
-import static android.support.test.InstrumentationRegistry.getInstrumentation;
 import static android.support.test.InstrumentationRegistry.getTargetContext;
 import static android.support.test.espresso.Espresso.onView;
 import static android.support.test.espresso.Espresso.openActionBarOverflowOrOptionsMenu;
@@ -55,7 +54,6 @@ public class ExportTest {
     //TODO: Add TEST cases
     //T1: No apps can send intent
     //T2: External Storage is unavailable
-    //T3: Permission request is denied with never show again
     //T4: Check if all apps can send file intent properly with file
     //Make sure that test start with permission revoked
     UiDevice uiDevice;
@@ -81,11 +79,21 @@ public class ExportTest {
     public void setUp() {
         uiDevice = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation());
 
+        Intents.init();
+        intending(hasAction(Intent.ACTION_CHOOSER)).respondWith(new ActivityResult(Activity.RESULT_OK, null));
+
+        /*
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             getInstrumentation().getUiAutomation().executeShellCommand(
                     "pm revoke " + getTargetContext().getPackageName()
                             + " android.permission.WRITE_EXTERNAL_STORAGE");
         }
+        */
+    }
+
+    @After
+    public void tearDown() {
+        Intents.release();
     }
 
 
@@ -120,8 +128,6 @@ public class ExportTest {
 
     @Test
     public void allowExternalStoragePermissionRequest_fireActionSendIntent() throws Exception {
-        Intents.init();
-        intending(hasAction(Intent.ACTION_CHOOSER)).respondWith(new ActivityResult(Activity.RESULT_OK, null));
         openActionBarOverflowOrOptionsMenu(getTargetContext());
         onView(withText(getTargetContext().getString(R.string.export)))
                 .perform(click());
@@ -130,7 +136,6 @@ public class ExportTest {
         allowCurrentPermission(uiDevice);
 
         intended(hasAction(Intent.ACTION_CHOOSER));
-        Intents.release();
     }
 
 }
