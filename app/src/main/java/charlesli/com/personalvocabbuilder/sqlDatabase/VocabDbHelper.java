@@ -299,6 +299,44 @@ public class VocabDbHelper extends SQLiteOpenHelper {
         db.insert(VocabDbContract.TABLE_NAME_CATEGORY, null, values);
     }
 
+    public void deleteCategory(String selectedCategory) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        String selection = VocabDbContract.COLUMN_NAME_CATEGORY + " LIKE ?";
+        String[] selectionArgs = {selectedCategory};
+        db.delete(VocabDbContract.TABLE_NAME_CATEGORY, selection, selectionArgs);
+        db.delete(VocabDbContract.TABLE_NAME_MY_VOCAB, selection, selectionArgs);
+    }
+
+    public void updateCategory(String selectedCategory, String categoryName, String categoryDesc) {
+        SQLiteDatabase db = this.getReadableDatabase();
+
+        ContentValues vocabTableValues = new ContentValues();
+        vocabTableValues.put(VocabDbContract.COLUMN_NAME_CATEGORY, categoryName);
+
+        ContentValues categoryTableValues = new ContentValues();
+        categoryTableValues.put(VocabDbContract.COLUMN_NAME_CATEGORY, categoryName);
+        categoryTableValues.put(VocabDbContract.COLUMN_NAME_DESCRIPTION, categoryDesc);
+
+        String selectionVocab = VocabDbContract.COLUMN_NAME_CATEGORY + " = ?";
+        String[] selectionArgsVocab = {selectedCategory};
+
+        // Update Category Table
+        db.update(
+                VocabDbContract.TABLE_NAME_CATEGORY,
+                categoryTableValues,
+                selectionVocab,
+                selectionArgsVocab
+        );
+
+        // Update Vocab Table for categories column to transfer the data
+        db.update(
+                VocabDbContract.TABLE_NAME_MY_VOCAB,
+                vocabTableValues,
+                selectionVocab,
+                selectionArgsVocab
+        );
+    }
+
     public Cursor getCategoryCursor() {
         SQLiteDatabase db = this.getReadableDatabase();
 

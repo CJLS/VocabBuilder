@@ -1,17 +1,14 @@
 package charlesli.com.personalvocabbuilder.ui;
 
-import android.content.ContentValues;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
 import android.text.InputType;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import charlesli.com.personalvocabbuilder.sqlDatabase.CategoryCursorAdapter;
-import charlesli.com.personalvocabbuilder.sqlDatabase.VocabDbContract;
 import charlesli.com.personalvocabbuilder.sqlDatabase.VocabDbHelper;
 
 /**
@@ -50,34 +47,7 @@ public class EditCategoryDialog extends CustomDialog {
                     Toast.makeText(getContext(), categoryName + " already exists", Toast.LENGTH_SHORT).show();
                 }
                 else {
-                    SQLiteDatabase db = dbHelper.getReadableDatabase();
-
-                    ContentValues vocabTableValues = new ContentValues();
-                    vocabTableValues.put(VocabDbContract.COLUMN_NAME_CATEGORY, categoryName);
-
-                    ContentValues categoryTableValues = new ContentValues();
-                    categoryTableValues.put(VocabDbContract.COLUMN_NAME_CATEGORY, categoryName);
-                    categoryTableValues.put(VocabDbContract.COLUMN_NAME_DESCRIPTION, categoryDesc);
-
-                    String selectionVocab = VocabDbContract.COLUMN_NAME_CATEGORY + " = ?";
-                    String[] selectionArgsVocab = {selectedCategory};
-
-                    // Update Category Table
-                    db.update(
-                            VocabDbContract.TABLE_NAME_CATEGORY,
-                            categoryTableValues,
-                            selectionVocab,
-                            selectionArgsVocab
-                    );
-
-                    // Update Vocab Table for categories column to transfer the data
-                    db.update(
-                            VocabDbContract.TABLE_NAME_MY_VOCAB,
-                            vocabTableValues,
-                            selectionVocab,
-                            selectionArgsVocab
-                    );
-
+                    dbHelper.updateCategory(selectedCategory, categoryName, categoryDesc);
                     cursorAdapter.changeCursor(dbHelper.getCategoryCursor());
                     dialog.dismiss();
                 }
