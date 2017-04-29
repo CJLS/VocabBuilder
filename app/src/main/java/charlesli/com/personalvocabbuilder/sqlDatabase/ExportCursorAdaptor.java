@@ -21,12 +21,16 @@ import charlesli.com.personalvocabbuilder.R;
 
 public class ExportCursorAdaptor extends CursorAdapter {
 
-    private List<Integer> selectedItemsPositions;
+    private static List<Integer> selectedItemsPositions;
 
     public ExportCursorAdaptor(Context context, Cursor c, int flags) {
         super(context, c, flags);
 
         selectedItemsPositions = new ArrayList<>();
+    }
+
+    public static List<Integer> getSelectedCategoryPositionList() {
+        return selectedItemsPositions;
     }
 
     @Override
@@ -61,9 +65,5 @@ public class ExportCursorAdaptor extends CursorAdapter {
             box.setChecked(true);
         else
             box.setChecked(false);
-    }
-
-    public List<Integer> getSelectedCategoryPositionList() {
-        return selectedItemsPositions;
     }
 }

@@ -35,8 +35,8 @@ public class ExportDialog extends CustomDialog {
         Cursor categoryCursor = dbHelper.getCategoryCursor();
 
         ListView exportListView = (ListView) promptsView.findViewById(R.id.exportListView);
-        ExportCursorAdaptor mCursorAdapter = new ExportCursorAdaptor(context, categoryCursor, 0);
-        exportListView.setAdapter(mCursorAdapter);
+        final ExportCursorAdaptor exportCursorAdaptor = new ExportCursorAdaptor(context, categoryCursor, 0);
+        exportListView.setAdapter(exportCursorAdaptor);
 
         setView(promptsView);
 
