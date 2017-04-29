@@ -5,7 +5,6 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Environment;
-import android.util.Log;
 import android.widget.Toast;
 
 import java.io.BufferedWriter;
@@ -65,9 +64,7 @@ public class ExportUtils {
             bufferedWriter.write("Vocab,Definition,Level,Category Name,Category Description");
 
             bufferedWriter.newLine();
-            Log.d("Test list: ", String.valueOf(categoryPositionList.size()));
             Cursor cursor = dbHelper.getExportCursor(categoryPositionList);
-            Log.d("Test:", String.valueOf(cursor.getCount()));
             for (int i = 0; i < cursor.getCount(); i++) {
                 cursor.moveToPosition(i);
                 String vocab = cursor.getString(cursor.getColumnIndexOrThrow(VocabDbContract.COLUMN_NAME_VOCAB));

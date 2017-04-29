@@ -78,7 +78,6 @@ public class EditCategoryDialog extends CustomDialog {
                             selectionArgsVocab
                     );
 
-                    // Update Cursor
                     cursorAdapter.changeCursor(dbHelper.getCategoryCursor());
                     dialog.dismiss();
                 }

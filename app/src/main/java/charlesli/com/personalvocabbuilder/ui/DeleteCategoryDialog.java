@@ -28,16 +28,12 @@ public class DeleteCategoryDialog extends CustomDialog {
         setButton(BUTTON_POSITIVE, "Ok", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                // Delete Category from Database
                 SQLiteDatabase db = dbHelper.getWritableDatabase();
                 String selection = VocabDbContract.COLUMN_NAME_CATEGORY + " LIKE ?";
-                // Specify arguments in placeholder order
                 String[] selectionArgs = {selectedCategory};
-                // Issue SQL statement
                 db.delete(VocabDbContract.TABLE_NAME_CATEGORY, selection, selectionArgs);
                 db.delete(VocabDbContract.TABLE_NAME_MY_VOCAB, selection, selectionArgs);
 
-                // Update Cursor
                 cursorAdapter.changeCursor(dbHelper.getCategoryCursor());
             }
         });

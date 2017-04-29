@@ -7,6 +7,7 @@ import android.database.Cursor;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import charlesli.com.personalvocabbuilder.R;
 import charlesli.com.personalvocabbuilder.controller.ExportUtils;
@@ -27,7 +28,7 @@ public class ExportDialog extends CustomDialog {
             setOwnerActivity((Activity) context);
         }
 
-        setTitle("Export");
+        setTitle("Select categories to export: ");
         LayoutInflater li = LayoutInflater.from(context);
         View promptsView = li.inflate(R.layout.alert_dialog_export, null);
 
@@ -43,9 +44,13 @@ public class ExportDialog extends CustomDialog {
         setButton(BUTTON_POSITIVE, "OK", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                if (PermissionsUtils.getExternalStoragePermission(context)) {
+                if (ExportCursorAdaptor.getSelectedCategoryPositionList().size() == 0) {
+                    Toast.makeText(context, "No categories were selected for export.", Toast.LENGTH_LONG).show();
+                }
+                else if (PermissionsUtils.getExternalStoragePermission(context)) {
                     ExportUtils.exportCategory(context);
                 }
+
             }
         });
         setButton(BUTTON_NEUTRAL, "Cancel", new DialogInterface.OnClickListener() {
