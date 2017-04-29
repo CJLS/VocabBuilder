@@ -135,7 +135,7 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
     }
 
     private void addCategory() {
-        AddCategoryDialog dialog = new AddCategoryDialog(this);
+        AddCategoryDialog dialog = new AddCategoryDialog(this, mCategoryAdapter);
         dialog.show();
         dialog.changeButtonsToAppIconColor();
     }
@@ -154,7 +154,7 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
             return;
         }
 
-        EditCategoryDialog dialog = new EditCategoryDialog(this, selectedCategory, selectedDesc);
+        EditCategoryDialog dialog = new EditCategoryDialog(this, mCategoryAdapter, selectedCategory, selectedDesc);
         dialog.show();
         dialog.changeButtonsToAppIconColor();
     }

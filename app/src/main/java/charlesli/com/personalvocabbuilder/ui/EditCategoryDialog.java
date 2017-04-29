@@ -2,7 +2,6 @@ package charlesli.com.personalvocabbuilder.ui;
 
 import android.content.Context;
 import android.content.DialogInterface;
-import android.database.Cursor;
 import android.text.InputType;
 import android.widget.EditText;
 import android.widget.LinearLayout;
@@ -17,8 +16,8 @@ import charlesli.com.personalvocabbuilder.sqlDatabase.VocabDbHelper;
 
 public class EditCategoryDialog extends CustomDialog {
 
-    public EditCategoryDialog(Context context, final String selectedCategory,
-                              String selectedDesc) {
+    public EditCategoryDialog(Context context, final CategoryCursorAdapter cursorAdapter,
+                              final String selectedCategory, String selectedDesc) {
         super(context);
 
         final EditText categoryNameInput = new EditText(getContext());
@@ -27,8 +26,6 @@ public class EditCategoryDialog extends CustomDialog {
         setView(setUpCustomDialogLayout(categoryNameInput, categoryDescInput,
                 selectedCategory, selectedDesc));
         final VocabDbHelper dbHelper = VocabDbHelper.getDBHelper(context);
-        Cursor cursor = dbHelper.getCategoryCursor();
-        final CategoryCursorAdapter cursorAdapter = new CategoryCursorAdapter(context, cursor, 0);
 
         setButton(BUTTON_NEUTRAL, "Cancel", new DialogInterface.OnClickListener() {
             @Override
