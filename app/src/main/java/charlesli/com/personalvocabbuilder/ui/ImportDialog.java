@@ -1,13 +1,14 @@
 package charlesli.com.personalvocabbuilder.ui;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.DialogInterface;
-import android.database.Cursor;
+import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.Button;
 
 import charlesli.com.personalvocabbuilder.R;
-import charlesli.com.personalvocabbuilder.sqlDatabase.VocabDbHelper;
 
 /**
  * Created by charles on 2017-04-23.
@@ -15,19 +16,26 @@ import charlesli.com.personalvocabbuilder.sqlDatabase.VocabDbHelper;
 
 public class ImportDialog extends CustomDialog {
 
+    public static int GET_FILE_RESULT_CODE = 1;
+
     public ImportDialog(final Context context) {
         super(context);
 
         setTitle("Import");
         LayoutInflater li = LayoutInflater.from(context);
-        // TODO: Replace placeholder
         View promptsView = li.inflate(R.layout.alert_dialog_import, null);
 
-        VocabDbHelper dbHelper = VocabDbHelper.getDBHelper(context);
-        Cursor categoryCursor = dbHelper.getCategoryCursor();
-
-
         setView(promptsView);
+
+        Button selectFile = (Button) promptsView.findViewById(R.id.selectFile);
+        selectFile.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
+                intent.setType("text/*");
+                ((Activity) context).startActivityForResult(intent, GET_FILE_RESULT_CODE);
+            }
+        });
 
         setButton(BUTTON_POSITIVE, "OK", new DialogInterface.OnClickListener() {
             @Override

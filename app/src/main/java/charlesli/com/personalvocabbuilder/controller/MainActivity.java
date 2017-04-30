@@ -3,18 +3,24 @@ package charlesli.com.personalvocabbuilder.controller;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.Toast;
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
 
 import charlesli.com.personalvocabbuilder.R;
 import charlesli.com.personalvocabbuilder.sqlDatabase.CategoryCursorAdapter;
@@ -172,4 +178,27 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
             }
         }
     }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == ImportDialog.GET_FILE_RESULT_CODE && resultCode == RESULT_OK) {
+            Uri uri = data.getData();
+            readExportFile(uri);
+        }
+    }
+
+    public void readExportFile(Uri uri) {
+        BufferedReader br;
+        try {
+            br = new BufferedReader(new InputStreamReader(getContentResolver().openInputStream(uri)));
+            String line;
+            while ((line = br.readLine()) != null) {
+                Log.d("Test4:", line);
+            }
+            br.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
 }
