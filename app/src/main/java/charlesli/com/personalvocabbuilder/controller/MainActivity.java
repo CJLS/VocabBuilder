@@ -19,7 +19,6 @@ import android.widget.ListView;
 import android.widget.Toast;
 
 import java.io.BufferedReader;
-import java.io.IOException;
 import java.io.InputStreamReader;
 
 import charlesli.com.personalvocabbuilder.R;
@@ -188,15 +187,82 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
     }
 
     public void readExportFile(Uri uri) {
+        /*TODO:
+            1. Check different language export file can be imported successfully
+            2. Make sure export with large number of rows doesn't clog main thread
+            3. Present decisions on which categories to import to
+                - a. original categories (for use in second device)
+                - b. all in one new category
+                - c. each category in export file is specified a new category location
+        */
         BufferedReader br;
         try {
             br = new BufferedReader(new InputStreamReader(getContentResolver().openInputStream(uri)));
             String line;
+            int count = 0;
+            // Skip first header line
+            br.readLine();
             while ((line = br.readLine()) != null) {
                 Log.d("Test4:", line);
+                //"Vocab,Definition,Level,Category Name,Category Description"
+                // 1. Split line by , that's not preceded by /
+                String[] row = line.split("(?<!\\\\),");
+                if (row.length < 4) {
+                    continue;
+                }
+                // 2. Get each item from array
+                String vocab = row[0];
+                String definition = row[1];
+                String progress = row[2];
+                String categoryName = row[3];
+                String categoryDescription = "";
+                if (row.length > 4) {
+                    categoryDescription = row[4];
+                }
+
+                Log.d("Test: ", "Vocab: " + vocab + ", Definition: " + definition
+                        + ", Progress: " + progress + ", Category Name: " + categoryName
+                        + ", Category Description: " + categoryDescription);
+                // 3. Convert each item from /, to ,
+                vocab = vocab.replace("\\,", ",");
+                definition = definition.replace("\\,", ",");
+                int level;
+                switch (progress) {
+                    case "Difficult":
+                        level = ReviewSession.DIFFICULT;
+                        break;
+                    case "Familiar":
+                        level = ReviewSession.FAMILIAR;
+                        break;
+                    case "Easy":
+                        level = ReviewSession.EASY;
+                        break;
+                    case "Perfect":
+                        level = ReviewSession.PERFECT;
+                        break;
+                    default:
+                        level = ReviewSession.DIFFICULT;
+                        break;
+                }
+                categoryName = categoryName.replace("\\,", ",");
+                categoryDescription = categoryDescription.replace("\\,", ",");
+
+                // 4. Insert into category and mvvocab db
+                VocabDbHelper dbHelper = VocabDbHelper.getDBHelper(this);
+                if (!dbHelper.checkIfCategoryExists(categoryName)) {
+                    dbHelper.insertCategory("TEMPORARY", categoryDescription);
+                }
+                dbHelper.insertVocab("TEMPORARY", vocab, definition, level);
+
+                count++;
+                /*
+                if (count > 10) {
+                    //break;
+                }
+                */
             }
             br.close();
-        } catch (IOException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
