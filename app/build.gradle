@@ -27,24 +27,24 @@ repositories {
 
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
+
+    // Android JUnit Runner
+    // JUnit4 Rules
+    // Espresso Core
+    // Espresso Intent
+    // UIAutomator
     compile 'com.google.apis:google-api-services-translate:v2-rev46-1.22.0'
     compile 'com.android.support:appcompat-v7:25.2.0'
     compile 'com.android.support:customtabs:25.2.0'
     compile 'com.android.support:design:25.2.0'
     compile 'com.github.PhilJay:MPAndroidChart:v3.0.1'
     compile 'me.zhanghai.android.materialprogressbar:library:1.1.7'
-    compile 'com.android.support.constraint:constraint-layout:1.0.0'
-
+    compile 'com.google.code.findbugs:jsr305:2.0.1'
     androidTestCompile 'com.android.support:support-annotations:25.2.0'
-    // Android JUnit Runner
     androidTestCompile 'com.android.support.test:runner:0.5'
-    // JUnit4 Rules
     androidTestCompile 'com.android.support.test:rules:0.5'
-    // Espresso Core
     androidTestCompile 'com.android.support.test.espresso:espresso-core:2.2.2'
-    compile('com.google.code.findbugs:jsr305:2.0.1')
-    // Espresso Intent
     androidTestCompile 'com.android.support.test.espresso:espresso-intents:2.2.2'
-    // UIAutomator
     androidTestCompile 'com.android.support.test.uiautomator:uiautomator-v18:2.1.2'
+    compile 'com.android.support.constraint:constraint-layout:1.0.2'
 }

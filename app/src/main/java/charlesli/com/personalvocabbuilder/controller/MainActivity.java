@@ -116,7 +116,9 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
             selectCategoriesToExport();
         }
         else if (id == R.id.import_button) {
-            selectExportFileToImport();
+            //selectExportFileToImport();
+            Intent intent = new Intent(this, ImportActivity.class);
+            startActivity(intent);
         }
         return super.onOptionsItemSelected(item);
     }
@@ -188,12 +190,13 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
 
     public void readExportFile(Uri uri) {
         /*TODO:
-            1. Check different language export file can be imported successfully
-            2. Make sure export with large number of rows doesn't clog main thread
-            3. Present decisions on which categories to import to
+            1. Make sure export with large number of rows doesn't clog main thread
+                - make it an async task operation
+            2. Present decisions on which categories to import to
                 - a. original categories (for use in second device)
                 - b. all in one new category
                 - c. each category in export file is specified a new category location
+            3. Test when no permission initially
         */
         BufferedReader br;
         try {
