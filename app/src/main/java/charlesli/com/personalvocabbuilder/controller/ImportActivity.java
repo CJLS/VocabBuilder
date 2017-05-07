@@ -98,6 +98,9 @@ public class ImportActivity extends AppCompatActivity {
             uri = data.getData();
             File file= new File(uri.getPath());
             exportFileName.setText(file.getName());
+            if (!file.getName().matches(".*MyVocabExportFile.*")) {
+                Toast.makeText(getApplicationContext(), "Please make sure the correct export file is selected", Toast.LENGTH_LONG).show();
+            }
         }
     }
 
