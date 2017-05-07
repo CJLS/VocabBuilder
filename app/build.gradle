@@ -28,11 +28,6 @@ repositories {
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
 
-    // Android JUnit Runner
-    // JUnit4 Rules
-    // Espresso Core
-    // Espresso Intent
-    // UIAutomator
     compile 'com.google.apis:google-api-services-translate:v2-rev46-1.22.0'
     compile 'com.android.support:appcompat-v7:25.2.0'
     compile 'com.android.support:customtabs:25.2.0'
