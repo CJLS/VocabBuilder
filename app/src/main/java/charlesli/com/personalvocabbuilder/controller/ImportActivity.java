@@ -99,12 +99,6 @@ public class ImportActivity extends AppCompatActivity {
     }
 
     public void readExportFile(Uri uri) {
-        /*TODO:
-            1. Make sure export with large number of rows doesn't clog main thread
-                - make it an async task operation
-            2. Test when no permission initially
-            3. Check export file name patter and give appropriate warning
-        */
         BufferedReader br;
         try {
             br = new BufferedReader(new InputStreamReader(getContentResolver().openInputStream(uri)));
@@ -162,12 +156,15 @@ public class ImportActivity extends AppCompatActivity {
                     categoryDescription = "";
                 }
 
-                // 4. Insert into category and mvvocab db
+                // 4. Insert into category and MyVocab db
                 VocabDbHelper dbHelper = VocabDbHelper.getDBHelper(this);
                 if (!dbHelper.checkIfCategoryExists(categoryName)) {
                     dbHelper.insertCategory(categoryName, categoryDescription);
                 }
-                dbHelper.insertVocab(categoryName, vocab, definition, level);
+
+                if (!dbHelper.checkIfVocabExistsInCategory(vocab, definition, categoryName)) {
+                    dbHelper.insertVocab(categoryName, vocab, definition, level);
+                }
 
                 count++;
 
