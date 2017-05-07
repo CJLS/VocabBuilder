@@ -7,6 +7,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.RadioButton;
 import android.widget.TextView;
@@ -28,6 +29,7 @@ public class ImportActivity extends AppCompatActivity {
     private int importOption = IMPORT_OPTION_ORIGINAL_CATEGORIES;
     private TextView exportFileName;
     private EditText importCategoryName;
+    private CheckBox resetVocabProgress;
     private Uri uri;
 
     @Override
@@ -37,6 +39,7 @@ public class ImportActivity extends AppCompatActivity {
 
         exportFileName = (TextView) findViewById(R.id.exportFileName);
         importCategoryName = (EditText) findViewById(R.id.importCategory);
+        resetVocabProgress = (CheckBox) findViewById(R.id.resetVocabProgress);
         Button selectFileButton = (Button) findViewById(R.id.selectFileButton);
         Button importButton = (Button) findViewById(R.id.importConfirmButton);
         final RadioButton originalCategories = (RadioButton) findViewById(R.id.originalCategoriesRB);
@@ -148,12 +151,17 @@ public class ImportActivity extends AppCompatActivity {
                         level = ReviewSession.DIFFICULT;
                         break;
                 }
+
+                if (resetVocabProgress.isChecked()) {
+                    level = ReviewSession.DIFFICULT;
+                }
+
                 categoryName = categoryName.replace("\\,", ",");
                 categoryDescription = categoryDescription.replace("\\,", ",");
 
                 if (importOption == IMPORT_OPTION_SPECIFIED_CATEGORY) {
                     categoryName = importCategoryName.getText().toString();
-                    categoryDescription = "";
+                    categoryDescription = "Vocab from the export file";
                 }
 
                 // 4. Insert into category and MyVocab db
