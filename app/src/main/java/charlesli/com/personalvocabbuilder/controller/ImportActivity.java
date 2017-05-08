@@ -4,11 +4,11 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
+import android.widget.ProgressBar;
 import android.widget.RadioButton;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -23,13 +23,14 @@ import charlesli.com.personalvocabbuilder.ui.ImportDialog;
 
 public class ImportActivity extends AppCompatActivity {
 
+    public static int IMPORT_OPTION_ORIGINAL_CATEGORIES = 0;
+    public static int IMPORT_OPTION_SPECIFIED_CATEGORY = 1;
     private int GET_FILE_RESULT_CODE = 1;
-    private int IMPORT_OPTION_ORIGINAL_CATEGORIES = 0;
-    private int IMPORT_OPTION_SPECIFIED_CATEGORY = 1;
     private int importOption = IMPORT_OPTION_ORIGINAL_CATEGORIES;
     private TextView exportFileName;
     private EditText importCategoryName;
     private CheckBox resetVocabProgress;
+    private ProgressBar importProgressBar;
     private Uri uri;
 
     @Override
@@ -40,8 +41,9 @@ public class ImportActivity extends AppCompatActivity {
         exportFileName = (TextView) findViewById(R.id.exportFileName);
         importCategoryName = (EditText) findViewById(R.id.importCategory);
         resetVocabProgress = (CheckBox) findViewById(R.id.resetVocabProgress);
+        importProgressBar = (ProgressBar) findViewById(R.id.importProgressBar);
         Button selectFileButton = (Button) findViewById(R.id.selectFileButton);
-        Button importButton = (Button) findViewById(R.id.importConfirmButton);
+        final Button importButton = (Button) findViewById(R.id.importConfirmButton);
         final RadioButton originalCategories = (RadioButton) findViewById(R.id.originalCategoriesRB);
         final RadioButton specifiedCategory = (RadioButton) findViewById(R.id.specifiedCategoryRB);
         selectFileButton.setOnClickListener(new View.OnClickListener() {
@@ -59,8 +61,14 @@ public class ImportActivity extends AppCompatActivity {
                     Toast.makeText(getApplicationContext(), "No export file has been selected", Toast.LENGTH_SHORT).show();
                 }
                 else {
-                    readExportFile(uri);
-                    finish();
+                    //readExportFile(uri);
+                    ExportFileReader exportFileReader =
+                            new ExportFileReader(getApplicationContext(),
+                                    resetVocabProgress.isChecked(), importOption,
+                                    importCategoryName.getText().toString(),
+                                    importProgressBar, uri);
+                    exportFileReader.execute();
+                    //finish();
                 }
             }
         });
@@ -109,11 +117,10 @@ public class ImportActivity extends AppCompatActivity {
         try {
             br = new BufferedReader(new InputStreamReader(getContentResolver().openInputStream(uri)));
             String line;
-            int count = 0;
             // Skip first header line
             br.readLine();
             while ((line = br.readLine()) != null) {
-                Log.d("Test5:", line);
+                //Log.d("Test5:", line);
                 //"Vocab,Definition,Level,Category Name,Category Description"
                 // 1. Split line by , that's not preceded by /
                 String[] row = line.split("(?<!\\\\),");
@@ -130,9 +137,11 @@ public class ImportActivity extends AppCompatActivity {
                     categoryDescription = row[4];
                 }
 
+                /*
                 Log.d("Test: ", "Vocab: " + vocab + ", Definition: " + definition
                         + ", Progress: " + progress + ", Category Name: " + categoryName
                         + ", Category Description: " + categoryDescription);
+                */
                 // 3. Convert each item from /, to ,
                 vocab = vocab.replace("\\,", ",");
                 definition = definition.replace("\\,", ",");
@@ -175,13 +184,6 @@ public class ImportActivity extends AppCompatActivity {
 
                 if (!dbHelper.checkIfVocabExistsInCategory(vocab, definition, categoryName)) {
                     dbHelper.insertVocab(categoryName, vocab, definition, level);
-                }
-
-                count++;
-
-                // TODO: REMOVE COUNT
-                if (count > 10) {
-                    break;
                 }
 
             }
