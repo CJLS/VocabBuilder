@@ -13,13 +13,9 @@ import android.widget.RadioButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.InputStreamReader;
 
 import charlesli.com.personalvocabbuilder.R;
-import charlesli.com.personalvocabbuilder.sqlDatabase.VocabDbHelper;
-import charlesli.com.personalvocabbuilder.ui.ImportDialog;
 
 public class ImportActivity extends AppCompatActivity {
 
@@ -61,14 +57,12 @@ public class ImportActivity extends AppCompatActivity {
                     Toast.makeText(getApplicationContext(), "No export file has been selected", Toast.LENGTH_SHORT).show();
                 }
                 else {
-                    //readExportFile(uri);
                     ExportFileReader exportFileReader =
-                            new ExportFileReader(getApplicationContext(),
+                            new ExportFileReader(ImportActivity.this,
                                     resetVocabProgress.isChecked(), importOption,
                                     importCategoryName.getText().toString(),
                                     importProgressBar, uri);
                     exportFileReader.execute();
-                    //finish();
                 }
             }
         });
@@ -102,7 +96,7 @@ public class ImportActivity extends AppCompatActivity {
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (requestCode == ImportDialog.GET_FILE_RESULT_CODE && resultCode == RESULT_OK) {
+        if (requestCode == GET_FILE_RESULT_CODE && resultCode == RESULT_OK) {
             uri = data.getData();
             File file= new File(uri.getPath());
             exportFileName.setText(file.getName());
@@ -112,84 +106,4 @@ public class ImportActivity extends AppCompatActivity {
         }
     }
 
-    public void readExportFile(Uri uri) {
-        BufferedReader br;
-        try {
-            br = new BufferedReader(new InputStreamReader(getContentResolver().openInputStream(uri)));
-            String line;
-            // Skip first header line
-            br.readLine();
-            while ((line = br.readLine()) != null) {
-                //Log.d("Test5:", line);
-                //"Vocab,Definition,Level,Category Name,Category Description"
-                // 1. Split line by , that's not preceded by /
-                String[] row = line.split("(?<!\\\\),");
-                if (row.length < 4) {
-                    continue;
-                }
-                // 2. Get each item from array
-                String vocab = row[0];
-                String definition = row[1];
-                String progress = row[2];
-                String categoryName = row[3];
-                String categoryDescription = "";
-                if (row.length > 4) {
-                    categoryDescription = row[4];
-                }
-
-                /*
-                Log.d("Test: ", "Vocab: " + vocab + ", Definition: " + definition
-                        + ", Progress: " + progress + ", Category Name: " + categoryName
-                        + ", Category Description: " + categoryDescription);
-                */
-                // 3. Convert each item from /, to ,
-                vocab = vocab.replace("\\,", ",");
-                definition = definition.replace("\\,", ",");
-                int level;
-                switch (progress) {
-                    case "Difficult":
-                        level = ReviewSession.DIFFICULT;
-                        break;
-                    case "Familiar":
-                        level = ReviewSession.FAMILIAR;
-                        break;
-                    case "Easy":
-                        level = ReviewSession.EASY;
-                        break;
-                    case "Perfect":
-                        level = ReviewSession.PERFECT;
-                        break;
-                    default:
-                        level = ReviewSession.DIFFICULT;
-                        break;
-                }
-
-                if (resetVocabProgress.isChecked()) {
-                    level = ReviewSession.DIFFICULT;
-                }
-
-                categoryName = categoryName.replace("\\,", ",");
-                categoryDescription = categoryDescription.replace("\\,", ",");
-
-                if (importOption == IMPORT_OPTION_SPECIFIED_CATEGORY) {
-                    categoryName = importCategoryName.getText().toString();
-                    categoryDescription = "Vocab from the export file";
-                }
-
-                // 4. Insert into category and MyVocab db
-                VocabDbHelper dbHelper = VocabDbHelper.getDBHelper(this);
-                if (!dbHelper.checkIfCategoryExists(categoryName)) {
-                    dbHelper.insertCategory(categoryName, categoryDescription);
-                }
-
-                if (!dbHelper.checkIfVocabExistsInCategory(vocab, definition, categoryName)) {
-                    dbHelper.insertVocab(categoryName, vocab, definition, level);
-                }
-
-            }
-            br.close();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
 }

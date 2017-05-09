@@ -3,23 +3,18 @@ package charlesli.com.personalvocabbuilder.controller;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.Toast;
-
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
 
 import charlesli.com.personalvocabbuilder.R;
 import charlesli.com.personalvocabbuilder.sqlDatabase.CategoryCursorAdapter;
@@ -28,7 +23,6 @@ import charlesli.com.personalvocabbuilder.sqlDatabase.VocabDbHelper;
 import charlesli.com.personalvocabbuilder.ui.AddCategoryDialog;
 import charlesli.com.personalvocabbuilder.ui.EditCategoryDialog;
 import charlesli.com.personalvocabbuilder.ui.ExportDialog;
-import charlesli.com.personalvocabbuilder.ui.ImportDialog;
 import charlesli.com.personalvocabbuilder.ui.ModifyMyWordBankCategoryDialog;
 import charlesli.com.personalvocabbuilder.ui.ReviewDialog;
 import charlesli.com.personalvocabbuilder.ui.TranslationSettingsDialog;
@@ -123,12 +117,6 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
         return super.onOptionsItemSelected(item);
     }
 
-    private void selectExportFileToImport() {
-        ImportDialog dialog = new ImportDialog(this);
-        dialog.show();
-        dialog.changeButtonsToAppIconColor();
-    }
-
     private void selectCategoriesToExport() {
         ExportDialog dialog = new ExportDialog(this);
         dialog.show();
@@ -177,96 +165,6 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
                     Toast.makeText(this, R.string.externalStoragePermissionDenied, Toast.LENGTH_LONG).show();
                 }
             }
-        }
-    }
-
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (requestCode == ImportDialog.GET_FILE_RESULT_CODE && resultCode == RESULT_OK) {
-            Uri uri = data.getData();
-            readExportFile(uri);
-        }
-    }
-
-    public void readExportFile(Uri uri) {
-        /*TODO:
-            1. Make sure export with large number of rows doesn't clog main thread
-                - make it an async task operation
-            2. Present decisions on which categories to import to
-                - a. original categories (for use in second device)
-                - b. all in one new category
-                - c. each category in export file is specified a new category location
-            3. Test when no permission initially
-        */
-        BufferedReader br;
-        try {
-            br = new BufferedReader(new InputStreamReader(getContentResolver().openInputStream(uri)));
-            String line;
-            int count = 0;
-            // Skip first header line
-            br.readLine();
-            while ((line = br.readLine()) != null) {
-                Log.d("Test4:", line);
-                //"Vocab,Definition,Level,Category Name,Category Description"
-                // 1. Split line by , that's not preceded by /
-                String[] row = line.split("(?<!\\\\),");
-                if (row.length < 4) {
-                    continue;
-                }
-                // 2. Get each item from array
-                String vocab = row[0];
-                String definition = row[1];
-                String progress = row[2];
-                String categoryName = row[3];
-                String categoryDescription = "";
-                if (row.length > 4) {
-                    categoryDescription = row[4];
-                }
-
-                Log.d("Test: ", "Vocab: " + vocab + ", Definition: " + definition
-                        + ", Progress: " + progress + ", Category Name: " + categoryName
-                        + ", Category Description: " + categoryDescription);
-                // 3. Convert each item from /, to ,
-                vocab = vocab.replace("\\,", ",");
-                definition = definition.replace("\\,", ",");
-                int level;
-                switch (progress) {
-                    case "Difficult":
-                        level = ReviewSession.DIFFICULT;
-                        break;
-                    case "Familiar":
-                        level = ReviewSession.FAMILIAR;
-                        break;
-                    case "Easy":
-                        level = ReviewSession.EASY;
-                        break;
-                    case "Perfect":
-                        level = ReviewSession.PERFECT;
-                        break;
-                    default:
-                        level = ReviewSession.DIFFICULT;
-                        break;
-                }
-                categoryName = categoryName.replace("\\,", ",");
-                categoryDescription = categoryDescription.replace("\\,", ",");
-
-                // 4. Insert into category and mvvocab db
-                VocabDbHelper dbHelper = VocabDbHelper.getDBHelper(this);
-                if (!dbHelper.checkIfCategoryExists(categoryName)) {
-                    dbHelper.insertCategory("TEMPORARY", categoryDescription);
-                }
-                dbHelper.insertVocab("TEMPORARY", vocab, definition, level);
-
-                count++;
-                /*
-                if (count > 10) {
-                    //break;
-                }
-                */
-            }
-            br.close();
-        } catch (Exception e) {
-            e.printStackTrace();
         }
     }
 
