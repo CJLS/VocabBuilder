@@ -110,7 +110,6 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
             selectCategoriesToExport();
         }
         else if (id == R.id.import_button) {
-            //selectExportFileToImport();
             Intent intent = new Intent(this, ImportActivity.class);
             startActivity(intent);
         }

@@ -22,10 +22,6 @@ public class PermissionsUtils {
             Toast.makeText(context, "External storage is unavailable. Please check your device's external storage.", Toast.LENGTH_LONG).show();
             return false;
         }
-        if (context == null) {
-            Toast.makeText(context, "Sorry, the export operation did not go through. Please try again later.", Toast.LENGTH_LONG).show();
-            return false;
-        }
         int permissionCheck = ContextCompat.checkSelfPermission(context,
                 Manifest.permission.WRITE_EXTERNAL_STORAGE);
         if (permissionCheck != PackageManager.PERMISSION_GRANTED) {

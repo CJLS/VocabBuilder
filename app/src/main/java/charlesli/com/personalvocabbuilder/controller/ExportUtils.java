@@ -26,7 +26,10 @@ public class ExportUtils {
 
     public static void exportCategory(Context context) {
         File exportFile = writeToExportFile(context, ExportCursorAdaptor.getSelectedCategoryPositionList());
-        if (!shareExportFile(context, exportFile)) {
+        if (exportFile == null) {
+            Toast.makeText(context, "Sorry, an error has occurred when writing to the export file. Please try again later.", Toast.LENGTH_LONG).show();
+        }
+        else if (!shareExportFile(context, exportFile)) {
             Toast.makeText(context, "Your export file is located in your external storage's downloads folder.", Toast.LENGTH_LONG).show();
         }
     }
@@ -107,7 +110,7 @@ public class ExportUtils {
             bufferedWriter.close();
         }
         catch (Exception e) {
-            Toast.makeText(context, "Sorry, an error has occurred when writing to the export file. Please try again later.", Toast.LENGTH_LONG).show();
+            file = null;
         }
         return file;
     }

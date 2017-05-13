@@ -50,7 +50,6 @@ public class ExportDialog extends CustomDialog {
                 else if (PermissionsUtils.getExternalStoragePermission(context)) {
                     ExportUtils.exportCategory(context);
                 }
-
             }
         });
         setButton(BUTTON_NEUTRAL, "Cancel", new DialogInterface.OnClickListener() {
