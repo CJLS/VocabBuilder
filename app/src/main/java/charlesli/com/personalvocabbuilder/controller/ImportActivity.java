@@ -1,8 +1,10 @@
 package charlesli.com.personalvocabbuilder.controller;
 
 import android.content.Intent;
+import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Button;
@@ -12,8 +14,6 @@ import android.widget.ProgressBar;
 import android.widget.RadioButton;
 import android.widget.TextView;
 import android.widget.Toast;
-
-import java.io.File;
 
 import charlesli.com.personalvocabbuilder.R;
 
@@ -98,11 +98,31 @@ public class ImportActivity extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == GET_FILE_RESULT_CODE && resultCode == RESULT_OK) {
             uri = data.getData();
+            String[] projection = {MediaStore.MediaColumns.DISPLAY_NAME};
+            Cursor returnCursor =
+                    getContentResolver().query(uri, projection, null, null, null);
+            String fileName = "";
+            if (returnCursor != null) {
+                try {
+                    if (returnCursor.moveToFirst()) {
+                        fileName = returnCursor.getString(0);
+                    }
+                } finally {
+                    returnCursor.close();
+                }
+            }
+
+            exportFileName.setText(fileName);
+            if (!fileName.matches(".*MyVocabExportFile.*")) {
+                Toast.makeText(getApplicationContext(), "Please make sure the correct export file is selected", Toast.LENGTH_LONG).show();
+            }
+            /*
             File file= new File(uri.getPath());
             exportFileName.setText(file.getName());
             if (!file.getName().matches(".*MyVocabExportFile.*")) {
                 Toast.makeText(getApplicationContext(), "Please make sure the correct export file is selected", Toast.LENGTH_LONG).show();
             }
+             */
         }
     }
 
