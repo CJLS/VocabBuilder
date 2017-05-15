@@ -10,6 +10,7 @@ import android.widget.Toast;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
+import java.io.IOException;
 import java.util.List;
 
 import charlesli.com.personalvocabbuilder.sqlDatabase.ExportCursorAdaptor;
@@ -57,13 +58,18 @@ public class ExportUtils {
 
         File path = Environment.getExternalStoragePublicDirectory(
                 Environment.DIRECTORY_DOWNLOADS);
-        path.mkdirs();
+        boolean fileCreated = path.mkdirs();
+        if (!fileCreated) {
+            return null;
+        }
         File file = new File(path, "MyVocabExportFile.csv");
+        BufferedWriter bufferedWriter = null;
+
 
         try {
             FileWriter fileWriter = new FileWriter(file);
 
-            BufferedWriter bufferedWriter = new BufferedWriter(fileWriter);
+            bufferedWriter = new BufferedWriter(fileWriter);
             bufferedWriter.write("Vocab,Definition,Level,Category Name,Category Description");
 
             bufferedWriter.newLine();
@@ -100,17 +106,20 @@ public class ExportUtils {
                 description = description.replace(",", "\\,");
                 String lineToWrite = vocab + "," + definition + "," + level + "," + category + "," + description;
 
-                /* For TSV option
-                String lineToWrite = vocab + "\t" + definition + "\t" + level + "\t" + category + "\t" + description;
-                */
-
                 bufferedWriter.write(lineToWrite);
                 bufferedWriter.newLine();
             }
-            bufferedWriter.close();
         }
         catch (Exception e) {
             file = null;
+        }
+        finally {
+            if (bufferedWriter != null) {
+                try {
+                    bufferedWriter.close();
+                } catch (IOException ignored) {
+                }
+            }
         }
         return file;
     }
