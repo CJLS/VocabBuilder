@@ -58,10 +58,7 @@ public class ExportUtils {
 
         File path = Environment.getExternalStoragePublicDirectory(
                 Environment.DIRECTORY_DOWNLOADS);
-        boolean fileCreated = path.mkdirs();
-        if (!fileCreated) {
-            return null;
-        }
+        path.mkdirs();
         File file = new File(path, "MyVocabExportFile.csv");
         BufferedWriter bufferedWriter = null;
 

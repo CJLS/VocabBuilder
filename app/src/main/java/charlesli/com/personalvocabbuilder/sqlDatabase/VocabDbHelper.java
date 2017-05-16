@@ -5,7 +5,6 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
-import android.text.TextUtils;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -15,7 +14,7 @@ import java.util.List;
  * Created by Li on 2015/4/13.
  */
 public class VocabDbHelper extends SQLiteOpenHelper {
-    // If the database schema is chanaged, the database version must be incremented.
+    // If the database schema is changed, the database version must be incremented.
     public static final int DATABASE_VERSION = 6;
     public static final String DATABASE_NAME = "VocabDatabase.db";
     private static final String DELETE_TABLE_MY_VOCAB =
@@ -402,8 +401,15 @@ public class VocabDbHelper extends SQLiteOpenHelper {
                     categoryCursor.getString(categoryCursor.getColumnIndexOrThrow(VocabDbContract.COLUMN_NAME_CATEGORY));
             selectedCategories.add(categoryName);
         }
-
-        String categoryArg = "('" + TextUtils.join("','", selectedCategories.toArray()) + "')";
+        int arrayLength = selectedCategories.size();
+        String categoryArg = "(";
+        for (int i = 0; i < arrayLength; i++) {
+            categoryArg += "?";
+            if (i < arrayLength - 1) {
+                categoryArg += ",";
+            }
+        }
+        categoryArg += ")";
         String selection = VocabDbContract.COLUMN_NAME_CATEGORY + " IN " + categoryArg;
 
         SQLiteDatabase db = this.getReadableDatabase();
@@ -420,7 +426,7 @@ public class VocabDbHelper extends SQLiteOpenHelper {
                 VocabDbContract.TABLE_NAME_MY_VOCAB, // The table to query
                 projection,                                 // The columns for the WHERE clause
                 selection,                                   // The rows to return for the WHERE clause
-                null,                                        // selectionArgs
+                selectedCategories.toArray(new String [0]),  // selectionArgs
                 null,                                        // groupBy
                 null,                                        // having
                 VocabDbContract.CATEGORY_ASC,                // orderBy

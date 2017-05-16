@@ -18,6 +18,7 @@ import android.widget.Toast;
 
 import charlesli.com.personalvocabbuilder.R;
 import charlesli.com.personalvocabbuilder.sqlDatabase.CategoryCursorAdapter;
+import charlesli.com.personalvocabbuilder.sqlDatabase.ExportCursorAdaptor;
 import charlesli.com.personalvocabbuilder.sqlDatabase.VocabDbContract;
 import charlesli.com.personalvocabbuilder.sqlDatabase.VocabDbHelper;
 import charlesli.com.personalvocabbuilder.ui.AddCategoryDialog;
@@ -159,7 +160,12 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
         switch (requestCode) {
             case MY_PERMISSIONS_REQUEST_WRITE_EXTERNAL_STORAGE: {
                 if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    ExportUtils.exportCategory(this);
+                    if (ExportCursorAdaptor.getSelectedCategoryPositionList().size() == 0) {
+                        Toast.makeText(this, "No categories were selected for export.", Toast.LENGTH_LONG).show();
+                    }
+                    else {
+                        ExportUtils.exportCategory(this);
+                    }
                 } else {
                     Toast.makeText(this, R.string.externalStoragePermissionDenied, Toast.LENGTH_LONG).show();
                 }
