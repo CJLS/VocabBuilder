@@ -15,7 +15,7 @@ import java.util.List;
  * Created by Li on 2015/4/13.
  */
 public class VocabDbHelper extends SQLiteOpenHelper {
-    // If you change the database schema, you must increment the database version.
+    // If the database schema is chanaged, the database version must be incremented.
     public static final int DATABASE_VERSION = 6;
     public static final String DATABASE_NAME = "VocabDatabase.db";
     private static final String DELETE_TABLE_MY_VOCAB =
@@ -364,24 +364,25 @@ public class VocabDbHelper extends SQLiteOpenHelper {
         return cursor;
     }
 
-    public String getCategoryDefinition(String categoryName) throws Exception {
+    public String getCategoryDefinition(String category) throws Exception {
         SQLiteDatabase db = this.getReadableDatabase();
 
         String[] projection = {
                 VocabDbContract.COLUMN_NAME_DESCRIPTION
         };
 
-        String selection = VocabDbContract.COLUMN_NAME_CATEGORY + " = '" + categoryName + "'";
+        String selection = VocabDbContract.COLUMN_NAME_CATEGORY + " = ?";
+        String[] selectionArgsVocab = {category};
 
         Cursor cursor = db.query(
-                VocabDbContract.TABLE_NAME_CATEGORY, // The table to query
-                projection,                                 // The columns for the WHERE clause
-                selection,                                   // The rows to return for the WHERE clause
-                null,                                        // selectionArgs
-                null,                                        // groupBy
-                null,                                        // having
-                null,                                        // orderBy
-                null                                         // limit (the number of rows)
+                VocabDbContract.TABLE_NAME_CATEGORY,
+                projection,
+                selection,
+                selectionArgsVocab,
+                null,
+                null,
+                null,
+                null
         );
         if (!cursor.moveToFirst()) {
             throw new Exception();
