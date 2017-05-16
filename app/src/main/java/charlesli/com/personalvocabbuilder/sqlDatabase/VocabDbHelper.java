@@ -473,8 +473,8 @@ public class VocabDbHelper extends SQLiteOpenHelper {
     public boolean checkIfCategoryExists(String pattern) {
         SQLiteDatabase db = this.getReadableDatabase();
         String query = "SELECT * FROM " + VocabDbContract.TABLE_NAME_CATEGORY + " WHERE " +
-                VocabDbContract.COLUMN_NAME_CATEGORY + " = " + "'" + pattern + "'";
-        Cursor cursor = db.rawQuery(query, null);
+                VocabDbContract.COLUMN_NAME_CATEGORY + " = ?";
+        Cursor cursor = db.rawQuery(query, new String[]{pattern});
         if (cursor.getCount() > 0) {
             cursor.close();
             return true;
