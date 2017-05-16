@@ -197,17 +197,18 @@ public class VocabDbHelper extends SQLiteOpenHelper {
                 VocabDbContract.COLUMN_NAME_LEVEL
         };
 
-        String selection = VocabDbContract.COLUMN_NAME_CATEGORY + " = " + "'" + category + "'";
+        String selection = VocabDbContract.COLUMN_NAME_CATEGORY + " = ?";
+        String[] selectionArgs = {category};
 
         Cursor cursor = db.query(
-                VocabDbContract.TABLE_NAME_MY_VOCAB, // The table to query
-                projection,                                 // The columns for the WHERE clause
-                selection,                                   // The rows to return for the WHERE clause
-                null,                                        // selectionArgs
-                null,                                        // groupBy
-                null,                                        // having
-                null,                                        // orderBy
-                null                                         // limit (the number of rows)
+                VocabDbContract.TABLE_NAME_MY_VOCAB,
+                projection,
+                selection,
+                selectionArgs,
+                null,
+                null,
+                null,
+                null
         );
         return cursor;
     }
