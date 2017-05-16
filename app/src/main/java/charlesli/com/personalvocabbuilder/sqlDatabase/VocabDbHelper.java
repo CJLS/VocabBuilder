@@ -487,10 +487,10 @@ public class VocabDbHelper extends SQLiteOpenHelper {
         // Check current category first
         String currentCategoryQuery = "SELECT " + VocabDbContract.COLUMN_NAME_CATEGORY + " FROM "
                 + VocabDbContract.TABLE_NAME_MY_VOCAB + " WHERE " + VocabDbContract.COLUMN_NAME_VOCAB
-                + " = " + "'" + vocab + "' AND " + VocabDbContract.COLUMN_NAME_DEFINITION
-                + " = " + "'" + definition + "' AND " + VocabDbContract.COLUMN_NAME_CATEGORY
-                + " = " + "'" + currentCategory + "'";
-        Cursor currentCategoryCursor = db.rawQuery(currentCategoryQuery, null);
+                + " = ?" + " AND " + VocabDbContract.COLUMN_NAME_DEFINITION
+                + " = ?" + " AND " + VocabDbContract.COLUMN_NAME_CATEGORY
+                + " = ?";
+        Cursor currentCategoryCursor = db.rawQuery(currentCategoryQuery, new String[]{vocab, definition, currentCategory});
         if (currentCategoryCursor.getCount() > 0) {
             currentCategoryCursor.moveToFirst();
             String category = currentCategoryCursor.getString(currentCategoryCursor.getColumnIndex(VocabDbContract.COLUMN_NAME_CATEGORY));
@@ -499,12 +499,12 @@ public class VocabDbHelper extends SQLiteOpenHelper {
             }
             return category;
         }
+        currentCategoryCursor.close();
         // Check other categories
         String allCategoriesQuery = "SELECT " + VocabDbContract.COLUMN_NAME_CATEGORY + " FROM "
                 + VocabDbContract.TABLE_NAME_MY_VOCAB + " WHERE " + VocabDbContract.COLUMN_NAME_VOCAB
-                + " = " + "'" + vocab + "' AND " + VocabDbContract.COLUMN_NAME_DEFINITION
-                + " = " + "'" + definition + "'";
-        Cursor allCategoriesCursor = db.rawQuery(allCategoriesQuery, null);
+                + " = ?" + " AND " + VocabDbContract.COLUMN_NAME_DEFINITION + " = ?";
+        Cursor allCategoriesCursor = db.rawQuery(allCategoriesQuery, new String[]{vocab, definition});
         if (allCategoriesCursor.getCount() > 0) {
             allCategoriesCursor.moveToFirst();
             String category = allCategoriesCursor.getString(allCategoriesCursor.getColumnIndex(VocabDbContract.COLUMN_NAME_CATEGORY));
@@ -513,6 +513,7 @@ public class VocabDbHelper extends SQLiteOpenHelper {
             }
             return category;
         }
+        allCategoriesCursor.close();
         return null;
     }
 
