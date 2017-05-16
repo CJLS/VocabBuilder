@@ -275,15 +275,17 @@ public class VocabDbHelper extends SQLiteOpenHelper {
                 VocabDbContract.COLUMN_NAME_LEVEL
         };
 
-        String selection = VocabDbContract.COLUMN_NAME_CATEGORY + " = " + "'" + category + "'" +
-                " AND " + "(" + VocabDbContract.COLUMN_NAME_VOCAB + " LIKE " + "'%" + pattern + "%'"
-                + " OR " + VocabDbContract.COLUMN_NAME_DEFINITION + " LIKE " + "'%" + pattern + "%'" + ")";
+        String selection = VocabDbContract.COLUMN_NAME_CATEGORY + " = ?" +
+                " AND " + "(" + VocabDbContract.COLUMN_NAME_VOCAB + " LIKE " + "?"
+                + " OR " + VocabDbContract.COLUMN_NAME_DEFINITION + " LIKE " + "?" + ")";
+        String likePattern = "%" + pattern + "%";
+        String[] selectionArgs = {category, likePattern, likePattern};
 
         Cursor cursor = db.query(
                 VocabDbContract.TABLE_NAME_MY_VOCAB, // The table to query
                 projection,                                 // The columns for the WHERE clause
                 selection,                                   // The rows to return for the WHERE clause
-                null,                                        // selectionArgs
+                selectionArgs,                                        // selectionArgs
                 null,                                        // groupBy
                 null,                                        // having
                 orderBy,                                     // orderBy
