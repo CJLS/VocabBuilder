@@ -425,10 +425,30 @@ public class VocabDbHelper extends SQLiteOpenHelper {
 
     public boolean checkIfVocabExists(String vocab, String definition) {
         SQLiteDatabase db = this.getReadableDatabase();
+        /*
+        String[] projection = {
+                VocabDbContract.COLUMN_NAME_VOCAB,
+                VocabDbContract.COLUMN_NAME_DEFINITION
+        };
+        String selection = VocabDbContract.COLUMN_NAME_VOCAB + " = '" + vocab + "' AND "
+                + VocabDbContract.COLUMN_NAME_DEFINITION + " = '" + definition + "'";
+        Cursor cursor = db.query(
+                VocabDbContract.TABLE_NAME_MY_VOCAB, // The table to query
+                projection,                                 // The columns for the WHERE clause
+                selection,                                   // The rows to return for the WHERE clause
+                null,                                        // selectionArgs
+                null,                                        // groupBy
+                null,                                        // having
+                null,                                       // orderBy
+                null                                         // limit (the number of rows)
+        );
+        */
+
         String query = "SELECT * FROM " + VocabDbContract.TABLE_NAME_MY_VOCAB + " WHERE " +
-                VocabDbContract.COLUMN_NAME_VOCAB + " = " + "'" + vocab + "' AND " +
-                VocabDbContract.COLUMN_NAME_DEFINITION + " = " + "'" + definition + "'";
-        Cursor cursor = db.rawQuery(query, null);
+                VocabDbContract.COLUMN_NAME_VOCAB + " = ? " + " AND " +
+                VocabDbContract.COLUMN_NAME_DEFINITION + " = ?";
+        Cursor cursor = db.rawQuery(query, new String[]{vocab, definition});
+
         if (cursor.getCount() > 0) {
             cursor.close();
             return true;

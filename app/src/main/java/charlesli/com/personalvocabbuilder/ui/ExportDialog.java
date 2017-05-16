@@ -32,7 +32,7 @@ public class ExportDialog extends CustomDialog {
         LayoutInflater li = LayoutInflater.from(context);
         View promptsView = li.inflate(R.layout.alert_dialog_export, null);
 
-        VocabDbHelper dbHelper = VocabDbHelper.getDBHelper(context);
+        final VocabDbHelper dbHelper = VocabDbHelper.getDBHelper(context);
         Cursor categoryCursor = dbHelper.getCategoryCursor();
 
         ListView exportListView = (ListView) promptsView.findViewById(R.id.exportListView);
