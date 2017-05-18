@@ -59,6 +59,7 @@ public class ExportUtils {
 
         File path = Environment.getExternalStoragePublicDirectory(
                 Environment.DIRECTORY_DOWNLOADS);
+        //TODO: REMOVE LOG MESSAGES
         Log.d("Test:", "Before mkdirs");
         path.mkdirs();
         Log.d("Test:", "After mkdirs");

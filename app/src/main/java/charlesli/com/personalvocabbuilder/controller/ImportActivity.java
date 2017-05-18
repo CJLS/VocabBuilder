@@ -1,5 +1,6 @@
 package charlesli.com.personalvocabbuilder.controller;
 
+import android.content.ContentResolver;
 import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
@@ -14,6 +15,8 @@ import android.widget.ProgressBar;
 import android.widget.RadioButton;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import java.io.File;
 
 import charlesli.com.personalvocabbuilder.R;
 
@@ -99,9 +102,20 @@ public class ImportActivity extends AppCompatActivity {
         if (requestCode == GET_FILE_RESULT_CODE && resultCode == RESULT_OK) {
             uri = data.getData();
             String[] projection = {MediaStore.MediaColumns.DISPLAY_NAME};
+
+            String fileName = getFileName(projection);
+            exportFileName.setText(fileName);
+            if (!fileName.matches(".*MyVocabExportFile.*")) {
+                Toast.makeText(getApplicationContext(), "Please make sure the correct export file is selected", Toast.LENGTH_LONG).show();
+            }
+        }
+    }
+
+    private String getFileName(String[] projection) {
+        String fileName = "File Selected";
+        if (ContentResolver.SCHEME_CONTENT.equals(uri.getScheme())) {
             Cursor returnCursor =
                     getContentResolver().query(uri, projection, null, null, null);
-            String fileName = "";
             if (returnCursor != null) {
                 try {
                     if (returnCursor.moveToFirst()) {
@@ -111,19 +125,12 @@ public class ImportActivity extends AppCompatActivity {
                     returnCursor.close();
                 }
             }
-
-            exportFileName.setText(fileName);
-            if (!fileName.matches(".*MyVocabExportFile.*")) {
-                Toast.makeText(getApplicationContext(), "Please make sure the correct export file is selected", Toast.LENGTH_LONG).show();
-            }
-            /*
-            File file= new File(uri.getPath());
-            exportFileName.setText(file.getName());
-            if (!file.getName().matches(".*MyVocabExportFile.*")) {
-                Toast.makeText(getApplicationContext(), "Please make sure the correct export file is selected", Toast.LENGTH_LONG).show();
-            }
-             */
         }
+        else if (ContentResolver.SCHEME_FILE.equals(uri.getScheme())) {
+            File file = new File(uri.getPath());
+            fileName = file.getName();
+        }
+        return fileName;
     }
 
 }
