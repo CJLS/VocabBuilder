@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Environment;
+import android.util.Log;
 import android.widget.Toast;
 
 import java.io.BufferedWriter;
@@ -58,11 +59,14 @@ public class ExportUtils {
 
         File path = Environment.getExternalStoragePublicDirectory(
                 Environment.DIRECTORY_DOWNLOADS);
+        Log.d("Test:", "Before mkdirs");
         path.mkdirs();
+        Log.d("Test:", "After mkdirs");
         File file = new File(path, "MyVocabExportFile.csv");
         BufferedWriter bufferedWriter = null;
+        Cursor cursor = null;
 
-
+        Log.d("Test:", "Before try block");
         try {
             FileWriter fileWriter = new FileWriter(file);
 
@@ -70,8 +74,10 @@ public class ExportUtils {
             bufferedWriter.write("Vocab,Definition,Level,Category Name,Category Description");
 
             bufferedWriter.newLine();
-            Cursor cursor = dbHelper.getExportCursor(categoryPositionList);
+            cursor = dbHelper.getExportCursor(categoryPositionList);
+            Log.d("Test:", "Before for loop");
             for (int i = 0; i < cursor.getCount(); i++) {
+                Log.d("Test:", "In for loop");
                 cursor.moveToPosition(i);
                 String vocab = cursor.getString(cursor.getColumnIndexOrThrow(VocabDbContract.COLUMN_NAME_VOCAB));
                 vocab = vocab.replace(",", "\\,");
@@ -105,9 +111,13 @@ public class ExportUtils {
 
                 bufferedWriter.write(lineToWrite);
                 bufferedWriter.newLine();
+                Log.d("Test:", "End of for loop");
+                Log.d("Test:", String.valueOf(i));
             }
         }
         catch (Exception e) {
+            Log.d("Test:", "In catch block");
+            Log.d("Test:", e.getMessage());
             file = null;
         }
         finally {
@@ -116,6 +126,9 @@ public class ExportUtils {
                     bufferedWriter.close();
                 } catch (IOException ignored) {
                 }
+            }
+            if (cursor != null) {
+                cursor.close();
             }
         }
         return file;

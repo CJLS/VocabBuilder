@@ -386,7 +386,9 @@ public class VocabDbHelper extends SQLiteOpenHelper {
         if (!cursor.moveToFirst()) {
             throw new Exception();
         }
-        return cursor.getString(cursor.getColumnIndexOrThrow(VocabDbContract.COLUMN_NAME_DESCRIPTION));
+        String definition = cursor.getString(cursor.getColumnIndexOrThrow(VocabDbContract.COLUMN_NAME_DESCRIPTION));
+        cursor.close();
+        return definition;
     }
 
     public Cursor getExportCursor(List<Integer> categoryPosList) {
@@ -442,12 +444,13 @@ public class VocabDbHelper extends SQLiteOpenHelper {
                 VocabDbContract.COLUMN_NAME_VOCAB + " = ? " + " AND " +
                 VocabDbContract.COLUMN_NAME_DEFINITION + " = ?";
         Cursor cursor = db.rawQuery(query, new String[]{vocab, definition});
+        boolean vocabExists = false;
 
         if (cursor.getCount() > 0) {
-            cursor.close();
-            return true;
+            vocabExists = true;
         }
-        return false;
+        cursor.close();
+        return vocabExists;
     }
 
     public boolean checkIfVocabExistsInCategory(String vocab, String definition, String category) {
@@ -457,11 +460,13 @@ public class VocabDbHelper extends SQLiteOpenHelper {
                 VocabDbContract.COLUMN_NAME_DEFINITION + " = ?" + " AND " +
                 VocabDbContract.COLUMN_NAME_CATEGORY + " = ?";
         Cursor cursor = db.rawQuery(query, new String[]{vocab, definition, category});
+        boolean vocabExists = false;
+
         if (cursor.getCount() > 0) {
-            cursor.close();
-            return true;
+            vocabExists = true;
         }
-        return false;
+        cursor.close();
+        return vocabExists;
     }
 
     public boolean checkIfCategoryExists(String category) {
@@ -469,11 +474,13 @@ public class VocabDbHelper extends SQLiteOpenHelper {
         String query = "SELECT * FROM " + VocabDbContract.TABLE_NAME_CATEGORY + " WHERE " +
                 VocabDbContract.COLUMN_NAME_CATEGORY + " = ?";
         Cursor cursor = db.rawQuery(query, new String[]{category});
+
+        boolean vocabExists = false;
         if (cursor.getCount() > 0) {
-            cursor.close();
-            return true;
+            vocabExists = true;
         }
-        return false;
+        cursor.close();
+        return vocabExists;
     }
 
     public String findVocabFirstCategory(String vocab, String definition, String currentCategory) {
@@ -491,6 +498,7 @@ public class VocabDbHelper extends SQLiteOpenHelper {
             while (category.equals(VocabDbContract.CATEGORY_NAME_MY_WORD_BANK) && currentCategoryCursor.moveToNext()) {
                 category = currentCategoryCursor.getString(currentCategoryCursor.getColumnIndex(VocabDbContract.COLUMN_NAME_CATEGORY));
             }
+            currentCategoryCursor.close();
             return category;
         }
         currentCategoryCursor.close();
@@ -505,6 +513,7 @@ public class VocabDbHelper extends SQLiteOpenHelper {
             while (category.equals(VocabDbContract.CATEGORY_NAME_MY_WORD_BANK) && allCategoriesCursor.moveToNext()) {
                 category = allCategoriesCursor.getString(allCategoriesCursor.getColumnIndex(VocabDbContract.COLUMN_NAME_CATEGORY));
             }
+            allCategoriesCursor.close();
             return category;
         }
         allCategoriesCursor.close();
