@@ -56,6 +56,15 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".controller.MainActivity" />
         </activity>
+        <activity
+            android:name=".controller.ExportActivity"
+            android:label="Export"
+            android:parentActivityName=".controller.MainActivity"
+            android:theme="@style/Theme.AppCompat.Light.Dialog">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".controller.MainActivity" />
+        </activity>
     </application>
 
 </manifest>

@@ -31,9 +31,8 @@ class ExportFileReader extends AsyncTask<Void, Void, Void> {
 
     ExportFileReader(Activity activity, boolean resetVocabProgress, int importOption,
                      String importCategoryName, ProgressBar progressBar, Uri exportFile) {
-        super();
         this.activity = activity;
-        this.context = activity.getApplicationContext();
+        this.context = activity.getBaseContext();
         this.resetVocabProgress = resetVocabProgress;
         this.progressBar = progressBar;
         this.exportFile = exportFile;

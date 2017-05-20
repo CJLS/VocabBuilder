@@ -2,7 +2,6 @@ package charlesli.com.personalvocabbuilder.controller;
 
 import android.Manifest;
 import android.app.Activity;
-import android.content.Context;
 import android.content.pm.PackageManager;
 import android.os.Environment;
 import android.support.v4.app.ActivityCompat;
@@ -15,17 +14,17 @@ import static charlesli.com.personalvocabbuilder.controller.ExportUtils.MY_PERMI
  * Created by charles on 2017-04-14.
  */
 
-public class PermissionsUtils {
+class PermissionsUtils {
 
-    public static boolean getExternalStoragePermission(Context context) {
+    static boolean getExternalStoragePermission(Activity activity) {
         if (!isExternalStorageWritable()) {
-            Toast.makeText(context, "External storage is unavailable. Please check your device's external storage.", Toast.LENGTH_LONG).show();
+            Toast.makeText(activity.getBaseContext(), "External storage is unavailable. Please check your device's external storage.", Toast.LENGTH_LONG).show();
             return false;
         }
-        int permissionCheck = ContextCompat.checkSelfPermission(context,
+        int permissionCheck = ContextCompat.checkSelfPermission(activity.getBaseContext(),
                 Manifest.permission.WRITE_EXTERNAL_STORAGE);
         if (permissionCheck != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions((Activity) context,
+            ActivityCompat.requestPermissions(activity,
                     new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
                     MY_PERMISSIONS_REQUEST_WRITE_EXTERNAL_STORAGE);
             return false;

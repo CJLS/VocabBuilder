@@ -101,9 +101,7 @@ public class ImportActivity extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == GET_FILE_RESULT_CODE && resultCode == RESULT_OK) {
             uri = data.getData();
-            String[] projection = {MediaStore.MediaColumns.DISPLAY_NAME};
-
-            String fileName = getFileName(projection);
+            String fileName = getFileName();
             exportFileName.setText(fileName);
             if (!fileName.matches(".*MyVocabExportFile.*")) {
                 Toast.makeText(getApplicationContext(), "Please make sure the correct export file is selected", Toast.LENGTH_LONG).show();
@@ -111,9 +109,10 @@ public class ImportActivity extends AppCompatActivity {
         }
     }
 
-    private String getFileName(String[] projection) {
+    private String getFileName() {
         String fileName = "File Selected";
         if (ContentResolver.SCHEME_CONTENT.equals(uri.getScheme())) {
+            String[] projection = {MediaStore.MediaColumns.DISPLAY_NAME};
             Cursor returnCursor =
                     getContentResolver().query(uri, projection, null, null, null);
             if (returnCursor != null) {

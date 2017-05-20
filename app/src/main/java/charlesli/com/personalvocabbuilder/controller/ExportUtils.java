@@ -5,7 +5,6 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Environment;
-import android.util.Log;
 import android.widget.Toast;
 
 import java.io.BufferedWriter;
@@ -22,11 +21,11 @@ import charlesli.com.personalvocabbuilder.sqlDatabase.VocabDbHelper;
  * Created by charles on 2017-04-13.
  */
 
-public class ExportUtils {
+class ExportUtils {
 
     static final int MY_PERMISSIONS_REQUEST_WRITE_EXTERNAL_STORAGE = 1;
 
-    public static void exportCategory(Context context) {
+    static void exportCategory(Context context) {
         File exportFile = writeToExportFile(context, ExportCursorAdaptor.getSelectedCategoryPositionList());
         if (exportFile == null) {
             Toast.makeText(context, "Sorry, an error has occurred when writing to the export file. Please try again later.", Toast.LENGTH_LONG).show();
@@ -36,7 +35,7 @@ public class ExportUtils {
         }
     }
 
-    private static boolean shareExportFile(Context context, File exportFile) {
+    static boolean shareExportFile(Context context, File exportFile) {
         boolean exportFileSent = true;
         Intent sendFileIntent = new Intent();
         sendFileIntent.setAction(Intent.ACTION_SEND);
@@ -54,20 +53,16 @@ public class ExportUtils {
         return exportFileSent;
     }
 
-    private static File writeToExportFile(Context context, List<Integer> categoryPositionList) {
+    static File writeToExportFile(Context context, List<Integer> categoryPositionList) {
         VocabDbHelper dbHelper = VocabDbHelper.getDBHelper(context);
 
         File path = Environment.getExternalStoragePublicDirectory(
                 Environment.DIRECTORY_DOWNLOADS);
-        //TODO: REMOVE LOG MESSAGES
-        Log.d("Test:", "Before mkdirs");
         path.mkdirs();
-        Log.d("Test:", "After mkdirs");
         File file = new File(path, "MyVocabExportFile.csv");
         BufferedWriter bufferedWriter = null;
         Cursor cursor = null;
 
-        Log.d("Test:", "Before try block");
         try {
             FileWriter fileWriter = new FileWriter(file);
 
@@ -76,9 +71,7 @@ public class ExportUtils {
 
             bufferedWriter.newLine();
             cursor = dbHelper.getExportCursor(categoryPositionList);
-            Log.d("Test:", "Before for loop");
             for (int i = 0; i < cursor.getCount(); i++) {
-                Log.d("Test:", "In for loop");
                 cursor.moveToPosition(i);
                 String vocab = cursor.getString(cursor.getColumnIndexOrThrow(VocabDbContract.COLUMN_NAME_VOCAB));
                 vocab = vocab.replace(",", "\\,");
@@ -112,13 +105,9 @@ public class ExportUtils {
 
                 bufferedWriter.write(lineToWrite);
                 bufferedWriter.newLine();
-                Log.d("Test:", "End of for loop");
-                Log.d("Test:", String.valueOf(i));
             }
         }
         catch (Exception e) {
-            Log.d("Test:", "In catch block");
-            Log.d("Test:", e.getMessage());
             file = null;
         }
         finally {
@@ -134,5 +123,4 @@ public class ExportUtils {
         }
         return file;
     }
-
 }
