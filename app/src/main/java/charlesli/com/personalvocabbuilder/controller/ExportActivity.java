@@ -5,7 +5,6 @@ import android.database.Cursor;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ListView;
@@ -20,6 +19,8 @@ import static charlesli.com.personalvocabbuilder.controller.ExportUtils.MY_PERMI
 
 public class ExportActivity extends AppCompatActivity {
 
+    private ProgressBar progressBar;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -29,7 +30,7 @@ public class ExportActivity extends AppCompatActivity {
 
         Button okButton = (Button) findViewById(R.id.exportActivityOKButton);
         Button cancelButton = (Button) findViewById(R.id.exportActivityCancelButton);
-        final ProgressBar progressBar = (ProgressBar) findViewById(R.id.exportActivityProgressBar);
+        progressBar = (ProgressBar) findViewById(R.id.exportActivityProgressBar);
 
         final VocabDbHelper dbHelper = VocabDbHelper.getDBHelper(this);
         Cursor categoryCursor = dbHelper.getCategoryCursor();
@@ -44,10 +45,8 @@ public class ExportActivity extends AppCompatActivity {
                     Toast.makeText(getApplicationContext(), "No categories were selected for export.", Toast.LENGTH_LONG).show();
                 }
                 else if (PermissionsUtils.getExternalStoragePermission(ExportActivity.this)) {
-                    Log.d("Activity Test:", "Before FileExporter");
                     FileExporter fileExporter = new FileExporter(ExportActivity.this, progressBar);
                     fileExporter.execute();
-                    Log.d("Activity Test:", "After FileExporter");
                 }
 
             }
@@ -66,13 +65,13 @@ public class ExportActivity extends AppCompatActivity {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         switch (requestCode) {
             case MY_PERMISSIONS_REQUEST_WRITE_EXTERNAL_STORAGE: {
-                Log.d("Test:", "In export Activity");
                 if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                     if (ExportCursorAdaptor.getSelectedCategoryPositionList().size() == 0) {
                         Toast.makeText(this, "No categories were selected for export.", Toast.LENGTH_LONG).show();
                     }
                     else {
-                        ExportUtils.exportCategory(this);
+                        FileExporter fileExporter = new FileExporter(ExportActivity.this, progressBar);
+                        fileExporter.execute();
                     }
                 } else {
                     Toast.makeText(this, R.string.externalStoragePermissionDenied, Toast.LENGTH_LONG).show();

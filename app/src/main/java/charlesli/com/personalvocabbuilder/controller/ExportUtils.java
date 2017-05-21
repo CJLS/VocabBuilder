@@ -5,7 +5,6 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Environment;
-import android.widget.Toast;
 
 import java.io.BufferedWriter;
 import java.io.File;
@@ -13,7 +12,6 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.List;
 
-import charlesli.com.personalvocabbuilder.sqlDatabase.ExportCursorAdaptor;
 import charlesli.com.personalvocabbuilder.sqlDatabase.VocabDbContract;
 import charlesli.com.personalvocabbuilder.sqlDatabase.VocabDbHelper;
 
@@ -24,16 +22,6 @@ import charlesli.com.personalvocabbuilder.sqlDatabase.VocabDbHelper;
 class ExportUtils {
 
     static final int MY_PERMISSIONS_REQUEST_WRITE_EXTERNAL_STORAGE = 1;
-
-    static void exportCategory(Context context) {
-        File exportFile = writeToExportFile(context, ExportCursorAdaptor.getSelectedCategoryPositionList());
-        if (exportFile == null) {
-            Toast.makeText(context, "Sorry, an error has occurred when writing to the export file. Please try again later.", Toast.LENGTH_LONG).show();
-        }
-        else if (!shareExportFile(context, exportFile)) {
-            Toast.makeText(context, "Your export file is located in your external storage's downloads folder.", Toast.LENGTH_LONG).show();
-        }
-    }
 
     static boolean shareExportFile(Context context, File exportFile) {
         boolean exportFileSent = true;
