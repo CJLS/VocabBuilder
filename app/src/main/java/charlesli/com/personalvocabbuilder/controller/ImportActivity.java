@@ -4,6 +4,7 @@ import android.content.ContentResolver;
 import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.v7.app.AppCompatActivity;
@@ -48,9 +49,18 @@ public class ImportActivity extends AppCompatActivity {
         selectFileButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
-                intent.setType("text/*");
-                startActivityForResult(intent, GET_FILE_RESULT_CODE);
+                if (Build.VERSION.SDK_INT >= 19) {
+                    Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
+                    intent.setType("text/*");
+                    intent.addCategory(Intent.CATEGORY_OPENABLE);
+                    startActivityForResult(intent, GET_FILE_RESULT_CODE);
+                }
+                else {
+                    Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
+                    intent.setType("text/*");
+                    intent.addCategory(Intent.CATEGORY_OPENABLE);
+                    startActivityForResult(intent, GET_FILE_RESULT_CODE);
+                }
             }
         });
         importButton.setOnClickListener(new View.OnClickListener() {
