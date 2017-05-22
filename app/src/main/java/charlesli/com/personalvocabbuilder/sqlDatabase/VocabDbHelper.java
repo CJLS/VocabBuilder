@@ -186,6 +186,31 @@ public class VocabDbHelper extends SQLiteOpenHelper {
         db.insert(VocabDbContract.TABLE_NAME_MY_VOCAB, null, values);
     }
 
+    public void updateVocabDefinition(String selectedVocab, String selectedDefinition, String newDefinition) {
+        SQLiteDatabase db = this.getReadableDatabase();
+
+        ContentValues values = new ContentValues();
+        values.put(VocabDbContract.COLUMN_NAME_DEFINITION, newDefinition);
+
+        String selectionMyVocab = VocabDbContract.COLUMN_NAME_VOCAB + " = ? AND " +
+                VocabDbContract.COLUMN_NAME_DEFINITION + " = ?";
+        String[] selectionArgsMyVocab = {selectedVocab, selectedDefinition};
+
+        db.update(
+                VocabDbContract.TABLE_NAME_MY_VOCAB,
+                values,
+                selectionMyVocab,
+                selectionArgsMyVocab
+        );
+    }
+
+    public void deleteVocab(long posID) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        String selection = VocabDbContract._ID + " = ?";
+        String[] selectionArgs = {String.valueOf(posID)};
+        db.delete(VocabDbContract.TABLE_NAME_MY_VOCAB, selection, selectionArgs);
+    }
+
     public Cursor getVocabCursor(String category) {
         SQLiteDatabase db = this.getReadableDatabase();
 
@@ -305,7 +330,7 @@ public class VocabDbHelper extends SQLiteOpenHelper {
 
     public void deleteCategory(String selectedCategory) {
         SQLiteDatabase db = this.getWritableDatabase();
-        String selection = VocabDbContract.COLUMN_NAME_CATEGORY + " LIKE ?";
+        String selection = VocabDbContract.COLUMN_NAME_CATEGORY + " = ?";
         String[] selectionArgs = {selectedCategory};
         db.delete(VocabDbContract.TABLE_NAME_CATEGORY, selection, selectionArgs);
         db.delete(VocabDbContract.TABLE_NAME_MY_VOCAB, selection, selectionArgs);

@@ -34,6 +34,7 @@ import static charlesli.com.personalvocabbuilder.sqlDatabase.VocabDbContract.DAT
 
 public class MyVocab extends AppCompatActivity {
 
+    public static String searchPattern = "";
     private VocabCursorAdapter mVocabAdapter;
     private VocabDbHelper mDbHelper = VocabDbHelper.getDBHelper(MyVocab.this);
     private String categoryName;
@@ -189,11 +190,12 @@ public class MyVocab extends AppCompatActivity {
 
     private void implementSearchBar(Menu menu, int menuItemId, final String category,
                                       final VocabCursorAdapter cursorAdapter, final VocabDbHelper dbHelper) {
-        MenuItem search = menu.findItem(menuItemId);
+        final MenuItem search = menu.findItem(menuItemId);
         SearchView searchView = (SearchView) MenuItemCompat.getActionView(search);
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String s) {
+                searchPattern = s;
                 SharedPreferences sharedPreferences = getSharedPreferences("Sort Order", MODE_PRIVATE);
                 String orderBy = sharedPreferences.getString(categoryName, DATE_ASC);
                 Cursor cursor = dbHelper.getVocabCursorWithStringPattern(category, s, orderBy);
@@ -203,6 +205,7 @@ public class MyVocab extends AppCompatActivity {
 
             @Override
             public boolean onQueryTextChange(String s) {
+                searchPattern = s;
                 SharedPreferences sharedPreferences = getSharedPreferences("Sort Order", MODE_PRIVATE);
                 String orderBy = sharedPreferences.getString(categoryName, DATE_ASC);
                 Cursor cursor = dbHelper.getVocabCursorWithStringPattern(category, s, orderBy);
