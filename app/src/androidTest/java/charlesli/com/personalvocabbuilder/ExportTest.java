@@ -32,6 +32,7 @@ import static android.support.test.espresso.intent.Intents.intending;
 import static android.support.test.espresso.intent.matcher.IntentMatchers.hasAction;
 import static android.support.test.espresso.matcher.RootMatchers.withDecorView;
 import static android.support.test.espresso.matcher.ViewMatchers.isDisplayed;
+import static android.support.test.espresso.matcher.ViewMatchers.withId;
 import static android.support.test.espresso.matcher.ViewMatchers.withText;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
@@ -77,14 +78,6 @@ public class ExportTest {
 
         Intents.init();
         intending(hasAction(Intent.ACTION_CHOOSER)).respondWith(new ActivityResult(Activity.RESULT_OK, null));
-
-        /*
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            getInstrumentation().getUiAutomation().executeShellCommand(
-                    "pm revoke " + getTargetContext().getPackageName()
-                            + " android.permission.WRITE_EXTERNAL_STORAGE");
-        }
-        */
     }
 
     @After
@@ -92,13 +85,12 @@ public class ExportTest {
         Intents.release();
     }
 
-    //TODO: Fix
     @Test
     public void clickExportOKButton_requestExternalStoragePermission() throws Exception {
         openActionBarOverflowOrOptionsMenu(getTargetContext());
         onView(withText(getTargetContext().getString(R.string.exportTitle)))
                 .perform(click());
-        onView(withId(R.id.exportListView))
+        onView(withId(R.id.exportActivityLV))
                 .check(matches(isDisplayed()));
         UiObject okButton = uiDevice.findObject(new UiSelector().text("OK"));
         okButton.clickAndWaitForNewWindow();
