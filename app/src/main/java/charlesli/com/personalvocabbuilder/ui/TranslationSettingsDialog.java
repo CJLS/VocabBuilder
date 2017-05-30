@@ -29,11 +29,11 @@ public class TranslationSettingsDialog extends CustomDialog {
         LayoutInflater li = LayoutInflater.from(context);
         View promptsView = li.inflate(R.layout.alert_dialog_translation_settings, null);
 
-        setupLanguageSelector((Spinner) promptsView.findViewById(R.id.spinnerTranslateFrom),
-                FROM_LANGUAGE, "Source", DETECT_LANGUAGE);
+        setupLanguageSelector((Spinner) promptsView.findViewById(R.id.vocabLanguageSpinner),
+                FROM_LANGUAGE, context.getString(R.string.sharedPrefTranslationSourceKey), DETECT_LANGUAGE);
 
         setupLanguageSelector((Spinner) promptsView.findViewById(R.id.spinnerTranslateTo),
-                TO_LANGUAGE, "Target", DEFAULT_TARGET_LANGUAGE_ENGLISH);
+                TO_LANGUAGE, context.getString(R.string.sharedPrefTranslationTargetKey), DEFAULT_TARGET_LANGUAGE_ENGLISH);
 
         setView(promptsView);
 
@@ -58,8 +58,8 @@ public class TranslationSettingsDialog extends CustomDialog {
         spinner.setAdapter(arrayAdapter);
 
 
-        final SharedPreferences sharedPreferences = getContext()
-                .getSharedPreferences("Translation", Context.MODE_PRIVATE);
+        final SharedPreferences sharedPreferences = getContext().
+                getSharedPreferences(getContext().getResources().getString(R.string.sharedPrefTranslationFile), Context.MODE_PRIVATE);
         spinner.setSelection(sharedPreferences.getInt(sharedPrefKey, defaultSelection));
 
         spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {

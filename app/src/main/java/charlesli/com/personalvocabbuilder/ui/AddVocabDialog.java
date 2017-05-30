@@ -94,9 +94,10 @@ public class AddVocabDialog extends CustomDialog {
             public void onClick(View v) {
                 String vocab = vocabInput.getText().toString();
 
-                SharedPreferences sharedPreferences = getContext().getSharedPreferences("Translation", MODE_PRIVATE);
-                int sourcePos = sharedPreferences.getInt("Source", DETECT_LANGUAGE);
-                int targetPos = sharedPreferences.getInt("Target", DEFAULT_TARGET_LANGUAGE_ENGLISH);
+                SharedPreferences sharedPreferences =
+                        getContext().getSharedPreferences(getContext().getResources().getString(R.string.sharedPrefTranslationFile), MODE_PRIVATE);
+                int sourcePos = sharedPreferences.getInt(getContext().getResources().getString(R.string.sharedPrefTranslationSourceKey), DETECT_LANGUAGE);
+                int targetPos = sharedPreferences.getInt(getContext().getResources().getString(R.string.sharedPrefTranslationTargetKey), DEFAULT_TARGET_LANGUAGE_ENGLISH);
 
                 String source = LanguageOptions.FROM_LANGUAGE_CODE[sourcePos];
                 String target = LanguageOptions.TO_LANGUAGE_CODE[targetPos];

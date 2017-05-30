@@ -4,7 +4,6 @@
     android:layout_height="match_parent"
     android:padding="5dp">
 
-
     <TextView
         android:id="@+id/vocabLanguageTV"
         android:layout_width="wrap_content"
@@ -12,7 +11,7 @@
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
         android:layout_alignParentTop="true"
-        android:text="From"
+        android:text="Language"
         android:textAppearance="?android:attr/textAppearanceMedium" />
 
     <Spinner
@@ -26,24 +25,4 @@
         android:layout_toRightOf="@+id/vocabLanguageTV"
         android:spinnerMode="dropdown" />
 
-    <TextView
-        android:id="@+id/tvTranslateTo"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"
-        android:layout_below="@+id/vocabLanguageSpinner"
-        android:text="To"
-        android:textAppearance="?android:attr/textAppearanceMedium" />
-
-    <Spinner
-        android:id="@+id/spinnerTranslateTo"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignLeft="@+id/vocabLanguageSpinner"
-        android:layout_alignParentEnd="true"
-        android:layout_alignParentRight="true"
-        android:layout_alignStart="@+id/vocabLanguageSpinner"
-        android:layout_alignTop="@+id/tvTranslateTo"
-        android:spinnerMode="dropdown" />
 </RelativeLayout>

@@ -60,6 +60,12 @@
     <string name="externalStoragePermissionDenied">No external storage permission to export categories.</string>
     <string name="importTitle">Import</string>
     <string name="specifiedImportCategory">My Vocab Export</string>
+    <string name="speech_settings">Speech Settings</string>
+    <string name="sharedPrefTranslationFile">Translation</string>
+    <string name="sharedPrefTranslationSourceKey">Source</string>
+    <string name="sharedPrefTranslationTargetKey">Target</string>
+    <string name="sharedPrefSortFile">Sort Order</string>
+    <string name="sharedPrefSpeechFile">com.cjlsdeveloper.speech</string>
     <color name="white">#ffffff</color>
     <color name="black">#000000</color>
     <color name="app_icon_color">#2b5ea2</color>

@@ -28,6 +28,7 @@ import charlesli.com.personalvocabbuilder.ui.AddVocabDialog;
 import charlesli.com.personalvocabbuilder.ui.CopyVocabDialog;
 import charlesli.com.personalvocabbuilder.ui.EditVocabDialog;
 import charlesli.com.personalvocabbuilder.ui.SortVocabDialog;
+import charlesli.com.personalvocabbuilder.ui.SpeechSettingsDialog;
 
 import static charlesli.com.personalvocabbuilder.sqlDatabase.VocabDbContract.DATE_ASC;
 
@@ -51,7 +52,7 @@ public class MyVocab extends AppCompatActivity {
         if (getSupportActionBar() != null) {
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         }
-        // Get Category Information
+
         Intent intent = getIntent();
         categoryName = intent.getStringExtra("Category");
         setTitle(categoryName);
@@ -60,7 +61,7 @@ public class MyVocab extends AppCompatActivity {
         TextView emptyTextView = (TextView) findViewById(android.R.id.empty);
         mVocabListView.setEmptyView(emptyTextView);
 
-        SharedPreferences sharedPreferences = getSharedPreferences("Sort Order", MODE_PRIVATE);
+        SharedPreferences sharedPreferences = getSharedPreferences(getString(R.string.sharedPrefSortFile), MODE_PRIVATE);
         String orderBy = sharedPreferences.getString(categoryName, DATE_ASC);
 
         Cursor cursor = mDbHelper.getVocabCursor(categoryName, orderBy);
@@ -114,8 +115,17 @@ public class MyVocab extends AppCompatActivity {
         else if (id == R.id.sort_my_vocab_button) {
             sortVocab();
         }
+        else if (id == R.id.speaker_my_vocab_button) {
+            setSpeakerSettings(categoryName);
+        }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    private void setSpeakerSettings(String categoryName) {
+        SpeechSettingsDialog speechSettingsDialog = new SpeechSettingsDialog(this, categoryName);
+        speechSettingsDialog.show();
+        speechSettingsDialog.changeButtonsToAppIconColor();
     }
 
     private void sortVocab() {
@@ -125,7 +135,7 @@ public class MyVocab extends AppCompatActivity {
 
     private void selectAll(VocabCursorAdapter cursorAdapter, VocabDbHelper dbHelper,
                              String category) {
-        SharedPreferences sharedPreferences = getSharedPreferences("Sort Order", MODE_PRIVATE);
+        SharedPreferences sharedPreferences = getSharedPreferences(getString(R.string.sharedPrefSortFile), MODE_PRIVATE);
         String orderBy = sharedPreferences.getString(categoryName, DATE_ASC);
 
         Cursor cursor = dbHelper.getVocabCursor(category, orderBy);
@@ -150,7 +160,7 @@ public class MyVocab extends AppCompatActivity {
                 String[] selectionArgs = {String.valueOf(cursorAdapter.getItemId(posInt)), category};
                 db.delete(VocabDbContract.TABLE_NAME_MY_VOCAB, selection, selectionArgs);
             }
-            SharedPreferences sharedPreferences = getSharedPreferences("Sort Order", MODE_PRIVATE);
+            SharedPreferences sharedPreferences = getSharedPreferences(getString(R.string.sharedPrefSortFile), MODE_PRIVATE);
             String orderBy = sharedPreferences.getString(category, DATE_ASC);
 
             Cursor cursor = dbHelper.getVocabCursor(category, orderBy);
@@ -196,7 +206,7 @@ public class MyVocab extends AppCompatActivity {
             @Override
             public boolean onQueryTextSubmit(String s) {
                 searchPattern = s;
-                SharedPreferences sharedPreferences = getSharedPreferences("Sort Order", MODE_PRIVATE);
+                SharedPreferences sharedPreferences = getSharedPreferences(getString(R.string.sharedPrefSortFile), MODE_PRIVATE);
                 String orderBy = sharedPreferences.getString(categoryName, DATE_ASC);
                 Cursor cursor = dbHelper.getVocabCursorWithStringPattern(category, s, orderBy);
                 cursorAdapter.changeCursor(cursor);
@@ -206,7 +216,7 @@ public class MyVocab extends AppCompatActivity {
             @Override
             public boolean onQueryTextChange(String s) {
                 searchPattern = s;
-                SharedPreferences sharedPreferences = getSharedPreferences("Sort Order", MODE_PRIVATE);
+                SharedPreferences sharedPreferences = getSharedPreferences(getString(R.string.sharedPrefSortFile), MODE_PRIVATE);
                 String orderBy = sharedPreferences.getString(categoryName, DATE_ASC);
                 Cursor cursor = dbHelper.getVocabCursorWithStringPattern(category, s, orderBy);
                 cursorAdapter.changeCursor(cursor);
@@ -224,7 +234,7 @@ public class MyVocab extends AppCompatActivity {
             @Override
             public void onViewDetachedFromWindow(View v) {
                 addVocabFAB.setVisibility(View.VISIBLE);
-                SharedPreferences sharedPreferences = getSharedPreferences("Sort Order", MODE_PRIVATE);
+                SharedPreferences sharedPreferences = getSharedPreferences(getString(R.string.sharedPrefSortFile), MODE_PRIVATE);
                 String orderBy = sharedPreferences.getString(categoryName, DATE_ASC);
                 cursorAdapter.changeCursor(dbHelper.getVocabCursor(category, orderBy));
             }
