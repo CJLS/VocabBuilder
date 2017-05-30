@@ -22,8 +22,8 @@
 
     <ImageView
         android:id="@+id/vocabSpeaker"
-        android:layout_width="20dp"
-        android:layout_height="20dp"
+        android:layout_width="22dp"
+        android:layout_height="22dp"
         android:layout_centerVertical="true"
         android:layout_gravity="right"
         android:layout_toLeftOf="@+id/editCheckbox"
