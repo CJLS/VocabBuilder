@@ -29,7 +29,7 @@ public class TranslationSettingsDialog extends CustomDialog {
         LayoutInflater li = LayoutInflater.from(context);
         View promptsView = li.inflate(R.layout.alert_dialog_translation_settings, null);
 
-        setupLanguageSelector((Spinner) promptsView.findViewById(R.id.vocabLanguageSpinner),
+        setupLanguageSelector((Spinner) promptsView.findViewById(R.id.spinnerTranslateFrom),
                 FROM_LANGUAGE, context.getString(R.string.sharedPrefTranslationSourceKey), DETECT_LANGUAGE);
 
         setupLanguageSelector((Spinner) promptsView.findViewById(R.id.spinnerTranslateTo),

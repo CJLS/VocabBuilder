@@ -2,6 +2,7 @@ package charlesli.com.personalvocabbuilder.ui;
 
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.SharedPreferences;
 import android.os.Build;
 import android.speech.tts.TextToSpeech;
 import android.view.LayoutInflater;
@@ -17,8 +18,6 @@ import java.util.Locale;
 
 import charlesli.com.personalvocabbuilder.R;
 
-import static charlesli.com.personalvocabbuilder.sqlDatabase.LanguageOptions.DETECT_LANGUAGE;
-
 /**
  * Created by charles on 2017-05-29.
  */
@@ -27,7 +26,7 @@ public class SpeechSettingsDialog extends CustomDialog {
 
     private TextToSpeech textToSpeech;
 
-    public SpeechSettingsDialog(Context context, String category) {
+    public SpeechSettingsDialog(Context context, TextToSpeech textToSpeech, String category) {
         super(context);
 
         setTitle("Speech Settings");
@@ -36,25 +35,23 @@ public class SpeechSettingsDialog extends CustomDialog {
 
         final ArrayList<String> engineAvailableLanguages = new ArrayList<>();
 
-        textToSpeech = new TextToSpeech(context, new TextToSpeech.OnInitListener() {
-            @Override
-            public void onInit(int status) {
-                if (status != TextToSpeech.ERROR) {
-                    textToSpeech.setLanguage(Locale.ENGLISH);
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                        for (Locale locale : textToSpeech.getAvailableLanguages()) {
-                            engineAvailableLanguages.add(locale.getDisplayName());
-                        }
-                        Collections.sort(engineAvailableLanguages);
-                    }
+        String defaultLanguageUSEnglish = "";
+        int defaultSelectionIndex = 0;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            for (Locale locale : textToSpeech.getAvailableLanguages()) {
+                if (locale.getLanguage().equals("en") && locale.getCountry().equals("US")) {
+                    defaultLanguageUSEnglish = locale.getDisplayName();
                 }
+                engineAvailableLanguages.add(locale.getDisplayName());
             }
-        }, "com.google.android.tts");
-
-        Collections.sort(engineAvailableLanguages);
+            Collections.sort(engineAvailableLanguages);
+            if (engineAvailableLanguages.contains(defaultLanguageUSEnglish)) {
+                defaultSelectionIndex = engineAvailableLanguages.indexOf(defaultLanguageUSEnglish);
+            }
+        }
 
         setupLanguageSelector((Spinner) promptsView.findViewById(R.id.vocabLanguageSpinner),
-                engineAvailableLanguages, category, DETECT_LANGUAGE);
+                engineAvailableLanguages, category, defaultSelectionIndex);
 
         setView(promptsView);
 
@@ -76,21 +73,17 @@ public class SpeechSettingsDialog extends CustomDialog {
         arrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 
         spinner.setAdapter(arrayAdapter);
-
-        /* TODO: GETSTRING INSTEAD, CHECK STRING PATTERN FOR LANGUAGE?
         final SharedPreferences sharedPreferences = getContext()
                 .getSharedPreferences(getContext().getResources().getString(R.string.sharedPrefSpeechFile), Context.MODE_PRIVATE);
         spinner.setSelection(sharedPreferences.getInt(category, defaultSelection));
-        */
+
 
         spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                /*
                 SharedPreferences.Editor editor = sharedPreferences.edit();
                 editor.putInt(category, position);
                 editor.apply();
-                */
             }
 
             @Override

@@ -5,6 +5,7 @@ import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
+import android.speech.tts.TextToSpeech;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.AppCompatActivity;
@@ -19,6 +20,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.Iterator;
+import java.util.Locale;
 
 import charlesli.com.personalvocabbuilder.R;
 import charlesli.com.personalvocabbuilder.sqlDatabase.VocabCursorAdapter;
@@ -40,6 +42,7 @@ public class MyVocab extends AppCompatActivity {
     private VocabDbHelper mDbHelper = VocabDbHelper.getDBHelper(MyVocab.this);
     private String categoryName;
     private FloatingActionButton addVocabFAB;
+    private TextToSpeech textToSpeech;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -87,6 +90,16 @@ public class MyVocab extends AppCompatActivity {
                 }
             });
         }
+
+        textToSpeech = new TextToSpeech(this, new TextToSpeech.OnInitListener() {
+            @Override
+            public void onInit(int status) {
+                if (status != TextToSpeech.ERROR) {
+                    textToSpeech.setLanguage(Locale.ENGLISH);
+                }
+            }
+        }, "com.google.android.tts");
+
     }
 
     @Override
@@ -116,14 +129,14 @@ public class MyVocab extends AppCompatActivity {
             sortVocab();
         }
         else if (id == R.id.speaker_my_vocab_button) {
-            setSpeakerSettings(categoryName);
+            setSpeakerSettings(textToSpeech, categoryName);
         }
 
         return super.onOptionsItemSelected(item);
     }
 
-    private void setSpeakerSettings(String categoryName) {
-        SpeechSettingsDialog speechSettingsDialog = new SpeechSettingsDialog(this, categoryName);
+    private void setSpeakerSettings(TextToSpeech textToSpeech, String categoryName) {
+        SpeechSettingsDialog speechSettingsDialog = new SpeechSettingsDialog(this, textToSpeech, categoryName);
         speechSettingsDialog.show();
         speechSettingsDialog.changeButtonsToAppIconColor();
     }
