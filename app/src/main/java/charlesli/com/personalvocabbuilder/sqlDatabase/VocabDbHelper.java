@@ -218,7 +218,8 @@ public class VocabDbHelper extends SQLiteOpenHelper {
                 VocabDbContract._ID,
                 VocabDbContract.COLUMN_NAME_VOCAB,
                 VocabDbContract.COLUMN_NAME_DEFINITION,
-                VocabDbContract.COLUMN_NAME_LEVEL
+                VocabDbContract.COLUMN_NAME_LEVEL,
+                VocabDbContract.COLUMN_NAME_CATEGORY
         };
 
         String selection = VocabDbContract.COLUMN_NAME_CATEGORY + " = ?";
@@ -244,7 +245,8 @@ public class VocabDbHelper extends SQLiteOpenHelper {
             VocabDbContract._ID,
             VocabDbContract.COLUMN_NAME_VOCAB,
             VocabDbContract.COLUMN_NAME_DEFINITION,
-            VocabDbContract.COLUMN_NAME_LEVEL
+            VocabDbContract.COLUMN_NAME_LEVEL,
+            VocabDbContract.COLUMN_NAME_CATEGORY
         };
 
         String selection = VocabDbContract.COLUMN_NAME_CATEGORY + " = ?";
@@ -270,7 +272,8 @@ public class VocabDbHelper extends SQLiteOpenHelper {
                 VocabDbContract._ID,
                 VocabDbContract.COLUMN_NAME_VOCAB,
                 VocabDbContract.COLUMN_NAME_DEFINITION,
-                VocabDbContract.COLUMN_NAME_LEVEL
+                VocabDbContract.COLUMN_NAME_LEVEL,
+                VocabDbContract.COLUMN_NAME_CATEGORY
         };
 
         String selection = VocabDbContract.COLUMN_NAME_CATEGORY + " = ?";
@@ -296,7 +299,8 @@ public class VocabDbHelper extends SQLiteOpenHelper {
                 VocabDbContract._ID,
                 VocabDbContract.COLUMN_NAME_VOCAB,
                 VocabDbContract.COLUMN_NAME_DEFINITION,
-                VocabDbContract.COLUMN_NAME_LEVEL
+                VocabDbContract.COLUMN_NAME_LEVEL,
+                VocabDbContract.COLUMN_NAME_CATEGORY
         };
 
         String selection = VocabDbContract.COLUMN_NAME_CATEGORY + " = ?" +

@@ -24,8 +24,6 @@ import charlesli.com.personalvocabbuilder.R;
 
 public class SpeechSettingsDialog extends CustomDialog {
 
-    private TextToSpeech textToSpeech;
-
     public SpeechSettingsDialog(Context context, TextToSpeech textToSpeech, String category) {
         super(context);
 
@@ -65,7 +63,7 @@ public class SpeechSettingsDialog extends CustomDialog {
     }
 
     private void setupLanguageSelector(Spinner spinner, List<String> languages,
-                                       final String category, int defaultSelection){
+                                       final String category, int defaultSelectionPos){
 
         ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(getContext(),
                 android.R.layout.simple_spinner_item, languages);
@@ -75,7 +73,7 @@ public class SpeechSettingsDialog extends CustomDialog {
         spinner.setAdapter(arrayAdapter);
         final SharedPreferences sharedPreferences = getContext()
                 .getSharedPreferences(getContext().getResources().getString(R.string.sharedPrefSpeechFile), Context.MODE_PRIVATE);
-        spinner.setSelection(sharedPreferences.getInt(category, defaultSelection));
+        spinner.setSelection(sharedPreferences.getInt(category, defaultSelectionPos));
 
 
         spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {

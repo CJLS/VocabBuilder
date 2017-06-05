@@ -68,7 +68,7 @@ public class MyVocab extends AppCompatActivity {
         String orderBy = sharedPreferences.getString(categoryName, DATE_ASC);
 
         Cursor cursor = mDbHelper.getVocabCursor(categoryName, orderBy);
-        mVocabAdapter = new VocabCursorAdapter(this, cursor, 0);
+        mVocabAdapter = new VocabCursorAdapter(this, cursor, categoryName);
         mVocabListView.setAdapter(mVocabAdapter);
         mVocabListView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
             @Override
