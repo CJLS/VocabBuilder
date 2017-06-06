@@ -3,7 +3,6 @@ package charlesli.com.personalvocabbuilder.ui;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
-import android.os.Build;
 import android.speech.tts.TextToSpeech;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -12,7 +11,7 @@ import android.widget.ArrayAdapter;
 import android.widget.Spinner;
 
 import java.util.ArrayList;
-import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 
@@ -24,32 +23,26 @@ import charlesli.com.personalvocabbuilder.R;
 
 public class SpeechSettingsDialog extends CustomDialog {
 
-    public SpeechSettingsDialog(Context context, TextToSpeech textToSpeech, String category) {
+    private TextToSpeech textToSpeech;
+    private HashMap<String, Locale> languageLocaleMapping;
+    private int defaultLangSelectionPos;
+
+    public SpeechSettingsDialog(Context context, String category, TextToSpeech textToSpeech,
+                                HashMap<String, Locale> languageLocaleMapping,
+                                ArrayList<String> engineAvailableLanguages, int defaultLangSelectionPos) {
         super(context);
 
         setTitle("Speech Settings");
         LayoutInflater li = LayoutInflater.from(context);
         View promptsView = li.inflate(R.layout.alert_dialog_speech_settings, null);
 
-        final ArrayList<String> engineAvailableLanguages = new ArrayList<>();
+        this.textToSpeech = textToSpeech;
+        this.languageLocaleMapping = languageLocaleMapping;
+        this.defaultLangSelectionPos = defaultLangSelectionPos;
 
-        String defaultLanguageUSEnglish = "";
-        int defaultSelectionIndex = 0;
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            for (Locale locale : textToSpeech.getAvailableLanguages()) {
-                if (locale.getLanguage().equals("en") && locale.getCountry().equals("US")) {
-                    defaultLanguageUSEnglish = locale.getDisplayName();
-                }
-                engineAvailableLanguages.add(locale.getDisplayName());
-            }
-            Collections.sort(engineAvailableLanguages);
-            if (engineAvailableLanguages.contains(defaultLanguageUSEnglish)) {
-                defaultSelectionIndex = engineAvailableLanguages.indexOf(defaultLanguageUSEnglish);
-            }
-        }
 
         setupLanguageSelector((Spinner) promptsView.findViewById(R.id.vocabLanguageSpinner),
-                engineAvailableLanguages, category, defaultSelectionIndex);
+                engineAvailableLanguages, category);
 
         setView(promptsView);
 
@@ -62,8 +55,7 @@ public class SpeechSettingsDialog extends CustomDialog {
 
     }
 
-    private void setupLanguageSelector(Spinner spinner, List<String> languages,
-                                       final String category, int defaultSelectionPos){
+    private void setupLanguageSelector(Spinner spinner, final List<String> languages, final String category){
 
         ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(getContext(),
                 android.R.layout.simple_spinner_item, languages);
@@ -73,7 +65,7 @@ public class SpeechSettingsDialog extends CustomDialog {
         spinner.setAdapter(arrayAdapter);
         final SharedPreferences sharedPreferences = getContext()
                 .getSharedPreferences(getContext().getResources().getString(R.string.sharedPrefSpeechFile), Context.MODE_PRIVATE);
-        spinner.setSelection(sharedPreferences.getInt(category, defaultSelectionPos));
+        spinner.setSelection(sharedPreferences.getInt(category, defaultLangSelectionPos));
 
 
         spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
@@ -82,6 +74,7 @@ public class SpeechSettingsDialog extends CustomDialog {
                 SharedPreferences.Editor editor = sharedPreferences.edit();
                 editor.putInt(category, position);
                 editor.apply();
+                textToSpeech.setLanguage(languageLocaleMapping.get(languages.get(position)));
             }
 
             @Override

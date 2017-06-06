@@ -1,9 +1,11 @@
 package charlesli.com.personalvocabbuilder.controller;
 
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.os.Build;
 import android.os.Bundle;
 import android.speech.tts.TextToSpeech;
 import android.support.design.widget.FloatingActionButton;
@@ -19,6 +21,9 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Locale;
 
@@ -43,6 +48,9 @@ public class MyVocab extends AppCompatActivity {
     private String categoryName;
     private FloatingActionButton addVocabFAB;
     private TextToSpeech textToSpeech;
+    private int[] defaultSelectionPos = {0};
+    private HashMap<String, Locale> languageLocaleMapping = new HashMap<String, Locale>();
+    private ArrayList<String> engineAvailableLanguages = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -60,15 +68,41 @@ public class MyVocab extends AppCompatActivity {
         categoryName = intent.getStringExtra("Category");
         setTitle(categoryName);
 
+        final SharedPreferences sharedPreferencesTTS =
+                getSharedPreferences(getResources().getString(R.string.sharedPrefSpeechFile), Context.MODE_PRIVATE);
+        textToSpeech = new TextToSpeech(this, new TextToSpeech.OnInitListener() {
+            @Override
+            public void onInit(int status) {
+                if (status != TextToSpeech.ERROR) {
+                    String defaultLanguageUSEnglish = "";
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                        for (Locale locale : textToSpeech.getAvailableLanguages()) {
+                            if (locale.getLanguage().equals("en") && locale.getCountry().equals("US")) {
+                                defaultLanguageUSEnglish = locale.getDisplayName();
+                            }
+                            engineAvailableLanguages.add(locale.getDisplayName());
+                            languageLocaleMapping.put(locale.getDisplayName(), locale);
+                        }
+                        Collections.sort(engineAvailableLanguages);
+                    }
+                    defaultSelectionPos[0] = engineAvailableLanguages.indexOf(defaultLanguageUSEnglish);
+                    String selectedDisplayName =
+                            engineAvailableLanguages.get(sharedPreferencesTTS.getInt(categoryName, defaultSelectionPos[0]));
+                    textToSpeech.setLanguage(languageLocaleMapping.get(selectedDisplayName));
+                }
+            }
+        }, "com.google.android.tts");
+
+
         ListView mVocabListView = (ListView) findViewById(R.id.mVocabList);
         TextView emptyTextView = (TextView) findViewById(android.R.id.empty);
         mVocabListView.setEmptyView(emptyTextView);
 
-        SharedPreferences sharedPreferences = getSharedPreferences(getString(R.string.sharedPrefSortFile), MODE_PRIVATE);
-        String orderBy = sharedPreferences.getString(categoryName, DATE_ASC);
+        SharedPreferences sharedPreferencesSortOrder = getSharedPreferences(getString(R.string.sharedPrefSortFile), MODE_PRIVATE);
+        String orderBy = sharedPreferencesSortOrder.getString(categoryName, DATE_ASC);
 
         Cursor cursor = mDbHelper.getVocabCursor(categoryName, orderBy);
-        mVocabAdapter = new VocabCursorAdapter(this, cursor, categoryName);
+        mVocabAdapter = new VocabCursorAdapter(this, cursor, textToSpeech);
         mVocabListView.setAdapter(mVocabAdapter);
         mVocabListView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
             @Override
@@ -90,16 +124,6 @@ public class MyVocab extends AppCompatActivity {
                 }
             });
         }
-
-        textToSpeech = new TextToSpeech(this, new TextToSpeech.OnInitListener() {
-            @Override
-            public void onInit(int status) {
-                if (status != TextToSpeech.ERROR) {
-                    textToSpeech.setLanguage(Locale.ENGLISH);
-                }
-            }
-        }, "com.google.android.tts");
-
     }
 
     @Override
@@ -136,7 +160,9 @@ public class MyVocab extends AppCompatActivity {
     }
 
     private void setSpeakerSettings(TextToSpeech textToSpeech, String categoryName) {
-        SpeechSettingsDialog speechSettingsDialog = new SpeechSettingsDialog(this, textToSpeech, categoryName);
+        SpeechSettingsDialog speechSettingsDialog =
+                new SpeechSettingsDialog(this, categoryName, textToSpeech, languageLocaleMapping,
+                        engineAvailableLanguages, defaultSelectionPos[0]);
         speechSettingsDialog.show();
         speechSettingsDialog.changeButtonsToAppIconColor();
     }

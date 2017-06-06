@@ -1,7 +1,6 @@
 package charlesli.com.personalvocabbuilder.sqlDatabase;
 
 import android.content.Context;
-import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.os.Build;
 import android.speech.tts.TextToSpeech;
@@ -15,10 +14,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Locale;
 
 import charlesli.com.personalvocabbuilder.R;
 
@@ -36,39 +32,11 @@ public class VocabCursorAdapter extends CursorAdapter {
     private TextToSpeech textToSpeech;
 
 
-    public VocabCursorAdapter(Context context, Cursor cursor, final String category) {
+    public VocabCursorAdapter(Context context, Cursor cursor, TextToSpeech textToSpeech) {
         super(context, cursor, 0);
 
         selectedItemsPositions = new ArrayList<>();
-
-        final SharedPreferences sharedPreferences = context
-                .getSharedPreferences(context.getResources().getString(R.string.sharedPrefSpeechFile), Context.MODE_PRIVATE);
-        final ArrayList<String> engineAvailableLanguages = new ArrayList<>();
-
-        textToSpeech = new TextToSpeech(context, new TextToSpeech.OnInitListener() {
-            @Override
-            public void onInit(int status) {
-                String defaultLanguageUSEnglish = "";
-                HashMap<String, Locale> languageLocaleMapping = new HashMap<String, Locale>();
-                if (status != TextToSpeech.ERROR) {
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                        for (Locale locale : textToSpeech.getAvailableLanguages()) {
-                            if (locale.getLanguage().equals("en") && locale.getCountry().equals("US")) {
-                                defaultLanguageUSEnglish = locale.getDisplayName();
-                            }
-                            engineAvailableLanguages.add(locale.getDisplayName());
-                            languageLocaleMapping.put(locale.getDisplayName(), locale);
-                        }
-                        Collections.sort(engineAvailableLanguages);
-                    }
-                    int defaultSelectionPos = engineAvailableLanguages.indexOf(defaultLanguageUSEnglish);
-                    String selectedDisplayName =
-                            engineAvailableLanguages.get(sharedPreferences.getInt(category, defaultSelectionPos));
-                    Locale selectedLocale = languageLocaleMapping.get(selectedDisplayName);
-                    textToSpeech.setLanguage(selectedLocale);
-                }
-            }
-        }, "com.google.android.tts");
+        this.textToSpeech = textToSpeech;
     }
 
     @Override
