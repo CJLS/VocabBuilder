@@ -22,22 +22,41 @@ import static charlesli.com.personalvocabbuilder.sqlDatabase.LanguageOptions.TO_
 
 public class TranslationSettingsDialog extends CustomDialog {
 
-    public TranslationSettingsDialog(Context context) {
+    private int sourceLanguagePos;
+    private int targetLanguagePos;
+
+    public TranslationSettingsDialog(final Context context) {
         super(context);
 
         setTitle("Translation Settings");
         LayoutInflater li = LayoutInflater.from(context);
         View promptsView = li.inflate(R.layout.alert_dialog_translation_settings, null);
 
+        final SharedPreferences sharedPreferences = getContext().
+                getSharedPreferences(getContext().getResources().getString(R.string.sharedPrefTranslationFile), Context.MODE_PRIVATE);
+
+        sourceLanguagePos = sharedPreferences.getInt(context.getString(R.string.sharedPrefTranslationSourceKey), DETECT_LANGUAGE);
+        targetLanguagePos = sharedPreferences.getInt(context.getString(R.string.sharedPrefTranslationTargetKey), DEFAULT_TARGET_LANGUAGE_ENGLISH);
+
         setupLanguageSelector((Spinner) promptsView.findViewById(R.id.spinnerTranslateFrom),
-                FROM_LANGUAGE, context.getString(R.string.sharedPrefTranslationSourceKey), DETECT_LANGUAGE);
+                FROM_LANGUAGE, true, sourceLanguagePos);
 
         setupLanguageSelector((Spinner) promptsView.findViewById(R.id.spinnerTranslateTo),
-                TO_LANGUAGE, context.getString(R.string.sharedPrefTranslationTargetKey), DEFAULT_TARGET_LANGUAGE_ENGLISH);
+                TO_LANGUAGE, false, targetLanguagePos);
 
         setView(promptsView);
 
         setButton(BUTTON_POSITIVE, "OK", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                SharedPreferences.Editor editor = sharedPreferences.edit();
+                editor.putInt(context.getString(R.string.sharedPrefTranslationSourceKey), sourceLanguagePos);
+                editor.putInt(context.getString(R.string.sharedPrefTranslationTargetKey), targetLanguagePos);
+                editor.apply();
+            }
+        });
+
+        setButton(BUTTON_NEGATIVE, "CANCEL", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 dialog.cancel();
@@ -48,7 +67,7 @@ public class TranslationSettingsDialog extends CustomDialog {
     }
 
     private void setupLanguageSelector(Spinner spinner, String[] languages,
-                                       final String sharedPrefKey, int defaultSelection){
+                                       final boolean isSource, int currentSelection){
 
         ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(getContext(),
                 android.R.layout.simple_spinner_item, languages);
@@ -56,18 +75,17 @@ public class TranslationSettingsDialog extends CustomDialog {
         arrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 
         spinner.setAdapter(arrayAdapter);
-
-
-        final SharedPreferences sharedPreferences = getContext().
-                getSharedPreferences(getContext().getResources().getString(R.string.sharedPrefTranslationFile), Context.MODE_PRIVATE);
-        spinner.setSelection(sharedPreferences.getInt(sharedPrefKey, defaultSelection));
+        spinner.setSelection(currentSelection);
 
         spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                SharedPreferences.Editor editor = sharedPreferences.edit();
-                editor.putInt(sharedPrefKey, position);
-                editor.apply();
+                if (isSource) {
+                    sourceLanguagePos = position;
+                }
+                else {
+                    targetLanguagePos = position;
+                }
             }
 
             @Override
