@@ -83,9 +83,26 @@ public class MyVocab extends AppCompatActivity {
                             engineAvailableLanguages.add(locale.getDisplayName());
                             languageLocaleMapping.put(locale.getDisplayName(), locale);
                         }
-                        Collections.sort(engineAvailableLanguages);
                     }
+                    else {
+                        Locale[] locales = Locale.getAvailableLocales();
+                        for (Locale locale : locales) {
+                            int result = textToSpeech.isLanguageAvailable(locale);
+                            if (result == TextToSpeech.LANG_COUNTRY_AVAILABLE
+                                    || result == TextToSpeech.LANG_COUNTRY_VAR_AVAILABLE) {
+                                if (locale.getLanguage().equals("en") && locale.getCountry().equals("US")) {
+                                    defaultLanguageUSEnglish = locale.getDisplayName();
+                                }
+                                engineAvailableLanguages.add(locale.getDisplayName());
+                                languageLocaleMapping.put(locale.getDisplayName(), locale);
+                            }
+                        }
+                    }
+                    Collections.sort(engineAvailableLanguages);
                     defaultSelectionPos[0] = engineAvailableLanguages.indexOf(defaultLanguageUSEnglish);
+                    if (defaultSelectionPos[0] < 0) {
+                        defaultSelectionPos[0] = 0;
+                    }
                     String selectedDisplayName =
                             engineAvailableLanguages.get(sharedPreferencesTTS.getInt(categoryName, defaultSelectionPos[0]));
                     textToSpeech.setLanguage(languageLocaleMapping.get(selectedDisplayName));
