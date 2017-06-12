@@ -3,7 +3,6 @@ package charlesli.com.personalvocabbuilder.ui;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
-import android.speech.tts.TextToSpeech;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.AdapterView;
@@ -11,11 +10,13 @@ import android.widget.ArrayAdapter;
 import android.widget.Spinner;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 
 import charlesli.com.personalvocabbuilder.R;
+import charlesli.com.personalvocabbuilder.controller.CustomTTS;
 
 /**
  * Created by charles on 2017-05-29.
@@ -25,9 +26,7 @@ public class SpeechSettingsDialog extends CustomDialog {
 
     private int selectedPos;
 
-    public SpeechSettingsDialog(Context context, final String category, final TextToSpeech textToSpeech,
-                                final HashMap<String, Locale> languageLocaleMapping,
-                                final ArrayList<String> engineAvailableLanguages, int defaultLangSelectionPos) {
+    public SpeechSettingsDialog(Context context, final String category, final CustomTTS textToSpeech) {
         super(context);
 
         setTitle("Speech Settings");
@@ -36,10 +35,13 @@ public class SpeechSettingsDialog extends CustomDialog {
 
         final SharedPreferences sharedPreferences = context
                 .getSharedPreferences(context.getResources().getString(R.string.sharedPrefSpeechFile), Context.MODE_PRIVATE);
-        selectedPos = sharedPreferences.getInt(category, defaultLangSelectionPos);
+        selectedPos = sharedPreferences.getInt(category, textToSpeech.getDefaultLanguageSelectionPos());
+        final HashMap<String, Locale> hashMap = textToSpeech.getSupportedDisplayNameToLocaleMapping();
+        final ArrayList<String> supportedLanguages = new ArrayList<>(hashMap.keySet());
+        Collections.sort(supportedLanguages);
 
         setupLanguageSelector((Spinner) promptsView.findViewById(R.id.vocabLanguageSpinner),
-                engineAvailableLanguages);
+                supportedLanguages);
 
         setView(promptsView);
 
@@ -49,7 +51,7 @@ public class SpeechSettingsDialog extends CustomDialog {
                 SharedPreferences.Editor editor = sharedPreferences.edit();
                 editor.putInt(category, selectedPos);
                 editor.apply();
-                textToSpeech.setLanguage(languageLocaleMapping.get(engineAvailableLanguages.get(selectedPos)));
+                textToSpeech.setLanguage(hashMap.get(supportedLanguages.get(selectedPos)));
             }
         });
 

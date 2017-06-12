@@ -5,7 +5,6 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
-import android.os.Build;
 import android.os.Bundle;
 import android.speech.tts.TextToSpeech;
 import android.support.design.widget.FloatingActionButton;
@@ -47,10 +46,7 @@ public class MyVocab extends AppCompatActivity {
     private VocabDbHelper mDbHelper = VocabDbHelper.getDBHelper(MyVocab.this);
     private String categoryName;
     private FloatingActionButton addVocabFAB;
-    private TextToSpeech textToSpeech;
-    private int[] defaultSelectionPos = {0};
-    private HashMap<String, Locale> languageLocaleMapping = new HashMap<String, Locale>();
-    private ArrayList<String> engineAvailableLanguages = new ArrayList<>();
+    private CustomTTS textToSpeech;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -70,42 +66,19 @@ public class MyVocab extends AppCompatActivity {
 
         final SharedPreferences sharedPreferencesTTS =
                 getSharedPreferences(getResources().getString(R.string.sharedPrefSpeechFile), Context.MODE_PRIVATE);
-        textToSpeech = new TextToSpeech(this, new TextToSpeech.OnInitListener() {
+
+        textToSpeech = new CustomTTS(this, new TextToSpeech.OnInitListener() {
             @Override
             public void onInit(int status) {
                 if (status != TextToSpeech.ERROR) {
-                    String defaultLanguageUSEnglish = "";
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                        for (Locale locale : textToSpeech.getAvailableLanguages()) {
-                            if (locale.getLanguage().equals("en") && locale.getCountry().equals("US")) {
-                                defaultLanguageUSEnglish = locale.getDisplayName();
-                            }
-                            engineAvailableLanguages.add(locale.getDisplayName());
-                            languageLocaleMapping.put(locale.getDisplayName(), locale);
-                        }
-                    }
-                    else {
-                        Locale[] locales = Locale.getAvailableLocales();
-                        for (Locale locale : locales) {
-                            int result = textToSpeech.isLanguageAvailable(locale);
-                            if (result == TextToSpeech.LANG_COUNTRY_AVAILABLE
-                                    || result == TextToSpeech.LANG_COUNTRY_VAR_AVAILABLE) {
-                                if (locale.getLanguage().equals("en") && locale.getCountry().equals("US")) {
-                                    defaultLanguageUSEnglish = locale.getDisplayName();
-                                }
-                                engineAvailableLanguages.add(locale.getDisplayName());
-                                languageLocaleMapping.put(locale.getDisplayName(), locale);
-                            }
-                        }
-                    }
+                    HashMap<String, Locale> languageLocaleMapping = textToSpeech.getSupportedDisplayNameToLocaleMapping();
+                    ArrayList<String> engineAvailableLanguages = new ArrayList<>(languageLocaleMapping.keySet());
                     Collections.sort(engineAvailableLanguages);
-                    defaultSelectionPos[0] = engineAvailableLanguages.indexOf(defaultLanguageUSEnglish);
-                    if (defaultSelectionPos[0] < 0) {
-                        defaultSelectionPos[0] = 0;
-                    }
+
                     String selectedDisplayName =
-                            engineAvailableLanguages.get(sharedPreferencesTTS.getInt(categoryName, defaultSelectionPos[0]));
+                            engineAvailableLanguages.get(sharedPreferencesTTS.getInt(categoryName, textToSpeech.getDefaultLanguageSelectionPos()));
                     textToSpeech.setLanguage(languageLocaleMapping.get(selectedDisplayName));
+
                 }
             }
         }, "com.google.android.tts");
@@ -147,8 +120,7 @@ public class MyVocab extends AppCompatActivity {
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu_my_vocab, menu);
 
-        implementSearchBar(menu, R.id.search_my_vocab_button, categoryName,
-                mVocabAdapter, mDbHelper);
+        implementSearchBar(menu, R.id.search_my_vocab_button);
 
         return true;
     }
@@ -158,28 +130,26 @@ public class MyVocab extends AppCompatActivity {
         int id = item.getItemId();
 
         if (id == R.id.del_my_vocab_button) {
-            deleteVocab(mDbHelper, categoryName, mVocabAdapter);
+            deleteVocab();
         }
         else if (id == R.id.label_my_vocab_button) {
-            selectTableToAddVocabTo(mVocabAdapter, mDbHelper, categoryName);
+            selectTableToAddVocabTo();
         }
         else if (id == R.id.select_all_my_vocab_button) {
-            selectAll(mVocabAdapter, mDbHelper, categoryName);
+            selectAll();
         }
         else if (id == R.id.sort_my_vocab_button) {
             sortVocab();
         }
         else if (id == R.id.speaker_my_vocab_button) {
-            setSpeakerSettings(textToSpeech, categoryName);
+            setSpeakerSettings();
         }
 
         return super.onOptionsItemSelected(item);
     }
 
-    private void setSpeakerSettings(TextToSpeech textToSpeech, String categoryName) {
-        SpeechSettingsDialog speechSettingsDialog =
-                new SpeechSettingsDialog(this, categoryName, textToSpeech, languageLocaleMapping,
-                        engineAvailableLanguages, defaultSelectionPos[0]);
+    private void setSpeakerSettings() {
+        SpeechSettingsDialog speechSettingsDialog = new SpeechSettingsDialog(this, categoryName, textToSpeech);
         speechSettingsDialog.show();
         speechSettingsDialog.changeButtonsToAppIconColor();
     }
@@ -189,50 +159,48 @@ public class MyVocab extends AppCompatActivity {
         dialog.show();
     }
 
-    private void selectAll(VocabCursorAdapter cursorAdapter, VocabDbHelper dbHelper,
-                             String category) {
+    private void selectAll() {
         SharedPreferences sharedPreferences = getSharedPreferences(getString(R.string.sharedPrefSortFile), MODE_PRIVATE);
         String orderBy = sharedPreferences.getString(categoryName, DATE_ASC);
 
-        Cursor cursor = dbHelper.getVocabCursor(category, orderBy);
+        Cursor cursor = mDbHelper.getVocabCursor(categoryName, orderBy);
         int numOfRows = cursor.getCount();
         for (int i = 0; i < numOfRows; i++) {
-            cursorAdapter.selectedItemsPositions.add(i);
+            mVocabAdapter.selectedItemsPositions.add(i);
         }
-        cursorAdapter.changeCursor(cursor);
+        mVocabAdapter.changeCursor(cursor);
     }
 
-    private void deleteVocab(VocabDbHelper dbHelper, String category, VocabCursorAdapter cursorAdapter) {
-        Iterator<Integer> posIt = cursorAdapter.selectedItemsPositions.iterator();
-        if (cursorAdapter.selectedItemsPositions.isEmpty()) {
+    private void deleteVocab() {
+        Iterator<Integer> posIt = mVocabAdapter.selectedItemsPositions.iterator();
+        if (mVocabAdapter.selectedItemsPositions.isEmpty()) {
             Toast.makeText(this, "No words are selected", Toast.LENGTH_SHORT).show();
         }
         else {
-            SQLiteDatabase db = dbHelper.getWritableDatabase();
+            SQLiteDatabase db = mDbHelper.getWritableDatabase();
             while (posIt.hasNext()) {
                 Integer posInt = posIt.next();
                 String selection = VocabDbContract._ID + " LIKE ?" + " AND " +
                         VocabDbContract.COLUMN_NAME_CATEGORY + " LIKE ?";
-                String[] selectionArgs = {String.valueOf(cursorAdapter.getItemId(posInt)), category};
+                String[] selectionArgs = {String.valueOf(mVocabAdapter.getItemId(posInt)), categoryName};
                 db.delete(VocabDbContract.TABLE_NAME_MY_VOCAB, selection, selectionArgs);
             }
             SharedPreferences sharedPreferences = getSharedPreferences(getString(R.string.sharedPrefSortFile), MODE_PRIVATE);
-            String orderBy = sharedPreferences.getString(category, DATE_ASC);
+            String orderBy = sharedPreferences.getString(categoryName, DATE_ASC);
 
-            Cursor cursor = dbHelper.getVocabCursor(category, orderBy);
-            cursorAdapter.changeCursor(cursor);
+            Cursor cursor = mDbHelper.getVocabCursor(categoryName, orderBy);
+            mVocabAdapter.changeCursor(cursor);
 
-            cursorAdapter.selectedItemsPositions.clear();
+            mVocabAdapter.selectedItemsPositions.clear();
         }
     }
 
-    private void selectTableToAddVocabTo(final VocabCursorAdapter cursorAdapter, final VocabDbHelper dbHelper,
-                                           final String fromCategory) {
-        if (cursorAdapter.selectedItemsPositions.isEmpty()) {
+    private void selectTableToAddVocabTo() {
+        if (mVocabAdapter.selectedItemsPositions.isEmpty()) {
             Toast.makeText(this, "No words are selected", Toast.LENGTH_SHORT).show();
             return;
         }
-        CopyVocabDialog dialog = new CopyVocabDialog(this, dbHelper, cursorAdapter, fromCategory);
+        CopyVocabDialog dialog = new CopyVocabDialog(this, mDbHelper, mVocabAdapter, categoryName);
         dialog.show();
         dialog.changeButtonsToAppIconColor();
     }
@@ -254,8 +222,7 @@ public class MyVocab extends AppCompatActivity {
         dialog.changeButtonsToAppIconColor();
     }
 
-    private void implementSearchBar(Menu menu, int menuItemId, final String category,
-                                      final VocabCursorAdapter cursorAdapter, final VocabDbHelper dbHelper) {
+    private void implementSearchBar(Menu menu, int menuItemId) {
         final MenuItem search = menu.findItem(menuItemId);
         SearchView searchView = (SearchView) MenuItemCompat.getActionView(search);
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
@@ -264,8 +231,8 @@ public class MyVocab extends AppCompatActivity {
                 searchPattern = s;
                 SharedPreferences sharedPreferences = getSharedPreferences(getString(R.string.sharedPrefSortFile), MODE_PRIVATE);
                 String orderBy = sharedPreferences.getString(categoryName, DATE_ASC);
-                Cursor cursor = dbHelper.getVocabCursorWithStringPattern(category, s, orderBy);
-                cursorAdapter.changeCursor(cursor);
+                Cursor cursor = mDbHelper.getVocabCursorWithStringPattern(categoryName, s, orderBy);
+                mVocabAdapter.changeCursor(cursor);
                 return true;
             }
 
@@ -274,8 +241,8 @@ public class MyVocab extends AppCompatActivity {
                 searchPattern = s;
                 SharedPreferences sharedPreferences = getSharedPreferences(getString(R.string.sharedPrefSortFile), MODE_PRIVATE);
                 String orderBy = sharedPreferences.getString(categoryName, DATE_ASC);
-                Cursor cursor = dbHelper.getVocabCursorWithStringPattern(category, s, orderBy);
-                cursorAdapter.changeCursor(cursor);
+                Cursor cursor = mDbHelper.getVocabCursorWithStringPattern(categoryName, s, orderBy);
+                mVocabAdapter.changeCursor(cursor);
                 return true;
             }
         });
@@ -292,7 +259,7 @@ public class MyVocab extends AppCompatActivity {
                 addVocabFAB.setVisibility(View.VISIBLE);
                 SharedPreferences sharedPreferences = getSharedPreferences(getString(R.string.sharedPrefSortFile), MODE_PRIVATE);
                 String orderBy = sharedPreferences.getString(categoryName, DATE_ASC);
-                cursorAdapter.changeCursor(dbHelper.getVocabCursor(category, orderBy));
+                mVocabAdapter.changeCursor(mDbHelper.getVocabCursor(categoryName, orderBy));
             }
         });
     }
