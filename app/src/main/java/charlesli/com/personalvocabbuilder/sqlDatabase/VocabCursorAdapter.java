@@ -12,6 +12,7 @@ import android.widget.CompoundButton;
 import android.widget.CursorAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -30,12 +31,14 @@ public class VocabCursorAdapter extends CursorAdapter {
 
     public List<Integer> selectedItemsPositions;
     private TextToSpeech textToSpeech;
+    private Context context;
 
 
     public VocabCursorAdapter(Context context, Cursor cursor, TextToSpeech textToSpeech) {
         super(context, cursor, 0);
 
         selectedItemsPositions = new ArrayList<>();
+        this.context = context;
         this.textToSpeech = textToSpeech;
     }
 
@@ -62,7 +65,7 @@ public class VocabCursorAdapter extends CursorAdapter {
 
 
     @Override
-    public void bindView(View view, Context context, final Cursor cursor) {
+    public void bindView(View view, final Context context, final Cursor cursor) {
         final TextView vocabNameTV = (TextView) view.findViewById(R.id.vocabName);
         TextView vocabDefinitionTV = (TextView) view.findViewById(R.id.vocabDefinition);
         ImageView vocabLevel = (ImageView) view.findViewById(R.id.vocabLevel);
@@ -99,12 +102,16 @@ public class VocabCursorAdapter extends CursorAdapter {
         speaker.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (Build.VERSION.SDK_INT >= 21) {
-                    textToSpeech.speak(vocab, TextToSpeech.QUEUE_FLUSH, null, "1");
+                if (textToSpeech != null) {
+                    if (Build.VERSION.SDK_INT >= 21) {
+                        textToSpeech.speak(vocab, TextToSpeech.QUEUE_FLUSH, null, "1");
 
+                    } else {
+                        textToSpeech.speak(vocab, TextToSpeech.QUEUE_FLUSH, null);
+                    }
                 }
                 else {
-                    textToSpeech.speak(vocab, TextToSpeech.QUEUE_FLUSH, null);
+                    Toast.makeText(context, "Sorry, the speech engine is currently unavailable.", Toast.LENGTH_SHORT).show();
                 }
             }
         });

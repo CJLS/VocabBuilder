@@ -149,9 +149,14 @@ public class MyVocab extends AppCompatActivity {
     }
 
     private void setSpeakerSettings() {
-        SpeechSettingsDialog speechSettingsDialog = new SpeechSettingsDialog(this, categoryName, textToSpeech);
-        speechSettingsDialog.show();
-        speechSettingsDialog.changeButtonsToAppIconColor();
+        if (textToSpeech != null) {
+            SpeechSettingsDialog speechSettingsDialog = new SpeechSettingsDialog(this, categoryName, textToSpeech);
+            speechSettingsDialog.show();
+            speechSettingsDialog.changeButtonsToAppIconColor();
+        }
+        else {
+            Toast.makeText(this, "Sorry, the speech engine is currently unavailable. Please try again later.", Toast.LENGTH_SHORT).show();
+        }
     }
 
     private void sortVocab() {
