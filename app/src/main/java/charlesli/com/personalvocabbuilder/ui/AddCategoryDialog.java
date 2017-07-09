@@ -2,11 +2,12 @@ package charlesli.com.personalvocabbuilder.ui;
 
 import android.content.Context;
 import android.content.DialogInterface;
-import android.text.InputType;
+import android.view.LayoutInflater;
+import android.view.View;
 import android.widget.EditText;
-import android.widget.LinearLayout;
 import android.widget.Toast;
 
+import charlesli.com.personalvocabbuilder.R;
 import charlesli.com.personalvocabbuilder.sqlDatabase.CategoryCursorAdapter;
 import charlesli.com.personalvocabbuilder.sqlDatabase.VocabDbHelper;
 
@@ -19,10 +20,14 @@ public class AddCategoryDialog extends CustomDialog {
     public AddCategoryDialog(Context context, final CategoryCursorAdapter categoryAdapter) {
         super(context);
 
-        final EditText categoryNameInput = new EditText(context);
-        final EditText categoryDescInput = new EditText(context);
         setTitle("Add Category");
-        setView(setUpCustomDialogLayout(categoryNameInput, categoryDescInput));
+
+        LayoutInflater li = LayoutInflater.from(context);
+        View promptsView = li.inflate(R.layout.alert_dialog_add_category, null);
+
+        final EditText categoryNameInput = (EditText) promptsView.findViewById(R.id.categoryNameInput);
+        final EditText categoryDescInput = (EditText) promptsView.findViewById(R.id.categoryDescInput);
+        setView(promptsView);
         final VocabDbHelper dbHelper = VocabDbHelper.getDBHelper(context);
 
         setButton(BUTTON_POSITIVE, "OK", new DialogInterface.OnClickListener() {
@@ -45,20 +50,5 @@ public class AddCategoryDialog extends CustomDialog {
                 dialog.cancel();
             }
         });
-    }
-
-    private LinearLayout setUpCustomDialogLayout(EditText categoryNameInput, EditText categoryDescInput) {
-        LinearLayout layout = new LinearLayout(getContext());
-        layout.setOrientation(LinearLayout.VERTICAL);
-
-        categoryNameInput.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_FLAG_AUTO_COMPLETE);
-        categoryNameInput.setHint("Name");
-        layout.addView(categoryNameInput);
-
-        categoryDescInput.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_FLAG_AUTO_COMPLETE);
-        categoryDescInput.setHint("Description");
-        layout.addView(categoryDescInput);
-
-        return layout;
     }
 }
