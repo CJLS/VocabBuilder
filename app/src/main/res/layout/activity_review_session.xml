@@ -7,11 +7,8 @@
 
     <android.support.v7.widget.Toolbar
         android:id="@+id/my_toolbar"
-        android:layout_width="match_parent"
-        android:layout_height="?attr/actionBarSize"
-        android:layout_marginLeft="0dp"
-        android:layout_marginRight="0dp"
-        android:layout_marginTop="0dp"
+        android:layout_width="0dp"
+        android:layout_height="56dp"
         android:background="?attr/colorPrimary"
         android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
         app:layout_constraintHorizontal_bias="0.0"
@@ -24,8 +21,10 @@
         android:id="@+id/topTextView"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:layout_marginEnd="8dp"
         android:layout_marginLeft="8dp"
         android:layout_marginRight="8dp"
+        android:layout_marginStart="8dp"
         android:layout_marginTop="50dp"
         android:gravity="center"
         android:text="@string/sample_word"
@@ -33,31 +32,17 @@
         app:layout_constraintHorizontal_bias="0.502"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/reviewProgressBar"/>
+        app:layout_constraintTop_toTopOf="@+id/reviewProgressBar" />
 
-    <!--
-    <ImageView
-        android:id="@+id/topTextImg"
-        android:layout_width="20dp"
-        android:layout_height="0dp"
-        app:srcCompat="@drawable/ic_volume_up_black_24dp"
-        tools:layout_constraintTop_creator="1"
-        tools:layout_constraintRight_creator="1"
-        tools:layout_constraintBottom_creator="1"
-        app:layout_constraintBottom_toBottomOf="@+id/topTextView"
-        android:layout_marginEnd="89dp"
-        app:layout_constraintRight_toRightOf="@+id/reviewProgressBar"
-        app:layout_constraintTop_toTopOf="@+id/topTextView"
-        android:layout_marginRight="89dp" />
-
-        -->
 
     <TextView
         android:id="@+id/bottomTextView"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:layout_marginEnd="8dp"
         android:layout_marginLeft="8dp"
         android:layout_marginRight="8dp"
+        android:layout_marginStart="8dp"
         android:layout_marginTop="30dp"
         android:gravity="center"
         android:text="@string/sample_definition"
@@ -72,6 +57,7 @@
         style="@style/Widget.AppCompat.Button.Colored"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:layout_marginBottom="0dp"
         android:layout_marginEnd="8dp"
         android:layout_marginLeft="0dp"
         android:layout_marginRight="0dp"
@@ -79,6 +65,7 @@
         android:text="@string/reveal_answer"
         android:theme="@style/AppColor.Button"
         app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent" />
 
@@ -149,11 +136,8 @@
     <me.zhanghai.android.materialprogressbar.MaterialProgressBar
         android:id="@+id/reviewProgressBar"
         style="@style/Widget.MaterialProgressBar.ProgressBar.Horizontal"
-        android:layout_width="match_parent"
+        android:layout_width="0dp"
         android:layout_height="4dp"
-        android:layout_marginLeft="0dp"
-        android:layout_marginRight="0dp"
-        android:layout_marginTop="0dp"
         android:indeterminate="false"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintLeft_toLeftOf="parent"
@@ -161,25 +145,5 @@
         app:layout_constraintTop_toBottomOf="@+id/my_toolbar"
         app:mpb_progressStyle="horizontal"
         app:mpb_useIntrinsicPadding="false" />
-
-    <!--
-
-    <ImageView
-        android:id="@+id/bottomTextImg"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:visibility="gone"
-        app:srcCompat="@drawable/ic_volume_up_black_24dp"
-        app:layout_constraintRight_toLeftOf="parent"
-        tools:layout_constraintTop_creator="1"
-        tools:layout_constraintRight_creator="1"
-        tools:layout_constraintBottom_creator="1"
-        app:layout_constraintBottom_toTopOf="parent"
-        tools:layout_constraintLeft_creator="1"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
-        -->
-
 
 </android.support.constraint.ConstraintLayout>
