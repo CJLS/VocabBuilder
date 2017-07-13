@@ -3,6 +3,7 @@ package charlesli.com.personalvocabbuilder.controller;
 import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
+import android.speech.tts.TextToSpeech;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -27,6 +28,7 @@ public class MainActivity extends AppCompatActivity {
 
     private CategoryCursorAdapter mCategoryAdapter;
     private VocabDbHelper mDbHelper = VocabDbHelper.getDBHelper(MainActivity.this);
+    private CustomTTS textToSpeech;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -74,6 +76,12 @@ public class MainActivity extends AppCompatActivity {
                 }
             });
         }
+
+        textToSpeech = new CustomTTS(this, new TextToSpeech.OnInitListener() {
+            @Override
+            public void onInit(int status) {
+            }
+        }, "com.google.android.tts");
     }
 
     @Override
@@ -81,6 +89,13 @@ public class MainActivity extends AppCompatActivity {
         super.onResume();
 
         mCategoryAdapter.changeCursor(mDbHelper.getCategoryCursor());
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+
+        textToSpeech.shutdown();
     }
 
     @Override
@@ -117,7 +132,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void addCategory() {
-        AddCategoryDialog dialog = new AddCategoryDialog(this, mCategoryAdapter);
+        AddCategoryDialog dialog = new AddCategoryDialog(this, mCategoryAdapter, textToSpeech);
         dialog.show();
         dialog.changeButtonsToAppIconColor();
     }

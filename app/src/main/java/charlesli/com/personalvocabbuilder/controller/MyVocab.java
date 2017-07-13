@@ -1,6 +1,5 @@
 package charlesli.com.personalvocabbuilder.controller;
 
-import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
@@ -20,8 +19,6 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Locale;
@@ -64,21 +61,14 @@ public class MyVocab extends AppCompatActivity {
         categoryName = intent.getStringExtra("Category");
         setTitle(categoryName);
 
-        final SharedPreferences sharedPreferencesTTS =
-                getSharedPreferences(getResources().getString(R.string.sharedPrefSpeechFile), Context.MODE_PRIVATE);
-
         textToSpeech = new CustomTTS(this, new TextToSpeech.OnInitListener() {
             @Override
             public void onInit(int status) {
                 if (status != TextToSpeech.ERROR) {
-                    HashMap<String, Locale> languageLocaleMapping = textToSpeech.getSupportedDisplayNameToLocaleMapping();
-                    ArrayList<String> engineAvailableLanguages = new ArrayList<>(languageLocaleMapping.keySet());
-                    Collections.sort(engineAvailableLanguages);
+                    String selectedLocaleDisplayName = mDbHelper.getCategoryLocaleDisplayName(categoryName);
+                    HashMap<String, Locale> displayNameToLocaleMapping = textToSpeech.getSupportedDisplayNameToLocaleMapping();
 
-                    String selectedDisplayName =
-                            engineAvailableLanguages.get(sharedPreferencesTTS.getInt(categoryName, textToSpeech.getDefaultLanguageSelectionPos()));
-                    textToSpeech.setLanguage(languageLocaleMapping.get(selectedDisplayName));
-
+                    textToSpeech.setLanguage(displayNameToLocaleMapping.get(selectedLocaleDisplayName));
                 }
             }
         }, "com.google.android.tts");
@@ -114,6 +104,13 @@ public class MyVocab extends AppCompatActivity {
                 }
             });
         }
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+
+        textToSpeech.shutdown();
     }
 
     @Override

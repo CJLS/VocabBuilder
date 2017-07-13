@@ -44,7 +44,7 @@ public class EditCategoryDialog extends CustomDialog {
                     Toast.makeText(getContext(), categoryName + " already exists", Toast.LENGTH_SHORT).show();
                 }
                 else {
-                    dbHelper.updateCategory(selectedCategory, categoryName, categoryDesc);
+                    dbHelper.updateCategoryNameAndDesc(selectedCategory, categoryName, categoryDesc);
                     cursorAdapter.changeCursor(dbHelper.getCategoryCursor());
                     dialog.dismiss();
                 }

@@ -2,7 +2,6 @@ package charlesli.com.personalvocabbuilder.ui;
 
 import android.content.Context;
 import android.content.DialogInterface;
-import android.content.SharedPreferences;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.AdapterView;
@@ -17,6 +16,7 @@ import java.util.Locale;
 
 import charlesli.com.personalvocabbuilder.R;
 import charlesli.com.personalvocabbuilder.controller.CustomTTS;
+import charlesli.com.personalvocabbuilder.sqlDatabase.VocabDbHelper;
 
 /**
  * Created by charles on 2017-05-29.
@@ -25,6 +25,7 @@ import charlesli.com.personalvocabbuilder.controller.CustomTTS;
 public class SpeechSettingsDialog extends CustomDialog {
 
     private int selectedPos;
+    private String selectedLocaleDisplayName;
 
     public SpeechSettingsDialog(Context context, final String category, final CustomTTS textToSpeech) {
         super(context);
@@ -33,25 +34,23 @@ public class SpeechSettingsDialog extends CustomDialog {
         LayoutInflater li = LayoutInflater.from(context);
         View promptsView = li.inflate(R.layout.alert_dialog_speech_settings, null);
 
-        final SharedPreferences sharedPreferences = context
-                .getSharedPreferences(context.getResources().getString(R.string.sharedPrefSpeechFile), Context.MODE_PRIVATE);
-        selectedPos = sharedPreferences.getInt(category, textToSpeech.getDefaultLanguageSelectionPos());
-        final HashMap<String, Locale> hashMap = textToSpeech.getSupportedDisplayNameToLocaleMapping();
-        final ArrayList<String> supportedLanguages = new ArrayList<>(hashMap.keySet());
+        final VocabDbHelper dbHelper = VocabDbHelper.getDBHelper(context);
+        selectedLocaleDisplayName = dbHelper.getCategoryLocaleDisplayName(category);
+        final HashMap<String, Locale> displayNameToLocaleMapping = textToSpeech.getSupportedDisplayNameToLocaleMapping();
+        final ArrayList<String> supportedLanguages = new ArrayList<>(displayNameToLocaleMapping.keySet());
         Collections.sort(supportedLanguages);
+        selectedPos = supportedLanguages.indexOf(selectedLocaleDisplayName);
 
         setupLanguageSelector((Spinner) promptsView.findViewById(R.id.vocabLanguageSpinner),
                 supportedLanguages);
-
         setView(promptsView);
 
         setButton(BUTTON_POSITIVE, "OK", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                SharedPreferences.Editor editor = sharedPreferences.edit();
-                editor.putInt(category, selectedPos);
-                editor.apply();
-                textToSpeech.setLanguage(hashMap.get(supportedLanguages.get(selectedPos)));
+                selectedLocaleDisplayName = supportedLanguages.get(selectedPos);
+                dbHelper.updateCategoryLocaleDisplayName(category, selectedLocaleDisplayName);
+                textToSpeech.setLanguage(displayNameToLocaleMapping.get(selectedLocaleDisplayName));
             }
         });
 
@@ -73,7 +72,6 @@ public class SpeechSettingsDialog extends CustomDialog {
 
         spinner.setAdapter(arrayAdapter);
         spinner.setSelection(selectedPos);
-
 
         spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override

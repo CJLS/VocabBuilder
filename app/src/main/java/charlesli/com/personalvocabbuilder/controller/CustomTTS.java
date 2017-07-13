@@ -4,8 +4,6 @@ import android.content.Context;
 import android.os.Build;
 import android.speech.tts.TextToSpeech;
 
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Locale;
 
@@ -39,26 +37,5 @@ public class CustomTTS extends TextToSpeech {
         }
         return displayToLocaleHashMap;
     }
-
-    public int getDefaultLanguageSelectionPos() {
-        String defaultLanguageUSEnglish = "";
-        HashMap<String, Locale> displayToLocaleHashMap = getSupportedDisplayNameToLocaleMapping();
-        ArrayList<String> displayNames = new ArrayList<>(displayToLocaleHashMap.keySet());
-        ArrayList<Locale> locales = new ArrayList<>(displayToLocaleHashMap.values());
-        Collections.sort(displayNames);
-        for (Locale locale: locales) {
-            if (locale.getLanguage().equals("en") && locale.getCountry().equals("US")) {
-                defaultLanguageUSEnglish = locale.getDisplayName();
-            }
-        }
-
-        int defaultSelectionPos = displayNames.indexOf(defaultLanguageUSEnglish);
-        if (defaultSelectionPos < 0) {
-            defaultSelectionPos = 0;
-        }
-
-        return defaultSelectionPos;
-    }
-
 
 }

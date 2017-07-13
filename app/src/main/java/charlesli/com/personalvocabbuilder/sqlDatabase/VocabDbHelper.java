@@ -9,13 +9,14 @@ import android.database.sqlite.SQLiteOpenHelper;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Locale;
 
 /**
  * Created by Li on 2015/4/13.
  */
 public class VocabDbHelper extends SQLiteOpenHelper {
     // If the database schema is changed, the database version must be incremented.
-    public static final int DATABASE_VERSION = 6;
+    public static final int DATABASE_VERSION = 7;
     public static final String DATABASE_NAME = "VocabDatabase.db";
     private static final String DELETE_TABLE_MY_VOCAB =
             "DROP TABLE IF EXISTS " + VocabDbContract.TABLE_NAME_MY_VOCAB;
@@ -40,7 +41,9 @@ public class VocabDbHelper extends SQLiteOpenHelper {
             "CREATE TABLE  " + VocabDbContract.TABLE_NAME_CATEGORY +
                     " (" + VocabDbContract._ID + " INTEGER PRIMARY KEY," +
                     VocabDbContract.COLUMN_NAME_CATEGORY + " TEXT, " +
-                    VocabDbContract.COLUMN_NAME_DESCRIPTION + " TEXT );";
+                    VocabDbContract.COLUMN_NAME_DESCRIPTION + " TEXT, " +
+                    VocabDbContract.COLUMN_NAME_LOCALE + " TEXT NOT NULL DEFAULT '" +
+                    Locale.US.getDisplayName() + "' );";
 
     private VocabDbHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
@@ -170,6 +173,11 @@ public class VocabDbHelper extends SQLiteOpenHelper {
                     " = " + "'Graduate Record Examination'" +
                     " WHERE " + VocabDbContract.COLUMN_NAME_CATEGORY +
                     " = " + "'" + VocabDbContract.CATEGORY_NAME_GRE + "'");
+        }
+        if (oldVersion <= 6) {
+            db.execSQL("ALTER TABLE " + VocabDbContract.TABLE_NAME_CATEGORY +
+                    " ADD COLUMN " + VocabDbContract.COLUMN_NAME_LOCALE + " TEXT NOT NULL DEFAULT '" +
+                    Locale.US.getDisplayName() + "'");
         }
 
     }
@@ -340,7 +348,7 @@ public class VocabDbHelper extends SQLiteOpenHelper {
         db.delete(VocabDbContract.TABLE_NAME_MY_VOCAB, selection, selectionArgs);
     }
 
-    public void updateCategory(String selectedCategory, String categoryName, String categoryDesc) {
+    public void updateCategoryNameAndDesc(String selectedCategory, String categoryName, String categoryDesc) {
         SQLiteDatabase db = this.getReadableDatabase();
 
         ContentValues vocabTableValues = new ContentValues();
@@ -369,6 +377,24 @@ public class VocabDbHelper extends SQLiteOpenHelper {
                 selectionArgsVocab
         );
     }
+
+    public void updateCategoryLocaleDisplayName(String selectedCategory, String localeDisplayName) {
+        SQLiteDatabase db = this.getReadableDatabase();
+
+        ContentValues categoryTableValues = new ContentValues();
+        categoryTableValues.put(VocabDbContract.COLUMN_NAME_LOCALE, localeDisplayName);
+
+        String selectionVocab = VocabDbContract.COLUMN_NAME_CATEGORY + " = ?";
+        String[] selectionArgsVocab = {selectedCategory};
+
+        db.update(
+                VocabDbContract.TABLE_NAME_CATEGORY,
+                categoryTableValues,
+                selectionVocab,
+                selectionArgsVocab
+        );
+    }
+
 
     public Cursor getCategoryCursor() {
         SQLiteDatabase db = this.getReadableDatabase();
@@ -418,6 +444,34 @@ public class VocabDbHelper extends SQLiteOpenHelper {
         String definition = cursor.getString(cursor.getColumnIndexOrThrow(VocabDbContract.COLUMN_NAME_DESCRIPTION));
         cursor.close();
         return definition;
+    }
+
+    public String getCategoryLocaleDisplayName(String category) {
+        SQLiteDatabase db = this.getReadableDatabase();
+
+        String[] projection = {
+                VocabDbContract.COLUMN_NAME_LOCALE
+        };
+
+        String selection = VocabDbContract.COLUMN_NAME_CATEGORY + " = ?";
+        String[] selectionArgsVocab = {category};
+
+        Cursor cursor = db.query(
+                VocabDbContract.TABLE_NAME_CATEGORY,
+                projection,
+                selection,
+                selectionArgsVocab,
+                null,
+                null,
+                null,
+                null
+        );
+        if (!cursor.moveToFirst()) {
+            return Locale.US.getDisplayName();
+        }
+        String localeDisplayName = cursor.getString(cursor.getColumnIndexOrThrow(VocabDbContract.COLUMN_NAME_LOCALE));
+        cursor.close();
+        return localeDisplayName;
     }
 
     public Cursor getExportCursor(List<Integer> categoryPosList) {
