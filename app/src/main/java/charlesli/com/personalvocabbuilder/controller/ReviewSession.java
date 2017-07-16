@@ -9,6 +9,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
@@ -56,7 +57,7 @@ public class ReviewSession extends AppCompatActivity {
     private Button mFamLvlButton;
     private Button mEasLvlButton;
     private Button mPerLvlButton;
-    private Button mAgaLvlButton;
+    private ImageView mAgaLvlButton;
     private ProgressBar mReviewProgressBar;
     private Cursor mCursor;
     private VocabDbHelper mDbHelper = VocabDbHelper.getDBHelper(ReviewSession.this);
@@ -90,7 +91,7 @@ public class ReviewSession extends AppCompatActivity {
         mFamLvlButton = (Button) findViewById(R.id.lvl_familiar_button);
         mEasLvlButton = (Button) findViewById(R.id.lvl_easy_button);
         mPerLvlButton = (Button) findViewById(R.id.lvl_perfect_button);
-        mAgaLvlButton = (Button) findViewById(R.id.lvl_again_button);
+        mAgaLvlButton = (ImageView) findViewById(R.id.lvl_again_button);
         mReviewProgressBar = (ProgressBar) findViewById(R.id.reviewProgressBar);
 
 
