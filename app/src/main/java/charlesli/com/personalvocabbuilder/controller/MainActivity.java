@@ -95,7 +95,9 @@ public class MainActivity extends AppCompatActivity {
     protected void onDestroy() {
         super.onDestroy();
 
-        textToSpeech.shutdown();
+        if (textToSpeech != null) {
+            textToSpeech.shutdown();
+        }
     }
 
     @Override

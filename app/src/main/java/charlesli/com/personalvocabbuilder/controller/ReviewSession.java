@@ -4,7 +4,9 @@ import android.content.ContentValues;
 import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.os.Build;
 import android.os.Bundle;
+import android.speech.tts.TextToSpeech;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
@@ -12,8 +14,11 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Locale;
 import java.util.Random;
 
 import charlesli.com.personalvocabbuilder.R;
@@ -59,10 +64,12 @@ public class ReviewSession extends AppCompatActivity {
     private Button mPerLvlButton;
     private ImageView mAgaLvlButton;
     private ProgressBar mReviewProgressBar;
+    private ImageView mSpeaker;
     private Cursor mCursor;
     private VocabDbHelper mDbHelper = VocabDbHelper.getDBHelper(ReviewSession.this);
     private Random mRandom = new Random();
     private ArrayList<Integer> mTracker = new ArrayList<Integer>();
+    private CustomTTS textToSpeech;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -84,6 +91,18 @@ public class ReviewSession extends AppCompatActivity {
         mReviewNumOfVocab = intent.getIntExtra("NumOfVocab", 0);
         mReviewType = intent.getIntExtra("Type", RANDOM_REVIEW_TYPE);
 
+        textToSpeech = new CustomTTS(this, new TextToSpeech.OnInitListener() {
+            @Override
+            public void onInit(int status) {
+                if (status != TextToSpeech.ERROR) {
+                    String selectedLocaleDisplayName = mDbHelper.getCategoryLocaleDisplayName(mReviewCategory);
+                    HashMap<String, Locale> displayNameToLocaleMapping = textToSpeech.getSupportedDisplayNameToLocaleMapping();
+
+                    textToSpeech.setLanguage(displayNameToLocaleMapping.get(selectedLocaleDisplayName));
+                }
+            }
+        }, "com.google.android.tts");
+
         mTopTextView = (TextView) findViewById(R.id.topTextView);
         mBottomTextView = (TextView) findViewById(R.id.bottomTextView);
         mRevealButton = (Button) findViewById(R.id.revealButton);
@@ -93,6 +112,7 @@ public class ReviewSession extends AppCompatActivity {
         mPerLvlButton = (Button) findViewById(R.id.lvl_perfect_button);
         mAgaLvlButton = (ImageView) findViewById(R.id.lvl_again_button);
         mReviewProgressBar = (ProgressBar) findViewById(R.id.reviewProgressBar);
+        mSpeaker = (ImageView) findViewById(R.id.pronounceVocab);
 
 
         switch (mReviewType) {
@@ -119,7 +139,14 @@ public class ReviewSession extends AppCompatActivity {
         loadVocabInRandomOrder();
     }
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
 
+        if (textToSpeech != null) {
+            textToSpeech.shutdown();
+        }
+    }
 
     private void loadVocabInRandomOrder() {
         int numOfRows = mCursor.getCount();
@@ -131,26 +158,47 @@ public class ReviewSession extends AppCompatActivity {
 
         mCursor.moveToPosition(randomNum);
         // Get word and definition from Desired Random Row
-        String word = mCursor.getString(mCursor.getColumnIndexOrThrow(VocabDbContract.COLUMN_NAME_VOCAB));
+        final String word = mCursor.getString(mCursor.getColumnIndexOrThrow(VocabDbContract.COLUMN_NAME_VOCAB));
         String definition = mCursor.getString(mCursor.getColumnIndexOrThrow(VocabDbContract.COLUMN_NAME_DEFINITION));
         final int curLevel = mCursor.getInt(mCursor.getColumnIndexOrThrow(VocabDbContract.COLUMN_NAME_LEVEL));
+
+        mSpeaker.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (textToSpeech != null) {
+                    if (Build.VERSION.SDK_INT >= 21) {
+                        textToSpeech.speak(word, TextToSpeech.QUEUE_FLUSH, null, "1");
+
+                    } else {
+                        textToSpeech.speak(word, TextToSpeech.QUEUE_FLUSH, null);
+                    }
+                }
+                else {
+                    Toast.makeText(ReviewSession.this, "Sorry, the speech engine is currently unavailable.", Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
 
         if (mReviewMode == VOCAB_TO_DEF_REVIEW_MODE) {
             mTopTextView.setText(word);
             mBottomTextView.setText(definition);
+            mSpeaker.setVisibility(View.VISIBLE);
         }
         else if (mReviewMode == DEF_TO_VOCAB_REVIEW_MODE) {
             mTopTextView.setText(definition);
             mBottomTextView.setText(word);
+            mSpeaker.setVisibility(View.INVISIBLE);
         }
         else {
             if (mRandom.nextBoolean()) {
                 mTopTextView.setText(word);
                 mBottomTextView.setText(definition);
+                mSpeaker.setVisibility(View.VISIBLE);
             }
             else {
                 mTopTextView.setText(definition);
                 mBottomTextView.setText(word);
+                mSpeaker.setVisibility(View.INVISIBLE);
             }
         }
 
@@ -167,6 +215,7 @@ public class ReviewSession extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 mRevealButton.setVisibility(View.INVISIBLE);
+                mSpeaker.setVisibility(View.VISIBLE);
 
                 mDifLvlButton.setVisibility(View.VISIBLE);
                 mFamLvlButton.setVisibility(View.VISIBLE);

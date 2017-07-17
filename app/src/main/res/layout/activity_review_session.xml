@@ -28,7 +28,6 @@
         android:layout_marginTop="140dp"
         android:text="@string/sample_word"
         android:textAppearance="?android:attr/textAppearanceLarge"
-        app:layout_constraintDimensionRatio=""
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
@@ -56,7 +55,6 @@
         style="@style/Widget.AppCompat.Button.Colored"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="-14dp"
         android:layout_marginEnd="8dp"
         android:layout_marginLeft="0dp"
         android:layout_marginRight="0dp"
@@ -73,49 +71,47 @@
         style="@style/Widget.AppCompat.Button.Colored"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="0dp"
+        android:layout_marginBottom="0dp"
         android:text="@string/level_difficult"
         android:theme="@style/LightAppColor.Button"
-        app:layout_constraintLeft_toRightOf="@+id/lvl_familiar_button"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/lvl_perfect_button" />
+        app:layout_constraintBottom_toBottomOf="@+id/revealButton"
+        app:layout_constraintHorizontal_chainStyle="spread"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toLeftOf="@+id/lvl_familiar_button" />
 
     <Button
         android:id="@+id/lvl_familiar_button"
         style="@style/Widget.AppCompat.Button.Colored"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="0dp"
         android:text="@string/level_familiar"
         android:theme="@style/LightAppColor.Button"
-        app:layout_constraintLeft_toRightOf="@+id/lvl_easy_button"
-        app:layout_constraintRight_toLeftOf="@+id/lvl_difficult_button"
-        app:layout_constraintTop_toTopOf="@+id/lvl_perfect_button" />
+        app:layout_constraintLeft_toRightOf="@+id/lvl_difficult_button"
+        app:layout_constraintRight_toLeftOf="@+id/lvl_easy_button"
+        app:layout_constraintTop_toTopOf="@+id/lvl_difficult_button" />
 
     <Button
         android:id="@+id/lvl_easy_button"
         style="@style/Widget.AppCompat.Button.Colored"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="0dp"
         android:text="@string/level_easy"
         android:theme="@style/LightAppColor.Button"
-        app:layout_constraintLeft_toRightOf="@+id/lvl_perfect_button"
-        app:layout_constraintRight_toLeftOf="@+id/lvl_familiar_button"
-        app:layout_constraintTop_toTopOf="@+id/lvl_perfect_button" />
+        app:layout_constraintLeft_toRightOf="@+id/lvl_familiar_button"
+        app:layout_constraintRight_toLeftOf="@+id/lvl_perfect_button"
+        app:layout_constraintTop_toTopOf="@+id/lvl_difficult_button" />
 
     <Button
         android:id="@+id/lvl_perfect_button"
         style="@style/Widget.AppCompat.Button.Colored"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="0dp"
         android:text="@string/level_perfect"
         android:theme="@style/LightAppColor.Button"
-        app:layout_constraintBottom_toBottomOf="@+id/revealButton"
         app:layout_constraintHorizontal_chainStyle="spread_inside"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toLeftOf="@+id/lvl_easy_button" />
+        app:layout_constraintLeft_toRightOf="@+id/lvl_easy_button"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/lvl_difficult_button" />
 
     <me.zhanghai.android.materialprogressbar.MaterialProgressBar
         android:id="@+id/reviewProgressBar"
