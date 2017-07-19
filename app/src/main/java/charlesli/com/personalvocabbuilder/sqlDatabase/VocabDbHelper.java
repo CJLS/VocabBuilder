@@ -194,10 +194,11 @@ public class VocabDbHelper extends SQLiteOpenHelper {
         db.insert(VocabDbContract.TABLE_NAME_MY_VOCAB, null, values);
     }
 
-    public void updateVocabDefinition(String selectedVocab, String selectedDefinition, String newDefinition) {
+    public void updateVocabDefinition(String selectedVocab, String selectedDefinition, String newVocab, String newDefinition) {
         SQLiteDatabase db = this.getReadableDatabase();
 
         ContentValues values = new ContentValues();
+        values.put(VocabDbContract.COLUMN_NAME_VOCAB, newVocab);
         values.put(VocabDbContract.COLUMN_NAME_DEFINITION, newDefinition);
 
         String selectionMyVocab = VocabDbContract.COLUMN_NAME_VOCAB + " = ? AND " +

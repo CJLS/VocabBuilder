@@ -20,8 +20,8 @@ public class EditCategoryDialog extends CustomDialog {
                               final String selectedCategory, String selectedDesc) {
         super(context);
 
-        final EditText categoryNameInput = new EditText(getContext());
-        final EditText categoryDescInput = new EditText(getContext());
+        final EditText categoryNameInput = new EditText(context);
+        final EditText categoryDescInput = new EditText(context);
         setTitle("Edit Category");
         setView(setUpCustomDialogLayout(categoryNameInput, categoryDescInput,
                 selectedCategory, selectedDesc));

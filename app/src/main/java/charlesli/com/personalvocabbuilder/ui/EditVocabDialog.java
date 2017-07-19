@@ -27,18 +27,12 @@ public class EditVocabDialog extends CustomDialog {
         super(context);
 
         setTitle("Edit Vocab");
-        setMessage(selectedVocab);
 
-        LinearLayout layout = new LinearLayout(context);
-        layout.setOrientation(LinearLayout.VERTICAL);
-
+        final EditText vocabInput = new EditText(context);
         final EditText definitionInput = new EditText(context);
-        definitionInput.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_FLAG_AUTO_COMPLETE);
-        definitionInput.setHint("New Definition");
-        definitionInput.setText(selectedDefinition);
-        layout.addView(definitionInput);
 
-        setView(layout);
+        setView(setUpCustomDialogLayout(vocabInput, definitionInput,
+                selectedVocab, selectedDefinition));
 
         setButton(BUTTON_NEUTRAL, "Cancel", new DialogInterface.OnClickListener() {
             @Override
@@ -49,8 +43,9 @@ public class EditVocabDialog extends CustomDialog {
         setButton(BUTTON_POSITIVE, "Update", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
+                String vocab = vocabInput.getText().toString();
                 String definition = definitionInput.getText().toString();
-                dbHelper.updateVocabDefinition(selectedVocab, selectedDefinition, definition);
+                dbHelper.updateVocabDefinition(selectedVocab, selectedDefinition, vocab, definition);
 
                 // Update Cursor
                 SharedPreferences sharedPreferences = getContext().getSharedPreferences("Sort Order", MODE_PRIVATE);
@@ -71,5 +66,24 @@ public class EditVocabDialog extends CustomDialog {
                 cursorAdapter.changeCursor(cursor);
             }
         });
+    }
+
+    private LinearLayout setUpCustomDialogLayout(EditText vocabInput, EditText definitionInput,
+                                                 String selectedVocab, String selectedDefinition) {
+        LinearLayout layout = new LinearLayout(getContext());
+        layout.setOrientation(LinearLayout.VERTICAL);
+
+        vocabInput.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_FLAG_AUTO_COMPLETE);
+        vocabInput.setHint("New vocab");
+        vocabInput.setText(selectedVocab);
+        layout.addView(vocabInput);
+
+
+        definitionInput.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_FLAG_AUTO_COMPLETE);
+        definitionInput.setHint("New definition");
+        definitionInput.setText(selectedDefinition);
+        layout.addView(definitionInput);
+
+        return layout;
     }
 }
