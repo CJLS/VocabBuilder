@@ -2,11 +2,13 @@ package charlesli.com.personalvocabbuilder.ui;
 
 import android.content.Context;
 import android.content.DialogInterface;
+import android.speech.tts.TextToSpeech;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Spinner;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -27,7 +29,7 @@ public class SpeechSettingsDialog extends CustomDialog {
     private int selectedPos;
     private String selectedLocaleDisplayName;
 
-    public SpeechSettingsDialog(Context context, final String category, final CustomTTS textToSpeech) {
+    public SpeechSettingsDialog(final Context context, final String category, final CustomTTS textToSpeech) {
         super(context);
 
         setTitle("Speech Settings");
@@ -50,7 +52,10 @@ public class SpeechSettingsDialog extends CustomDialog {
             public void onClick(DialogInterface dialog, int which) {
                 selectedLocaleDisplayName = supportedLanguages.get(selectedPos);
                 dbHelper.updateCategoryLocaleDisplayName(category, selectedLocaleDisplayName);
-                textToSpeech.setLanguage(displayNameToLocaleMapping.get(selectedLocaleDisplayName));
+                int result = textToSpeech.setLanguage(displayNameToLocaleMapping.get(selectedLocaleDisplayName));
+                if (result == TextToSpeech.LANG_MISSING_DATA || result == TextToSpeech.LANG_NOT_SUPPORTED) {
+                    Toast.makeText(context, "Please enable internet to download the selected language voice data", Toast.LENGTH_SHORT).show();
+                }
             }
         });
 

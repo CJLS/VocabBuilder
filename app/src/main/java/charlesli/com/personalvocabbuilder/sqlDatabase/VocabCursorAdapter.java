@@ -31,14 +31,12 @@ public class VocabCursorAdapter extends CursorAdapter {
 
     public List<Integer> selectedItemsPositions;
     private TextToSpeech textToSpeech;
-    private Context context;
 
 
     public VocabCursorAdapter(Context context, Cursor cursor, TextToSpeech textToSpeech) {
         super(context, cursor, 0);
 
         selectedItemsPositions = new ArrayList<>();
-        this.context = context;
         this.textToSpeech = textToSpeech;
     }
 
@@ -93,10 +91,12 @@ public class VocabCursorAdapter extends CursorAdapter {
         CheckBox box = (CheckBox) view.findViewById(R.id.editCheckbox);
         box.setTag(cursor.getPosition());
 
-        if (selectedItemsPositions.contains(cursor.getPosition()))
+        if (selectedItemsPositions.contains(cursor.getPosition())) {
             box.setChecked(true);
-        else
+        }
+        else {
             box.setChecked(false);
+        }
 
         ImageView speaker = (ImageView) view.findViewById(R.id.vocabSpeaker);
         speaker.setOnClickListener(new View.OnClickListener() {

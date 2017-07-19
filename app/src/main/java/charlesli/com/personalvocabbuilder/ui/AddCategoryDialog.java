@@ -2,6 +2,7 @@ package charlesli.com.personalvocabbuilder.ui;
 
 import android.content.Context;
 import android.content.DialogInterface;
+import android.speech.tts.TextToSpeech;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.AdapterView;
@@ -29,7 +30,7 @@ public class AddCategoryDialog extends CustomDialog {
 
     private int selectedPos;
 
-    public AddCategoryDialog(final Context context, final CategoryCursorAdapter categoryAdapter, CustomTTS textToSpeech) {
+    public AddCategoryDialog(final Context context, final CategoryCursorAdapter categoryAdapter, final CustomTTS textToSpeech) {
         super(context);
 
         setTitle("Add Category");
@@ -60,7 +61,12 @@ public class AddCategoryDialog extends CustomDialog {
                 else {
                     dbHelper.insertCategory(categoryName, description);
                     categoryAdapter.changeCursor(dbHelper.getCategoryCursor());
-                    dbHelper.updateCategoryLocaleDisplayName(categoryName, supportedLanguages.get(selectedPos));
+                    String selectedLocaleDisplayName = supportedLanguages.get(selectedPos);
+                    dbHelper.updateCategoryLocaleDisplayName(categoryName, selectedLocaleDisplayName);
+                    int result = textToSpeech.isLanguageAvailable(displayNameToLocaleMapping.get(selectedLocaleDisplayName));
+                    if (result == TextToSpeech.LANG_MISSING_DATA || result == TextToSpeech.LANG_NOT_SUPPORTED) {
+                        Toast.makeText(context, "Please enable internet to download the selected language voice data", Toast.LENGTH_SHORT).show();
+                    }
                 }
             }
         });
