@@ -73,22 +73,24 @@ public class MyVocab extends AppCompatActivity {
                     if (result == TextToSpeech.LANG_MISSING_DATA || result == TextToSpeech.LANG_NOT_SUPPORTED) {
                         Toast.makeText(MyVocab.this, "Please enable internet to download the selected language voice data", Toast.LENGTH_SHORT).show();
                     }
-                    textToSpeech.setOnUtteranceProgressListener(new UtteranceProgressListener() {
-                        @Override
-                        public void onStart(String s) {
+                    else {
+                        textToSpeech.setOnUtteranceProgressListener(new UtteranceProgressListener() {
+                            @Override
+                            public void onStart(String s) {
 
-                        }
+                            }
 
-                        @Override
-                        public void onDone(String s) {
+                            @Override
+                            public void onDone(String s) {
 
-                        }
+                            }
 
-                        @Override
-                        public void onError(String s) {
-                            Toast.makeText(MyVocab.this, "Language voice data might not be downloaded yet. Please enable internet when a new language is selected", Toast.LENGTH_LONG).show();
-                        }
-                    });
+                            @Override
+                            public void onError(String s) {
+                                Toast.makeText(MyVocab.this, "Language voice data might not be downloaded yet. Please enable internet when a new language is selected", Toast.LENGTH_LONG).show();
+                            }
+                        });
+                    }
                 }
             }
         }, "com.google.android.tts");
