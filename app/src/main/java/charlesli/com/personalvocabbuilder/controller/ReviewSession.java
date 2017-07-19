@@ -7,6 +7,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.os.Build;
 import android.os.Bundle;
 import android.speech.tts.TextToSpeech;
+import android.speech.tts.UtteranceProgressListener;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
@@ -98,7 +99,29 @@ public class ReviewSession extends AppCompatActivity {
                     String selectedLocaleDisplayName = mDbHelper.getCategoryLocaleDisplayName(mReviewCategory);
                     HashMap<String, Locale> displayNameToLocaleMapping = textToSpeech.getSupportedDisplayNameToLocaleMapping();
 
-                    textToSpeech.setLanguage(displayNameToLocaleMapping.get(selectedLocaleDisplayName));
+                    int result = textToSpeech.setLanguage(displayNameToLocaleMapping.get(selectedLocaleDisplayName));
+
+                    if (result == TextToSpeech.LANG_MISSING_DATA || result == TextToSpeech.LANG_NOT_SUPPORTED) {
+                        Toast.makeText(ReviewSession.this, "Please enable internet to download the selected language voice data", Toast.LENGTH_SHORT).show();
+                    }
+                    else {
+                        textToSpeech.setOnUtteranceProgressListener(new UtteranceProgressListener() {
+                            @Override
+                            public void onStart(String s) {
+
+                            }
+
+                            @Override
+                            public void onDone(String s) {
+
+                            }
+
+                            @Override
+                            public void onError(String s) {
+                                Toast.makeText(ReviewSession.this, "Language voice data might not be downloaded yet. Please enable internet when a new language is selected", Toast.LENGTH_LONG).show();
+                            }
+                        });
+                    }
                 }
             }
         }, "com.google.android.tts");
