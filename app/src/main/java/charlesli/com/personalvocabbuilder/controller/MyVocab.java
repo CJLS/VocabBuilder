@@ -12,6 +12,7 @@ import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -32,6 +33,7 @@ import charlesli.com.personalvocabbuilder.ui.AddVocabDialog;
 import charlesli.com.personalvocabbuilder.ui.CopyVocabDialog;
 import charlesli.com.personalvocabbuilder.ui.EditVocabDialog;
 import charlesli.com.personalvocabbuilder.ui.SortVocabDialog;
+import charlesli.com.personalvocabbuilder.ui.SpeechLimitDialog;
 import charlesli.com.personalvocabbuilder.ui.SpeechSettingsDialog;
 
 import static charlesli.com.personalvocabbuilder.sqlDatabase.VocabDbContract.DATE_ASC;
@@ -62,6 +64,8 @@ public class MyVocab extends AppCompatActivity {
         categoryName = intent.getStringExtra("Category");
         setTitle(categoryName);
 
+        final int[] speechCount = {0};
+
         textToSpeech = new CustomTTS(this, new TextToSpeech.OnInitListener() {
             @Override
             public void onInit(int status) {
@@ -77,17 +81,33 @@ public class MyVocab extends AppCompatActivity {
                         textToSpeech.setOnUtteranceProgressListener(new UtteranceProgressListener() {
                             @Override
                             public void onStart(String s) {
-
                             }
 
                             @Override
                             public void onDone(String s) {
-
+                                Log.d("TTS:", "done");
+                                speechCount[0]++;
+                                if (speechCount[0] > 3) {
+                                    Log.d("TTS:", "success");
+                                    runOnUiThread(new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            SpeechLimitDialog dialog = new SpeechLimitDialog(MyVocab.this);
+                                            dialog.show();
+                                            dialog.changeButtonsToAppIconColor();
+                                        }
+                                    });
+                                }
                             }
 
                             @Override
                             public void onError(String s) {
-                                Toast.makeText(MyVocab.this, "Language voice data might not be downloaded yet. Please enable internet when a new language is selected", Toast.LENGTH_LONG).show();
+                                runOnUiThread(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        Toast.makeText(MyVocab.this, "Voice data might not be downloaded. Please enable internet when a new language is selected", Toast.LENGTH_LONG).show();
+                                    }
+                                });
                             }
                         });
                     }
