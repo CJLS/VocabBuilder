@@ -124,6 +124,10 @@ public class MainActivity extends AppCompatActivity {
             Intent intent = new Intent(this, ImportActivity.class);
             startActivity(intent);
         }
+        else if (id == R.id.upgrade_button) {
+            Intent intent = new Intent(this, Subscription.class);
+            startActivity(intent);
+        }
         return super.onOptionsItemSelected(item);
     }
 

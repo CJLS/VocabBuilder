@@ -5,6 +5,7 @@ import android.content.IntentFilter;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -123,6 +124,13 @@ public class Subscription extends AppCompatActivity implements IabBroadcastRecei
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_subscription);
 
+        Toolbar myToolbar = (Toolbar) findViewById(R.id.my_toolbar);
+        setSupportActionBar(myToolbar);
+
+        if (getSupportActionBar() != null) {
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        }
+
         String compiledKy = reverse(getBaseContext().getString(R.string.firstR))
                 + getBaseContext().getString(R.string.middle)
                 + reverse(getBaseContext().getString(R.string.lastR));
@@ -175,8 +183,8 @@ public class Subscription extends AppCompatActivity implements IabBroadcastRecei
             }
         });
 
-        Button testButton = (Button) findViewById(R.id.testButton);
-        testButton.setOnClickListener(new View.OnClickListener() {
+        Button monthlySubButton = (Button) findViewById(R.id.yearlySubButtons);
+        monthlySubButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 if (!mHelper.subscriptionsSupported()) {
@@ -280,11 +288,7 @@ public class Subscription extends AppCompatActivity implements IabBroadcastRecei
         Log.d("IAB", "onActivityResult(" + requestCode + "," + resultCode + "," + data);
         if (mHelper == null) return;
 
-        // Pass on the activity result to the helper for handling
         if (!mHelper.handleActivityResult(requestCode, resultCode, data)) {
-            // not handled, so handle it ourselves (here's where you'd
-            // perform any handling of activity results not related to in-app
-            // billing...
             super.onActivityResult(requestCode, resultCode, data);
         }
         else {

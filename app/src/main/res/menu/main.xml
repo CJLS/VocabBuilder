@@ -27,4 +27,9 @@
         android:title="@string/importTitle"
         app:showAsAction="never"/>
 
+    <item android:id="@+id/upgrade_button"
+        android:orderInCategory="450"
+        android:title="@string/upgradeTitle"
+        app:showAsAction="never"/>
+
 </menu>
