@@ -6,9 +6,13 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import charlesli.com.personalvocabbuilder.R;
 import charlesli.com.personalvocabbuilder.inAppBillingUtil.IabBroadcastReceiver;
@@ -23,32 +27,41 @@ public class Subscription extends AppCompatActivity implements IabBroadcastRecei
 
     // Provides purchase notification while this app is running
     IabBroadcastReceiver mBroadcastReceiver;
-    String SKU_TTS = "tts";
+    String SKU_MONTHLY_TTS = "monthly_tts";
+    String SKU_YEARLY_TTS = "yearly_tts";
 
-    // Does the user have an active subscription to the infinite tts plan?
+    String mPurchasedInfiniteTTSSku = "";
     boolean mSubscribedToInfiniteTTS = false;
-
-    // Will the subscription auto-renew?
-    boolean mAutoRenewEnabled = false;
+    int mTTSMonthlyLimit = 50;
     // Listener that's called when we finish querying the items and subscriptions we own
     IabHelper.QueryInventoryFinishedListener mGotInventoryListener = new IabHelper.QueryInventoryFinishedListener() {
         public void onQueryInventoryFinished(IabResult result, Inventory inventory) {
             Log.d("IAB", "Query inventory finished.");
 
-            // Have we been disposed of in the meantime? If so, quit.
             if (mHelper == null) return;
 
-            // Is it a failure?
             if (result.isFailure()) {
                 Log.d("IAB", "Failed to query inventory: " + result);
                 return;
             }
 
-            if (inventory.getSkuDetails(SKU_TTS) != null) {
-                String ttsPrice =
-                        inventory.getSkuDetails(SKU_TTS).getPrice();
+            if (inventory.getSkuDetails(SKU_MONTHLY_TTS) != null
+                    && inventory.getSkuDetails(SKU_YEARLY_TTS) != null) {
+                String monthlyTTSPrice =
+                        inventory.getSkuDetails(SKU_MONTHLY_TTS).getPrice();
+                Log.d("IAB", "monthlyTTSPrice " + monthlyTTSPrice);
 
-                Log.d("IAB", "ttsPrice " + ttsPrice);
+                String yearlyTTSPrice =
+                        inventory.getSkuDetails(SKU_YEARLY_TTS).getPrice();
+                Log.d("IAB", "yearlyTTSPrice " + yearlyTTSPrice);
+
+                Button monthlySubButton = (Button) findViewById(R.id.monthlySubButton);
+                String monthlyPriceInfo = monthlyTTSPrice + " / Month";
+                monthlySubButton.setText(monthlyPriceInfo);
+
+                Button yearlySubButton = (Button) findViewById(R.id.yearlySubButton);
+                String yearlyPriceInfo = (Float.parseFloat(yearlyTTSPrice) / 12.0 ) + " / Month";
+                yearlySubButton.setText(yearlyPriceInfo);
             }
             else {
                 Log.d("IAB", "ttsPrice " + "no SKU inventory");
@@ -62,26 +75,21 @@ public class Subscription extends AppCompatActivity implements IabBroadcastRecei
              * the developer payload to see if it's correct! See
              * verifyDeveloperPayload().
              */
-
-
-            // First find out which subscription is auto renewing
-            Purchase ttsMonthly = inventory.getPurchase(SKU_TTS);
-            if (ttsMonthly != null && ttsMonthly.isAutoRenewing()) {
-                mAutoRenewEnabled = true;
-            } else {
-                mAutoRenewEnabled = false;
+            Purchase ttsMonthly = inventory.getPurchase(SKU_MONTHLY_TTS);
+            if (ttsMonthly != null) {
+                mPurchasedInfiniteTTSSku = SKU_MONTHLY_TTS;
             }
-
-            // The user is subscribed if either subscription exists, even if neither is auto
-            // renewing
-            mSubscribedToInfiniteTTS = (ttsMonthly != null && verifyDeveloperPayload(ttsMonthly));
+            Purchase ttsYearly = inventory.getPurchase(SKU_YEARLY_TTS);
+            if (ttsYearly != null) {
+                mPurchasedInfiniteTTSSku = SKU_YEARLY_TTS;
+            }
+            mSubscribedToInfiniteTTS = (ttsMonthly != null && verifyDeveloperPayload(ttsMonthly))
+                    || (ttsYearly != null && verifyDeveloperPayload(ttsYearly));
             Log.d("IAB", "User " + (mSubscribedToInfiniteTTS ? "HAS" : "DOES NOT HAVE")
                     + " infinite tts subscription.");
 
-            //if (mSubscribedToInfiniteTTS) mTank = TANK_MAX;
+            if (mSubscribedToInfiniteTTS) mTTSMonthlyLimit = Integer.MAX_VALUE;
 
-            //updateUi();
-            //setWaitScreen(false);
             Log.d("IAB", "Initial inventory query finished; enabling main UI.");
         }
     };
@@ -104,11 +112,11 @@ public class Subscription extends AppCompatActivity implements IabBroadcastRecei
 
             Log.d("IAB", "Purchase successful.");
 
-            if (purchase.getSku().equals(SKU_TTS)) {
-                // bought the infinite tts subscription
+            if (purchase.getSku().equals(SKU_MONTHLY_TTS) || purchase.getSku().equals(SKU_YEARLY_TTS)) {
                 Log.d("IAB", "Infinite tts subscription purchased.");
                 mSubscribedToInfiniteTTS = true;
-                mAutoRenewEnabled = purchase.isAutoRenewing();
+                mTTSMonthlyLimit = Integer.MAX_VALUE;
+                Log.d("IAB", "Limit is now " + mTTSMonthlyLimit);
             }
         }
     };
@@ -164,26 +172,17 @@ public class Subscription extends AppCompatActivity implements IabBroadcastRecei
                 // IAB is fully set up. Now, let's get an inventory of stuff we own.
                 Log.d("IAB", "Setup successful. Querying inventory.");
                 try {
-                    mHelper.queryInventoryAsync(mGotInventoryListener);
+                    List<String> additionalSkuList = new ArrayList<String>();
+                    additionalSkuList.add(SKU_MONTHLY_TTS);
+                    additionalSkuList.add(SKU_YEARLY_TTS);
+                    mHelper.queryInventoryAsync(true, null, additionalSkuList, mGotInventoryListener);
                 } catch (IabHelper.IabAsyncInProgressException e) {
                     Log.d("IAB", "Error querying inventory. Another async operation in progress.");
                 }
-                /*
-                else {
-                    Log.d("Subscription", "Success setting up In-app Billing: " + result);
-                    List<String> additionalSkuList = new ArrayList<String>();
-                    additionalSkuList.add(SKU_TTS);
-                    try {
-                        mHelper.queryInventoryAsync(true, null, additionalSkuList, mQueryFinishedListener);
-                    } catch (IabHelper.IabAsyncInProgressException e) {
-                        Toast.makeText(Subscription.this, "Sorry something went wrong. Please try again later", Toast.LENGTH_SHORT).show();
-                    }
-                }
-                */
             }
         });
 
-        Button monthlySubButton = (Button) findViewById(R.id.yearlySubButtons);
+        Button monthlySubButton = (Button) findViewById(R.id.monthlySubButton);
         monthlySubButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -192,51 +191,47 @@ public class Subscription extends AppCompatActivity implements IabBroadcastRecei
                     return;
                 }
                 try {
-                    mHelper.launchPurchaseFlow(Subscription.this, SKU_TTS, 10001, mPurchaseFinishedListener, "");
+                    List<String> oldSku = null;
+                    if (!TextUtils.isEmpty(mPurchasedInfiniteTTSSku)
+                            && !mPurchasedInfiniteTTSSku.equals(SKU_MONTHLY_TTS)) {
+                        // The user currently has a valid subscription, any purchase action is going to
+                        // replace that subscription
+                        oldSku = new ArrayList<String>();
+                        oldSku.add(mPurchasedInfiniteTTSSku);
+                    }
+                    mHelper.launchPurchaseFlow(Subscription.this, SKU_MONTHLY_TTS, IabHelper.ITEM_TYPE_SUBS,
+                            oldSku, 10001, mPurchaseFinishedListener, "");
                 } catch (IabHelper.IabAsyncInProgressException e) {
                     Log.d("IAB", e.getMessage());
                 }
             }
         });
 
-
-
+        Button yearlySubButton = (Button) findViewById(R.id.yearlySubButton);
+        yearlySubButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (!mHelper.subscriptionsSupported()) {
+                    Log.d("IAB","Subscriptions not supported on your device yet. Sorry!");
+                    return;
+                }
+                try {
+                    List<String> oldSku = null;
+                    if (!TextUtils.isEmpty(mPurchasedInfiniteTTSSku)
+                            && !mPurchasedInfiniteTTSSku.equals(SKU_YEARLY_TTS)) {
+                        // The user currently has a valid subscription, any purchase action is going to
+                        // replace that subscription
+                        oldSku = new ArrayList<String>();
+                        oldSku.add(mPurchasedInfiniteTTSSku);
+                    }
+                    mHelper.launchPurchaseFlow(Subscription.this, SKU_YEARLY_TTS, IabHelper.ITEM_TYPE_SUBS,
+                            oldSku, 10001, mPurchaseFinishedListener, "");
+                } catch (IabHelper.IabAsyncInProgressException e) {
+                    Log.d("IAB", e.getMessage());
+                }
+            }
+        });
     }
-
-    // "Subscribe to infinite gas" button clicked. Explain to user, then start purchase
-    // flow for subscription.
-
-    /*
-    public void onInfiniteGasButtonClicked(View arg0) {
-        if (!mHelper.subscriptionsSupported()) {
-            Log.d("IAB","Subscriptions not supported on your device yet. Sorry!");
-            return;
-        }
-
-        CharSequence[] options = new CharSequence[1];
-        options[0] = "Unlimited TTS";
-        if (!mSubscribedToInfiniteTTS || !mAutoRenewEnabled) {
-            mFirstChoiceSku = SKU_INFINITE_GAS_MONTHLY;
-        }
-
-        int titleResId;
-        if (!mSubscribedToInfiniteTTS) {
-            titleResId = R.string.subscription_period_prompt;
-        } else if (!mAutoRenewEnabled) {
-            titleResId = R.string.subscription_resignup_prompt;
-        } else {
-            titleResId = R.string.subscription_update_prompt;
-        }
-
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setTitle(titleResId)
-                .setSingleChoiceItems(options, 0, this)
-                .setPositiveButton(R.string.subscription_prompt_continue, this)
-                .setNegativeButton(R.string.subscription_prompt_cancel, this);
-        AlertDialog dialog = builder.create();
-        dialog.show();
-    }
-    */
 
     /** Verifies the developer payload of a purchase. */
     boolean verifyDeveloperPayload(Purchase p) {

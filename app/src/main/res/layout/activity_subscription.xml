@@ -20,7 +20,7 @@
         app:popupTheme="@style/ThemeOverlay.AppCompat.Light" />
 
     <Button
-        android:id="@+id/yearlySubButtons"
+        android:id="@+id/yearlySubButton"
         style="@style/Widget.AppCompat.Button.Colored"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -33,7 +33,7 @@
         android:paddingLeft="40dp"
         android:paddingRight="40dp"
         android:paddingTop="15dp"
-        android:text="$0.83 / Month"
+        android:text="Yearly Plan"
         android:textAllCaps="false"
         android:textSize="18sp"
         android:theme="@style/SubColor.Button"
@@ -55,7 +55,7 @@
         android:paddingLeft="40dp"
         android:paddingRight="40dp"
         android:paddingTop="15dp"
-        android:text="$0.99 / Month"
+        android:text="Monthly Plan"
         android:textAllCaps="false"
         android:textSize="18sp"
         android:theme="@style/SubColor.Button"
@@ -148,6 +148,6 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/yearlySubButtons" />
+        app:layout_constraintTop_toBottomOf="@+id/yearlySubButton" />
 
 </android.support.constraint.ConstraintLayout>
