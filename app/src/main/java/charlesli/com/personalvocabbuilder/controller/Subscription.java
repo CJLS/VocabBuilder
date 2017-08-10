@@ -13,6 +13,8 @@ import android.widget.Button;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import charlesli.com.personalvocabbuilder.R;
 import charlesli.com.personalvocabbuilder.inAppBillingUtil.IabBroadcastReceiver;
@@ -47,21 +49,32 @@ public class Subscription extends AppCompatActivity implements IabBroadcastRecei
 
             if (inventory.getSkuDetails(SKU_MONTHLY_TTS) != null
                     && inventory.getSkuDetails(SKU_YEARLY_TTS) != null) {
-                String monthlyTTSPrice =
+                String monthlyTTSPriceWithCurrency =
                         inventory.getSkuDetails(SKU_MONTHLY_TTS).getPrice();
-                Log.d("IAB", "monthlyTTSPrice " + monthlyTTSPrice);
+                Log.d("IAB", "monthlyTTSPriceWithCurrency " + monthlyTTSPriceWithCurrency);
 
-                String yearlyTTSPrice =
+                String yearlyTTSPriceWithCurrency =
                         inventory.getSkuDetails(SKU_YEARLY_TTS).getPrice();
-                Log.d("IAB", "yearlyTTSPrice " + yearlyTTSPrice);
+                Log.d("IAB", "yearlyTTSPriceWithCurrency " + yearlyTTSPriceWithCurrency);
 
                 Button monthlySubButton = (Button) findViewById(R.id.monthlySubButton);
-                String monthlyPriceInfo = monthlyTTSPrice + " / Month";
+                String monthlyPriceInfo = monthlyTTSPriceWithCurrency + " / Month";
                 monthlySubButton.setText(monthlyPriceInfo);
 
                 Button yearlySubButton = (Button) findViewById(R.id.yearlySubButton);
-                String yearlyPriceInfo = (Float.parseFloat(yearlyTTSPrice) / 12.0 ) + " / Month";
+                String yearlyPriceInfo = yearlyTTSPriceWithCurrency + " / Year";
                 yearlySubButton.setText(yearlyPriceInfo);
+
+                Pattern pricePattern = Pattern.compile("[0-9]*\\.?[0-9]+");
+                Matcher priceMatcher = pricePattern.matcher(yearlyTTSPriceWithCurrency);
+                if (priceMatcher.find()) {
+                    String yearlyPrice = priceMatcher.group();
+                    float yearlyPricePerMonth = Float.parseFloat(yearlyPrice) / 12.0f;
+                    String yearlyPricePerMonthWithCurrency =
+                            priceMatcher.replaceFirst(String.valueOf(yearlyPricePerMonth));
+                    yearlyPriceInfo = yearlyPricePerMonthWithCurrency + " / Month";
+                    yearlySubButton.setText(yearlyPriceInfo);
+                }
             }
             else {
                 Log.d("IAB", "ttsPrice " + "no SKU inventory");
