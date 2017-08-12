@@ -13,6 +13,7 @@ import android.widget.Button;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -32,7 +33,8 @@ public class Subscription extends AppCompatActivity implements IabBroadcastRecei
     String SKU_MONTHLY_TTS = "monthly_tts";
     String SKU_YEARLY_TTS = "yearly_tts";
 
-    String mPurchasedInfiniteTTSSku = "";
+    boolean mAutoRenewEnabled = false;
+    String mSubscribedInfiniteTTSSku = "";
     boolean mSubscribedToInfiniteTTS = false;
     int mTTSMonthlyLimit = 50;
     // Listener that's called when we finish querying the items and subscriptions we own
@@ -53,13 +55,13 @@ public class Subscription extends AppCompatActivity implements IabBroadcastRecei
                         inventory.getSkuDetails(SKU_MONTHLY_TTS).getPrice();
                 Log.d("IAB", "monthlyTTSPriceWithCurrency " + monthlyTTSPriceWithCurrency);
 
-                String yearlyTTSPriceWithCurrency =
-                        inventory.getSkuDetails(SKU_YEARLY_TTS).getPrice();
-                Log.d("IAB", "yearlyTTSPriceWithCurrency " + yearlyTTSPriceWithCurrency);
-
                 Button monthlySubButton = (Button) findViewById(R.id.monthlySubButton);
                 String monthlyPriceInfo = monthlyTTSPriceWithCurrency + " / Month";
                 monthlySubButton.setText(monthlyPriceInfo);
+
+                String yearlyTTSPriceWithCurrency =
+                        inventory.getSkuDetails(SKU_YEARLY_TTS).getPrice();
+                Log.d("IAB", "yearlyTTSPriceWithCurrency " + yearlyTTSPriceWithCurrency);
 
                 Button yearlySubButton = (Button) findViewById(R.id.yearlySubButton);
                 String yearlyPriceInfo = yearlyTTSPriceWithCurrency + " / Year";
@@ -71,7 +73,7 @@ public class Subscription extends AppCompatActivity implements IabBroadcastRecei
                     String yearlyPrice = priceMatcher.group();
                     float yearlyPricePerMonth = Float.parseFloat(yearlyPrice) / 12.0f;
                     String yearlyPricePerMonthWithCurrency =
-                            priceMatcher.replaceFirst(String.valueOf(yearlyPricePerMonth));
+                            priceMatcher.replaceFirst(String.format(Locale.CANADA, "%.2f", yearlyPricePerMonth));
                     yearlyPriceInfo = yearlyPricePerMonthWithCurrency + " / Month";
                     yearlySubButton.setText(yearlyPriceInfo);
                 }
@@ -89,12 +91,18 @@ public class Subscription extends AppCompatActivity implements IabBroadcastRecei
              * verifyDeveloperPayload().
              */
             Purchase ttsMonthly = inventory.getPurchase(SKU_MONTHLY_TTS);
-            if (ttsMonthly != null) {
-                mPurchasedInfiniteTTSSku = SKU_MONTHLY_TTS;
-            }
             Purchase ttsYearly = inventory.getPurchase(SKU_YEARLY_TTS);
-            if (ttsYearly != null) {
-                mPurchasedInfiniteTTSSku = SKU_YEARLY_TTS;
+            if (ttsMonthly != null && ttsMonthly.isAutoRenewing()) {
+                mSubscribedInfiniteTTSSku = SKU_MONTHLY_TTS;
+                mAutoRenewEnabled = true;
+            }
+            else if (ttsYearly != null && ttsYearly.isAutoRenewing()) {
+                mSubscribedInfiniteTTSSku = SKU_YEARLY_TTS;
+                mAutoRenewEnabled = true;
+            }
+            else {
+                mSubscribedInfiniteTTSSku = "";
+                mAutoRenewEnabled = false;
             }
             mSubscribedToInfiniteTTS = (ttsMonthly != null && verifyDeveloperPayload(ttsMonthly))
                     || (ttsYearly != null && verifyDeveloperPayload(ttsYearly));
@@ -128,6 +136,8 @@ public class Subscription extends AppCompatActivity implements IabBroadcastRecei
             if (purchase.getSku().equals(SKU_MONTHLY_TTS) || purchase.getSku().equals(SKU_YEARLY_TTS)) {
                 Log.d("IAB", "Infinite tts subscription purchased.");
                 mSubscribedToInfiniteTTS = true;
+                mAutoRenewEnabled = purchase.isAutoRenewing();
+                mSubscribedInfiniteTTSSku = purchase.getSku();
                 mTTSMonthlyLimit = Integer.MAX_VALUE;
                 Log.d("IAB", "Limit is now " + mTTSMonthlyLimit);
             }
@@ -205,12 +215,12 @@ public class Subscription extends AppCompatActivity implements IabBroadcastRecei
                 }
                 try {
                     List<String> oldSku = null;
-                    if (!TextUtils.isEmpty(mPurchasedInfiniteTTSSku)
-                            && !mPurchasedInfiniteTTSSku.equals(SKU_MONTHLY_TTS)) {
+                    if (!TextUtils.isEmpty(mSubscribedInfiniteTTSSku)
+                            && !mSubscribedInfiniteTTSSku.equals(SKU_MONTHLY_TTS)) {
                         // The user currently has a valid subscription, any purchase action is going to
                         // replace that subscription
                         oldSku = new ArrayList<String>();
-                        oldSku.add(mPurchasedInfiniteTTSSku);
+                        oldSku.add(mSubscribedInfiniteTTSSku);
                     }
                     mHelper.launchPurchaseFlow(Subscription.this, SKU_MONTHLY_TTS, IabHelper.ITEM_TYPE_SUBS,
                             oldSku, 10001, mPurchaseFinishedListener, "");
@@ -230,12 +240,12 @@ public class Subscription extends AppCompatActivity implements IabBroadcastRecei
                 }
                 try {
                     List<String> oldSku = null;
-                    if (!TextUtils.isEmpty(mPurchasedInfiniteTTSSku)
-                            && !mPurchasedInfiniteTTSSku.equals(SKU_YEARLY_TTS)) {
+                    if (!TextUtils.isEmpty(mSubscribedInfiniteTTSSku)
+                            && !mSubscribedInfiniteTTSSku.equals(SKU_YEARLY_TTS)) {
                         // The user currently has a valid subscription, any purchase action is going to
                         // replace that subscription
                         oldSku = new ArrayList<String>();
-                        oldSku.add(mPurchasedInfiniteTTSSku);
+                        oldSku.add(mSubscribedInfiniteTTSSku);
                     }
                     mHelper.launchPurchaseFlow(Subscription.this, SKU_YEARLY_TTS, IabHelper.ITEM_TYPE_SUBS,
                             oldSku, 10001, mPurchaseFinishedListener, "");
