@@ -2,6 +2,7 @@ package charlesli.com.personalvocabbuilder.controller;
 
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
@@ -105,6 +106,18 @@ public class Subscription extends AppCompatActivity implements IabBroadcastRecei
                 mAutoRenewEnabled = false;
             }
             mSubscribedToInfiniteTTS = (ttsMonthly != null) || (ttsYearly != null);
+            if (mSubscribedToInfiniteTTS) {
+                SharedPreferences sharedPreferencesTest = getSharedPreferences("Test", MODE_PRIVATE);
+                SharedPreferences.Editor editor = sharedPreferencesTest.edit();
+                editor.putInt("QuotaTest", 150);
+                editor.apply();
+            }
+            else {
+                SharedPreferences sharedPreferencesTest = getSharedPreferences("Test", MODE_PRIVATE);
+                SharedPreferences.Editor editor = sharedPreferencesTest.edit();
+                editor.putInt("QuotaTest", 50);
+                editor.apply();
+            }
             Log.d("IAB", "User " + (mSubscribedToInfiniteTTS ? "HAS" : "DOES NOT HAVE")
                     + " infinite tts subscription.");
 

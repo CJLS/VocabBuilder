@@ -1,6 +1,7 @@
 package charlesli.com.personalvocabbuilder.controller;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.speech.tts.TextToSpeech;
@@ -12,6 +13,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import charlesli.com.personalvocabbuilder.R;
 import charlesli.com.personalvocabbuilder.sqlDatabase.CategoryCursorAdapter;
@@ -127,6 +129,18 @@ public class MainActivity extends AppCompatActivity {
         else if (id == R.id.upgrade_button) {
             Intent intent = new Intent(this, Subscription.class);
             startActivity(intent);
+        }
+        else if (id == R.id.test_button) {
+            SharedPreferences sharedPreferencesTest = getSharedPreferences("Test", MODE_PRIVATE);
+            int quota = sharedPreferencesTest.getInt("QuotaTest", 50);
+
+            Toast.makeText(this, "Quota: " + quota, Toast.LENGTH_SHORT).show();
+        }
+        else if (id == R.id.reset_button) {
+            SharedPreferences sharedPreferencesTest = getSharedPreferences("Test", MODE_PRIVATE);
+            SharedPreferences.Editor editor = sharedPreferencesTest.edit();
+            editor.putInt("QuotaTest", 50);
+            editor.apply();
         }
         return super.onOptionsItemSelected(item);
     }
