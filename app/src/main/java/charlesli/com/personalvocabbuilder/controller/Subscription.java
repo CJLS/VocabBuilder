@@ -11,6 +11,7 @@ import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.TextView;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -37,7 +38,6 @@ public class Subscription extends AppCompatActivity implements IabBroadcastRecei
     boolean mAutoRenewEnabled = false;
     String mSubscribedInfiniteTTSSku = "";
     boolean mSubscribedToInfiniteTTS = false;
-    int mTTSMonthlyLimit = 50;
     // Listener that's called when we finish querying the items and subscriptions we own
     IabHelper.QueryInventoryFinishedListener mGotInventoryListener = new IabHelper.QueryInventoryFinishedListener() {
         public void onQueryInventoryFinished(IabResult result, Inventory inventory) {
@@ -121,8 +121,6 @@ public class Subscription extends AppCompatActivity implements IabBroadcastRecei
             Log.d("IAB", "User " + (mSubscribedToInfiniteTTS ? "HAS" : "DOES NOT HAVE")
                     + " infinite tts subscription.");
 
-            if (mSubscribedToInfiniteTTS) mTTSMonthlyLimit = Integer.MAX_VALUE;
-
             Log.d("IAB", "Initial inventory query finished; enabling main UI.");
         }
     };
@@ -146,8 +144,6 @@ public class Subscription extends AppCompatActivity implements IabBroadcastRecei
                 mSubscribedToInfiniteTTS = true;
                 mAutoRenewEnabled = purchase.isAutoRenewing();
                 mSubscribedInfiniteTTSSku = purchase.getSku();
-                mTTSMonthlyLimit = Integer.MAX_VALUE;
-                Log.d("IAB", "Limit is now " + mTTSMonthlyLimit);
             }
         }
     };
@@ -189,13 +185,6 @@ public class Subscription extends AppCompatActivity implements IabBroadcastRecei
 
                 if (mHelper == null) return;
 
-                // Important: Dynamically register for broadcast messages about updated purchases.
-                // We register the receiver here instead of as a <receiver> in the Manifest
-                // because we always call getPurchases() at startup, so therefore we can ignore
-                // any broadcasts sent while the app isn't running.
-                // Note: registering this listener in an Activity is a bad idea, but is done here
-                // because this is a SAMPLE. Regardless, the receiver must be registered after
-                // IabHelper is setup, but before first call to getPurchases().
                 mBroadcastReceiver = new IabBroadcastReceiver(Subscription.this);
                 IntentFilter broadcastFilter = new IntentFilter(IabBroadcastReceiver.ACTION);
                 registerReceiver(mBroadcastReceiver, broadcastFilter);
@@ -260,6 +249,14 @@ public class Subscription extends AppCompatActivity implements IabBroadcastRecei
                 } catch (IabHelper.IabAsyncInProgressException e) {
                     Log.d("IAB", e.getMessage());
                 }
+            }
+        });
+
+        TextView noSubButton = (TextView) findViewById(R.id.noSubButton);
+        noSubButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                finish();
             }
         });
     }
