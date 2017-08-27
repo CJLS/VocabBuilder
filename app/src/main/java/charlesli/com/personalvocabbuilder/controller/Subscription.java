@@ -38,7 +38,7 @@ public class Subscription extends AppCompatActivity implements IabBroadcastRecei
     boolean mAutoRenewEnabled = false;
     String mSubscribedInfiniteTTSSku = "";
     boolean mSubscribedToInfiniteTTS = false;
-    // Listener that's called when we finish querying the items and subscriptions we own
+
     IabHelper.QueryInventoryFinishedListener mGotInventoryListener = new IabHelper.QueryInventoryFinishedListener() {
         public void onQueryInventoryFinished(IabResult result, Inventory inventory) {
             Log.d("IAB", "Query inventory finished.");
@@ -107,15 +107,16 @@ public class Subscription extends AppCompatActivity implements IabBroadcastRecei
             }
             mSubscribedToInfiniteTTS = (ttsMonthly != null) || (ttsYearly != null);
             if (mSubscribedToInfiniteTTS) {
-                SharedPreferences sharedPreferencesTest = getSharedPreferences("Test", MODE_PRIVATE);
-                SharedPreferences.Editor editor = sharedPreferencesTest.edit();
-                editor.putInt("QuotaTest", 150);
+                SharedPreferences sharedPreferencesTTS = getSharedPreferences(getString(R.string.ttsMonthlyLimitPref), MODE_PRIVATE);
+                SharedPreferences.Editor editor = sharedPreferencesTTS.edit();
+                editor.putBoolean(getString(R.string.isSubscribed), true);
+                editor.putInt(getString(R.string.remainingTTSQuota), 60);
                 editor.apply();
             }
             else {
-                SharedPreferences sharedPreferencesTest = getSharedPreferences("Test", MODE_PRIVATE);
-                SharedPreferences.Editor editor = sharedPreferencesTest.edit();
-                editor.putInt("QuotaTest", 50);
+                SharedPreferences sharedPreferencesTTS = getSharedPreferences(getString(R.string.ttsMonthlyLimitPref), MODE_PRIVATE);
+                SharedPreferences.Editor editor = sharedPreferencesTTS.edit();
+                editor.putBoolean(getString(R.string.isSubscribed), false);
                 editor.apply();
             }
             Log.d("IAB", "User " + (mSubscribedToInfiniteTTS ? "HAS" : "DOES NOT HAVE")

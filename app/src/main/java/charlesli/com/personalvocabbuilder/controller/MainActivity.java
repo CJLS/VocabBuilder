@@ -131,15 +131,19 @@ public class MainActivity extends AppCompatActivity {
             startActivity(intent);
         }
         else if (id == R.id.test_button) {
-            SharedPreferences sharedPreferencesTest = getSharedPreferences("Test", MODE_PRIVATE);
-            int quota = sharedPreferencesTest.getInt("QuotaTest", 50);
+            SharedPreferences sharedPreferencesTTS =
+                    getSharedPreferences(getString(R.string.ttsMonthlyLimitPref), MODE_PRIVATE);
+            boolean isSubscribed = sharedPreferencesTTS.getBoolean(getString(R.string.isSubscribed), false);
+            int remainingTTSQuota = sharedPreferencesTTS.getInt(getString(R.string.remainingTTSQuota), 60);
 
-            Toast.makeText(this, "Quota: " + quota, Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "Subscribed: " + isSubscribed + " Remaining Quota: " + remainingTTSQuota, Toast.LENGTH_SHORT).show();
         }
         else if (id == R.id.reset_button) {
-            SharedPreferences sharedPreferencesTest = getSharedPreferences("Test", MODE_PRIVATE);
-            SharedPreferences.Editor editor = sharedPreferencesTest.edit();
-            editor.putInt("QuotaTest", 50);
+            SharedPreferences sharedPreferencesTTS =
+                    getSharedPreferences(getString(R.string.ttsMonthlyLimitPref), MODE_PRIVATE);
+            SharedPreferences.Editor editor = sharedPreferencesTTS.edit();
+            editor.putBoolean(getString(R.string.isSubscribed), false);
+            editor.putInt(getString(R.string.remainingTTSQuota), 60);
             editor.apply();
         }
         return super.onOptionsItemSelected(item);

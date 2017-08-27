@@ -1,6 +1,7 @@
 package charlesli.com.personalvocabbuilder.sqlDatabase;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.os.Build;
 import android.speech.tts.TextToSpeech;
@@ -18,6 +19,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import charlesli.com.personalvocabbuilder.R;
+import charlesli.com.personalvocabbuilder.ui.SpeechLimitDialog;
+
+import static android.content.Context.MODE_PRIVATE;
 
 /**
  * Created by Li on 2015/4/17.
@@ -103,11 +107,22 @@ public class VocabCursorAdapter extends CursorAdapter {
             @Override
             public void onClick(View view) {
                 if (textToSpeech != null) {
-                    if (Build.VERSION.SDK_INT >= 21) {
-                        textToSpeech.speak(vocab, TextToSpeech.QUEUE_FLUSH, null, "1");
+                    SharedPreferences sharedPreferencesTTS =
+                            context.getSharedPreferences(context.getString(R.string.ttsMonthlyLimitPref), MODE_PRIVATE);
+                    boolean isSubscribed = sharedPreferencesTTS.getBoolean(context.getString(R.string.isSubscribed), false);
+                    int remainingTTSQuota = sharedPreferencesTTS.getInt(context.getString(R.string.remainingTTSQuota), 60);
+                    if (isSubscribed || (remainingTTSQuota > 0)) {
+                        if (Build.VERSION.SDK_INT >= 21) {
+                            textToSpeech.speak(vocab, TextToSpeech.QUEUE_FLUSH, null, "1");
 
-                    } else {
-                        textToSpeech.speak(vocab, TextToSpeech.QUEUE_FLUSH, null);
+                        } else {
+                            textToSpeech.speak(vocab, TextToSpeech.QUEUE_FLUSH, null);
+                        }
+                    }
+                    else {
+                        SpeechLimitDialog dialog = new SpeechLimitDialog(context);
+                        dialog.show();
+                        dialog.changeButtonsToAppIconColor();
                     }
                 }
                 else {
