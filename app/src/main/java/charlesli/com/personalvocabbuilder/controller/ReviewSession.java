@@ -2,6 +2,7 @@ package charlesli.com.personalvocabbuilder.controller;
 
 import android.content.ContentValues;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Build;
@@ -25,6 +26,7 @@ import java.util.Random;
 import charlesli.com.personalvocabbuilder.R;
 import charlesli.com.personalvocabbuilder.sqlDatabase.VocabDbContract;
 import charlesli.com.personalvocabbuilder.sqlDatabase.VocabDbHelper;
+import charlesli.com.personalvocabbuilder.ui.SpeechLimitDialog;
 
 import static charlesli.com.personalvocabbuilder.sqlDatabase.VocabDbContract.DATE_ASC;
 import static charlesli.com.personalvocabbuilder.sqlDatabase.VocabDbContract.DATE_DESC;
@@ -108,7 +110,16 @@ public class ReviewSession extends AppCompatActivity {
                         textToSpeech.setOnUtteranceProgressListener(new UtteranceProgressListener() {
                             @Override
                             public void onStart(String s) {
-
+                                SharedPreferences sharedPreferencesTTS =
+                                        getSharedPreferences(getString(R.string.ttsMonthlyLimitPref), MODE_PRIVATE);
+                                boolean isSubscribed = sharedPreferencesTTS.getBoolean(getString(R.string.isSubscribed), false);
+                                int remainingTTSQuota = sharedPreferencesTTS.getInt(getString(R.string.remainingTTSQuota), 60);
+                                SharedPreferences.Editor editor = sharedPreferencesTTS.edit();
+                                if (!isSubscribed) {
+                                    remainingTTSQuota -= 1;
+                                    editor.putInt(getString(R.string.remainingTTSQuota), remainingTTSQuota);
+                                    editor.apply();
+                                }
                             }
 
                             @Override
@@ -189,11 +200,22 @@ public class ReviewSession extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 if (textToSpeech != null) {
-                    if (Build.VERSION.SDK_INT >= 21) {
-                        textToSpeech.speak(word, TextToSpeech.QUEUE_FLUSH, null, "1");
+                    SharedPreferences sharedPreferencesTTS =
+                            getSharedPreferences(getString(R.string.ttsMonthlyLimitPref), MODE_PRIVATE);
+                    boolean isSubscribed = sharedPreferencesTTS.getBoolean(getString(R.string.isSubscribed), false);
+                    int remainingTTSQuota = sharedPreferencesTTS.getInt(getString(R.string.remainingTTSQuota), 60);
+                    if (isSubscribed || (remainingTTSQuota > 0)) {
+                        if (Build.VERSION.SDK_INT >= 21) {
+                            textToSpeech.speak(word, TextToSpeech.QUEUE_FLUSH, null, "1");
 
-                    } else {
-                        textToSpeech.speak(word, TextToSpeech.QUEUE_FLUSH, null);
+                        } else {
+                            textToSpeech.speak(word, TextToSpeech.QUEUE_FLUSH, null);
+                        }
+                    }
+                    else {
+                        SpeechLimitDialog dialog = new SpeechLimitDialog(ReviewSession.this);
+                        dialog.show();
+                        dialog.changeButtonsToAppIconColor();
                     }
                 }
                 else {
