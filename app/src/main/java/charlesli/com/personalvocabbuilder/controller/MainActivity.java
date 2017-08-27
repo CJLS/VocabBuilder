@@ -8,12 +8,15 @@ import android.speech.tts.TextToSpeech;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.Toast;
+
+import java.util.Calendar;
 
 import charlesli.com.personalvocabbuilder.R;
 import charlesli.com.personalvocabbuilder.sqlDatabase.CategoryCursorAdapter;
@@ -84,6 +87,22 @@ public class MainActivity extends AppCompatActivity {
             public void onInit(int status) {
             }
         }, "com.google.android.tts");
+
+        int dayOfMonth = refreshTTSQuota(60);
+        Log.d("TTS", String.valueOf(dayOfMonth));
+    }
+
+    private int refreshTTSQuota(int monthlyQuota) {
+        Calendar calendar = Calendar.getInstance();
+        int dayOfMonth = calendar.get(Calendar.DAY_OF_MONTH);
+        if (dayOfMonth == 1) {
+            SharedPreferences sharedPreferencesTTS =
+                    getSharedPreferences(getString(R.string.ttsMonthlyLimitPref), MODE_PRIVATE);
+            SharedPreferences.Editor editor = sharedPreferencesTTS.edit();
+            editor.putInt(getString(R.string.remainingTTSQuota), monthlyQuota);
+            editor.apply();
+        }
+        return dayOfMonth;
     }
 
     @Override
