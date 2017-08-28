@@ -8,7 +8,6 @@ import android.speech.tts.TextToSpeech;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -88,21 +87,7 @@ public class MainActivity extends AppCompatActivity {
             }
         }, "com.google.android.tts");
 
-        int dayOfMonth = refreshTTSQuota(60);
-        Log.d("TTS", String.valueOf(dayOfMonth));
-    }
-
-    private int refreshTTSQuota(int monthlyQuota) {
-        Calendar calendar = Calendar.getInstance();
-        int dayOfMonth = calendar.get(Calendar.DAY_OF_MONTH);
-        if (dayOfMonth == 1) {
-            SharedPreferences sharedPreferencesTTS =
-                    getSharedPreferences(getString(R.string.ttsMonthlyLimitPref), MODE_PRIVATE);
-            SharedPreferences.Editor editor = sharedPreferencesTTS.edit();
-            editor.putInt(getString(R.string.remainingTTSQuota), monthlyQuota);
-            editor.apply();
-        }
-        return dayOfMonth;
+        refreshTTSQuota(60);
     }
 
     @Override
@@ -197,6 +182,20 @@ public class MainActivity extends AppCompatActivity {
         EditCategoryDialog dialog = new EditCategoryDialog(this, mCategoryAdapter, selectedCategory, selectedDesc);
         dialog.show();
         dialog.changeButtonsToAppIconColor();
+    }
+
+    private void refreshTTSQuota(int monthlyQuota) {
+        Calendar calendar = Calendar.getInstance();
+        SharedPreferences sharedPreferencesTTS =
+                getSharedPreferences(getString(R.string.ttsMonthlyLimitPref), MODE_PRIVATE);
+        int currentMonth = calendar.get(Calendar.MONTH);
+        int lastUpdatedMonth = sharedPreferencesTTS.getInt(getString(R.string.lastUpdatedMonth), -1);
+        if (currentMonth != lastUpdatedMonth) {
+            SharedPreferences.Editor editor = sharedPreferencesTTS.edit();
+            editor.putInt(getString(R.string.lastUpdatedMonth), currentMonth);
+            editor.putInt(getString(R.string.remainingTTSQuota), monthlyQuota);
+            editor.apply();
+        }
     }
 
 }
