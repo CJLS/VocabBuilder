@@ -13,7 +13,7 @@
  * limitations under the License.
  */
 
-package charlesli.com.personalvocabbuilder.inAppBillingUtil;
+package charlesli.com.personalvocabbuilder.inAppBilling;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;

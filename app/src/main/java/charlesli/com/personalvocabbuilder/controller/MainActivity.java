@@ -8,6 +8,7 @@ import android.speech.tts.TextToSpeech;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -15,9 +16,15 @@ import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.Toast;
 
+import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.List;
 
 import charlesli.com.personalvocabbuilder.R;
+import charlesli.com.personalvocabbuilder.inAppBilling.IabHelper;
+import charlesli.com.personalvocabbuilder.inAppBilling.IabResult;
+import charlesli.com.personalvocabbuilder.inAppBilling.Inventory;
+import charlesli.com.personalvocabbuilder.inAppBilling.Purchase;
 import charlesli.com.personalvocabbuilder.sqlDatabase.CategoryCursorAdapter;
 import charlesli.com.personalvocabbuilder.sqlDatabase.VocabDbContract;
 import charlesli.com.personalvocabbuilder.sqlDatabase.VocabDbHelper;
@@ -27,12 +34,62 @@ import charlesli.com.personalvocabbuilder.ui.ModifyMyWordBankCategoryDialog;
 import charlesli.com.personalvocabbuilder.ui.ReviewDialog;
 import charlesli.com.personalvocabbuilder.ui.TranslationSettingsDialog;
 
+import static charlesli.com.personalvocabbuilder.controller.Subscription.SKU_MONTHLY_TTS;
+import static charlesli.com.personalvocabbuilder.controller.Subscription.SKU_YEARLY_TTS;
+import static charlesli.com.personalvocabbuilder.controller.Subscription.reverse;
+
 
 public class MainActivity extends AppCompatActivity {
 
+    public static final String MONTHLY_TTS_PRICE_EXTRA = "MONTHLY_TTS_PRICE";
+    public static final String YEARLY_TTS_PRICE_EXTRA = "MONTHLY_TTS_PRICE";
     private CategoryCursorAdapter mCategoryAdapter;
     private VocabDbHelper mDbHelper = VocabDbHelper.getDBHelper(MainActivity.this);
     private CustomTTS textToSpeech;
+    private IabHelper mHelper;
+    private String monthlyTTSPrice;
+    private String yearlyTTSPrice;
+    IabHelper.QueryInventoryFinishedListener mGotInventoryListener = new IabHelper.QueryInventoryFinishedListener() {
+        public void onQueryInventoryFinished(IabResult result, Inventory inventory) {
+            Log.d("IAB", "Query inventory finished.");
+
+            if (mHelper == null) return;
+
+            if (result.isFailure()) {
+                Log.d("IAB", "Failed to query inventory: " + result);
+                return;
+            }
+
+            if (inventory.getSkuDetails(SKU_MONTHLY_TTS) != null
+                    && inventory.getSkuDetails(SKU_YEARLY_TTS) != null) {
+                monthlyTTSPrice =
+                        inventory.getSkuDetails(SKU_MONTHLY_TTS).getPrice();
+                yearlyTTSPrice =
+                        inventory.getSkuDetails(SKU_YEARLY_TTS).getPrice();
+            }
+
+            Log.d("IAB", "Query inventory was successful.");
+
+            Purchase ttsMonthly = inventory.getPurchase(SKU_MONTHLY_TTS);
+            Purchase ttsYearly = inventory.getPurchase(SKU_YEARLY_TTS);
+
+            if ((ttsMonthly != null) || (ttsYearly != null)) {
+                SharedPreferences sharedPreferencesTTS = getSharedPreferences(getString(R.string.ttsMonthlyLimitPref), MODE_PRIVATE);
+                SharedPreferences.Editor editor = sharedPreferencesTTS.edit();
+                editor.putBoolean(getString(R.string.isSubscribed), true);
+                editor.putInt(getString(R.string.remainingTTSQuota), 60);
+                editor.apply();
+            }
+            else {
+                SharedPreferences sharedPreferencesTTS = getSharedPreferences(getString(R.string.ttsMonthlyLimitPref), MODE_PRIVATE);
+                SharedPreferences.Editor editor = sharedPreferencesTTS.edit();
+                editor.putBoolean(getString(R.string.isSubscribed), false);
+                editor.apply();
+            }
+            Log.d("IAB", "User " + (((ttsMonthly != null) || (ttsYearly != null)) ? "HAS" : "DOES NOT HAVE")
+                    + " infinite tts subscription.");
+        }
+    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -88,6 +145,39 @@ public class MainActivity extends AppCompatActivity {
         }, "com.google.android.tts");
 
         refreshTTSQuota(60);
+
+        String compiledKy = reverse(getBaseContext().getString(R.string.firstR))
+                + getBaseContext().getString(R.string.middle)
+                + reverse(getBaseContext().getString(R.string.lastR));
+
+        mHelper = new IabHelper(this, compiledKy);
+
+        mHelper.enableDebugLogging(true);
+
+        mHelper.startSetup(new IabHelper.OnIabSetupFinishedListener() {
+            @Override
+            public void onIabSetupFinished(IabResult result) {
+                Log.d("Subscription", "InSetUpFinished: " + result);
+                if (!result.isSuccess()) {
+                    Log.d("Subscription", "Problem setting up In-app Billing: " + result);
+                    return;
+                }
+
+                if (mHelper == null) return;
+
+                // IAB is fully set up. Now, let's get an inventory of stuff we own.
+                Log.d("IAB", "Setup successful. Querying inventory.");
+                try {
+                    List<String> additionalSkuList = new ArrayList<String>();
+                    additionalSkuList.add(SKU_MONTHLY_TTS);
+                    additionalSkuList.add(SKU_YEARLY_TTS);
+                    mHelper.queryInventoryAsync(true, null, additionalSkuList, mGotInventoryListener);
+                } catch (IabHelper.IabAsyncInProgressException e) {
+                    Log.d("IAB", "Error querying inventory. Another async operation in progress.");
+                }
+            }
+        });
+
     }
 
     @Override
@@ -103,6 +193,10 @@ public class MainActivity extends AppCompatActivity {
 
         if (textToSpeech != null) {
             textToSpeech.shutdown();
+        }
+        if (mHelper != null) {
+            mHelper.disposeWhenFinished();
+            mHelper = null;
         }
     }
 
@@ -132,6 +226,8 @@ public class MainActivity extends AppCompatActivity {
         }
         else if (id == R.id.upgrade_button) {
             Intent intent = new Intent(this, Subscription.class);
+            intent.putExtra(MONTHLY_TTS_PRICE_EXTRA, monthlyTTSPrice);
+            intent.putExtra(YEARLY_TTS_PRICE_EXTRA, yearlyTTSPrice);
             startActivity(intent);
         }
         else if (id == R.id.test_button) {

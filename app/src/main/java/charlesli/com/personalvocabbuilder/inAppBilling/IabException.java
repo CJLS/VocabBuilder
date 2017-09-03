@@ -13,7 +13,7 @@
  * limitations under the License.
  */
 
-package charlesli.com.personalvocabbuilder.inAppBillingUtil;
+package charlesli.com.personalvocabbuilder.inAppBilling;
 
 /**
  * Exception thrown when something went wrong with in-app billing.

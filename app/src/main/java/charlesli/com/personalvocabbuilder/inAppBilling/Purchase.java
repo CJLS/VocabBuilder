@@ -13,7 +13,7 @@
  * limitations under the License.
  */
 
-package charlesli.com.personalvocabbuilder.inAppBillingUtil;
+package charlesli.com.personalvocabbuilder.inAppBilling;
 
 import org.json.JSONException;
 import org.json.JSONObject;
