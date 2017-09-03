@@ -34,6 +34,7 @@ import charlesli.com.personalvocabbuilder.ui.ModifyMyWordBankCategoryDialog;
 import charlesli.com.personalvocabbuilder.ui.ReviewDialog;
 import charlesli.com.personalvocabbuilder.ui.TranslationSettingsDialog;
 
+import static charlesli.com.personalvocabbuilder.controller.InternetConnection.isNetworkAvailable;
 import static charlesli.com.personalvocabbuilder.controller.Subscription.SKU_MONTHLY_TTS;
 import static charlesli.com.personalvocabbuilder.controller.Subscription.SKU_YEARLY_TTS;
 import static charlesli.com.personalvocabbuilder.controller.Subscription.reverse;
@@ -99,6 +100,37 @@ public class MainActivity extends AppCompatActivity {
         Toolbar myToolbar = (Toolbar) findViewById(R.id.my_toolbar);
         setSupportActionBar(myToolbar);
 
+        String compiledKy = reverse(getBaseContext().getString(R.string.firstR))
+                + getBaseContext().getString(R.string.middle)
+                + reverse(getBaseContext().getString(R.string.lastR));
+
+        mHelper = new IabHelper(this, compiledKy);
+
+        mHelper.enableDebugLogging(true);
+
+        mHelper.startSetup(new IabHelper.OnIabSetupFinishedListener() {
+            @Override
+            public void onIabSetupFinished(IabResult result) {
+                Log.d("Subscription", "InSetUpFinished: " + result);
+                if (!result.isSuccess()) {
+                    Log.d("Subscription", "Problem setting up In-app Billing: " + result);
+                    return;
+                }
+
+                if (mHelper == null) return;
+
+                Log.d("IAB", "Setup successful. Querying inventory.");
+                try {
+                    List<String> additionalSkuList = new ArrayList<String>();
+                    additionalSkuList.add(SKU_MONTHLY_TTS);
+                    additionalSkuList.add(SKU_YEARLY_TTS);
+                    mHelper.queryInventoryAsync(true, null, additionalSkuList, mGotInventoryListener);
+                } catch (IabHelper.IabAsyncInProgressException e) {
+                    Log.d("IAB", "Error querying inventory. Another async operation in progress.");
+                }
+            }
+        });
+
         ListView mCategoryListView = (ListView) findViewById(R.id.mainListView);
         Cursor cursor = mDbHelper.getCategoryCursor();
         mCategoryAdapter = new CategoryCursorAdapter(this, cursor, 0);
@@ -145,39 +177,6 @@ public class MainActivity extends AppCompatActivity {
         }, "com.google.android.tts");
 
         refreshTTSQuota(60);
-
-        String compiledKy = reverse(getBaseContext().getString(R.string.firstR))
-                + getBaseContext().getString(R.string.middle)
-                + reverse(getBaseContext().getString(R.string.lastR));
-
-        mHelper = new IabHelper(this, compiledKy);
-
-        mHelper.enableDebugLogging(true);
-
-        mHelper.startSetup(new IabHelper.OnIabSetupFinishedListener() {
-            @Override
-            public void onIabSetupFinished(IabResult result) {
-                Log.d("Subscription", "InSetUpFinished: " + result);
-                if (!result.isSuccess()) {
-                    Log.d("Subscription", "Problem setting up In-app Billing: " + result);
-                    return;
-                }
-
-                if (mHelper == null) return;
-
-                // IAB is fully set up. Now, let's get an inventory of stuff we own.
-                Log.d("IAB", "Setup successful. Querying inventory.");
-                try {
-                    List<String> additionalSkuList = new ArrayList<String>();
-                    additionalSkuList.add(SKU_MONTHLY_TTS);
-                    additionalSkuList.add(SKU_YEARLY_TTS);
-                    mHelper.queryInventoryAsync(true, null, additionalSkuList, mGotInventoryListener);
-                } catch (IabHelper.IabAsyncInProgressException e) {
-                    Log.d("IAB", "Error querying inventory. Another async operation in progress.");
-                }
-            }
-        });
-
     }
 
     @Override
@@ -225,10 +224,15 @@ public class MainActivity extends AppCompatActivity {
             startActivity(intent);
         }
         else if (id == R.id.upgrade_button) {
-            Intent intent = new Intent(this, Subscription.class);
-            intent.putExtra(MONTHLY_TTS_PRICE_EXTRA, monthlyTTSPrice);
-            intent.putExtra(YEARLY_TTS_PRICE_EXTRA, yearlyTTSPrice);
-            startActivity(intent);
+            if (isNetworkAvailable(getBaseContext())) {
+                Intent intent = new Intent(this, Subscription.class);
+                intent.putExtra(MONTHLY_TTS_PRICE_EXTRA, monthlyTTSPrice);
+                intent.putExtra(YEARLY_TTS_PRICE_EXTRA, yearlyTTSPrice);
+                startActivity(intent);
+            }
+            else {
+                Toast.makeText(this, "The upgrade feature is unavailable offline.", Toast.LENGTH_SHORT).show();
+            }
         }
         else if (id == R.id.test_button) {
             SharedPreferences sharedPreferencesTTS =

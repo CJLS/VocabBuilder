@@ -4,8 +4,6 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.database.Cursor;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
 import android.text.Html;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -22,6 +20,7 @@ import charlesli.com.personalvocabbuilder.sqlDatabase.VocabDbContract;
 import charlesli.com.personalvocabbuilder.sqlDatabase.VocabDbHelper;
 
 import static android.content.Context.MODE_PRIVATE;
+import static charlesli.com.personalvocabbuilder.controller.InternetConnection.isNetworkAvailable;
 import static charlesli.com.personalvocabbuilder.sqlDatabase.LanguageOptions.DEFAULT_TARGET_LANGUAGE_ENGLISH;
 import static charlesli.com.personalvocabbuilder.sqlDatabase.LanguageOptions.DETECT_LANGUAGE;
 import static charlesli.com.personalvocabbuilder.sqlDatabase.VocabDbContract.DATE_ASC;
@@ -102,7 +101,7 @@ public class AddVocabDialog extends CustomDialog {
                 String source = LanguageOptions.FROM_LANGUAGE_CODE[sourcePos];
                 String target = LanguageOptions.TO_LANGUAGE_CODE[targetPos];
 
-                if (isNetworkAvailable()) {
+                if (isNetworkAvailable(getContext())) {
                     String APIKey = getContext().getString(R.string.translateKey);
                     GoogleTranslate googleTranslate = new GoogleTranslate(progressBar, APIKey);
                     googleTranslate.setListener(new GoogleTranslate.Listener() {
@@ -128,17 +127,5 @@ public class AddVocabDialog extends CustomDialog {
                 }
             }
         });
-    }
-
-    private boolean isNetworkAvailable() {
-        ConnectivityManager connectivityManager =
-                (ConnectivityManager) getContext().getSystemService(Context.CONNECTIVITY_SERVICE);
-        NetworkInfo networkInfo = connectivityManager.getActiveNetworkInfo();
-
-        boolean isAvailable = false;
-        if (networkInfo != null && networkInfo.isConnected()) {
-            isAvailable = true;
-        }
-        return isAvailable;
     }
 }
