@@ -13,7 +13,6 @@ import android.widget.Toast;
 
 import charlesli.com.personalvocabbuilder.R;
 import charlesli.com.personalvocabbuilder.controller.GoogleTranslate;
-import charlesli.com.personalvocabbuilder.controller.JSONParser;
 import charlesli.com.personalvocabbuilder.sqlDatabase.LanguageOptions;
 import charlesli.com.personalvocabbuilder.sqlDatabase.VocabCursorAdapter;
 import charlesli.com.personalvocabbuilder.sqlDatabase.VocabDbContract;
@@ -21,6 +20,7 @@ import charlesli.com.personalvocabbuilder.sqlDatabase.VocabDbHelper;
 
 import static android.content.Context.MODE_PRIVATE;
 import static charlesli.com.personalvocabbuilder.controller.InternetConnection.isNetworkAvailable;
+import static charlesli.com.personalvocabbuilder.controller.JSONParser.parseJSONForTranslation;
 import static charlesli.com.personalvocabbuilder.sqlDatabase.LanguageOptions.DEFAULT_TARGET_LANGUAGE_ENGLISH;
 import static charlesli.com.personalvocabbuilder.sqlDatabase.LanguageOptions.DETECT_LANGUAGE;
 import static charlesli.com.personalvocabbuilder.sqlDatabase.VocabDbContract.DATE_ASC;
@@ -108,8 +108,7 @@ public class AddVocabDialog extends CustomDialog {
                         @Override
                         public void onTaskResult(String string) {
                             if (string != null) {
-                                JSONParser jsonParser = new JSONParser();
-                                String translatedText = jsonParser.parseJSONForTranslation(string);
+                                String translatedText = parseJSONForTranslation(string);
                                 definitionInput.setText(Html.fromHtml(translatedText));
                             }
                             else {

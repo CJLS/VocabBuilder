@@ -9,7 +9,7 @@ import org.json.JSONTokener;
  */
 public class JSONParser {
 
-    public String parseJSONForTranslation(String jsonString) {
+    public static String parseJSONForTranslation(String jsonString) {
         try {
             JSONObject object = (JSONObject) new JSONTokener(jsonString).nextValue();
             return object.getJSONObject("data").getJSONArray("translations").
