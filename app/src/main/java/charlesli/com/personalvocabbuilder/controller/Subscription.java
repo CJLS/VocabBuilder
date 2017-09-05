@@ -36,17 +36,15 @@ public class Subscription extends AppCompatActivity implements IabBroadcastRecei
     public static final String SKU_YEARLY_TTS = "yearly_tts";
     public static final int MONTHLY_DEFAULT_TTS_QUOTA = 60;
     IabHelper mHelper;
-    // Provides purchase notification while this app is running
     IabBroadcastReceiver mBroadcastReceiver;
     boolean mAutoRenewEnabled = false;
     String mSubscribedInfiniteTTSSku = "";
     boolean mSubscribedToInfiniteTTS = false;
-    // Callback for when a purchase is finished
+
     IabHelper.OnIabPurchaseFinishedListener mPurchaseFinishedListener = new IabHelper.OnIabPurchaseFinishedListener() {
         public void onIabPurchaseFinished(IabResult result, Purchase purchase) {
             Log.d("IAB", "Purchase finished: " + result + ", purchase: " + purchase);
 
-            // if we were disposed of in the meantime, quit.
             if (mHelper == null) return;
 
             if (result.isFailure()) {
@@ -183,7 +181,6 @@ public class Subscription extends AppCompatActivity implements IabBroadcastRecei
                 IntentFilter broadcastFilter = new IntentFilter(IabBroadcastReceiver.ACTION);
                 registerReceiver(mBroadcastReceiver, broadcastFilter);
 
-                // IAB is fully set up. Now, let's get an inventory of stuff we own.
                 Log.d("IAB", "Setup successful. Querying inventory.");
                 try {
                     List<String> additionalSkuList = new ArrayList<String>();

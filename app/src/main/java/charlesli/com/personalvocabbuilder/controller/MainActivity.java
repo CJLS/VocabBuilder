@@ -219,7 +219,8 @@ public class MainActivity extends AppCompatActivity {
             addCategory();
         }
         else if (id == R.id.settings_button) {
-            setTranslationLanguage();
+            Intent intent = new Intent(this, Settings.class);
+            startActivity(intent);
         }
         else if (id == R.id.export_button) {
             Intent intent = new Intent(this, ExportActivity.class);
@@ -257,16 +258,6 @@ public class MainActivity extends AppCompatActivity {
             editor.apply();
         }
         return super.onOptionsItemSelected(item);
-    }
-
-    private void setTranslationLanguage() {
-        Intent intent = new Intent(this, Settings.class);
-        startActivity(intent);
-        /*
-        TranslationSettingsDialog dialog = new TranslationSettingsDialog(this);
-        dialog.show();
-        dialog.changeButtonsToAppIconColor();
-        */
     }
 
     private void addCategory() {
