@@ -34,6 +34,7 @@ import charlesli.com.personalvocabbuilder.ui.ModifyMyWordBankCategoryDialog;
 import charlesli.com.personalvocabbuilder.ui.ReviewDialog;
 
 import static charlesli.com.personalvocabbuilder.controller.InternetConnection.isNetworkAvailable;
+import static charlesli.com.personalvocabbuilder.controller.Subscription.MONTHLY_DEFAULT_TTS_QUOTA;
 import static charlesli.com.personalvocabbuilder.controller.Subscription.SKU_MONTHLY_TTS;
 import static charlesli.com.personalvocabbuilder.controller.Subscription.SKU_YEARLY_TTS;
 import static charlesli.com.personalvocabbuilder.controller.Subscription.reverse;
@@ -42,7 +43,7 @@ import static charlesli.com.personalvocabbuilder.controller.Subscription.reverse
 public class MainActivity extends AppCompatActivity {
 
     public static final String MONTHLY_TTS_PRICE_EXTRA = "MONTHLY_TTS_PRICE";
-    public static final String YEARLY_TTS_PRICE_EXTRA = "MONTHLY_TTS_PRICE";
+    public static final String YEARLY_TTS_PRICE_EXTRA = "YEARLY_TTS_PRICE";
     private CategoryCursorAdapter mCategoryAdapter;
     private VocabDbHelper mDbHelper = VocabDbHelper.getDBHelper(MainActivity.this);
     private CustomTTS textToSpeech;
@@ -73,16 +74,22 @@ public class MainActivity extends AppCompatActivity {
             Purchase ttsMonthly = inventory.getPurchase(SKU_MONTHLY_TTS);
             Purchase ttsYearly = inventory.getPurchase(SKU_YEARLY_TTS);
 
-            if ((ttsMonthly != null) || (ttsYearly != null)) {
-                SharedPreferences sharedPreferencesTTS = getSharedPreferences(getString(R.string.ttsMonthlyLimitPref), MODE_PRIVATE);
-                SharedPreferences.Editor editor = sharedPreferencesTTS.edit();
+            SharedPreferences sharedPreferencesTTS = getSharedPreferences(getString(R.string.ttsMonthlyLimitPref), MODE_PRIVATE);
+            SharedPreferences.Editor editor = sharedPreferencesTTS.edit();
+
+            if (ttsYearly != null) {
                 editor.putBoolean(getString(R.string.isSubscribed), true);
-                editor.putInt(getString(R.string.remainingTTSQuota), 60);
+                editor.putInt(getString(R.string.remainingTTSQuota), MONTHLY_DEFAULT_TTS_QUOTA);
+                editor.putString(getString(R.string.subscribedTTS), SKU_YEARLY_TTS);
+                editor.apply();
+            }
+            else if (ttsMonthly != null) {
+                editor.putBoolean(getString(R.string.isSubscribed), true);
+                editor.putInt(getString(R.string.remainingTTSQuota), MONTHLY_DEFAULT_TTS_QUOTA);
+                editor.putString(getString(R.string.subscribedTTS), SKU_MONTHLY_TTS);
                 editor.apply();
             }
             else {
-                SharedPreferences sharedPreferencesTTS = getSharedPreferences(getString(R.string.ttsMonthlyLimitPref), MODE_PRIVATE);
-                SharedPreferences.Editor editor = sharedPreferencesTTS.edit();
                 editor.putBoolean(getString(R.string.isSubscribed), false);
                 editor.apply();
             }
@@ -175,7 +182,7 @@ public class MainActivity extends AppCompatActivity {
             }
         }, "com.google.android.tts");
 
-        refreshTTSQuota(60);
+        refreshTTSQuota(MONTHLY_DEFAULT_TTS_QUOTA);
     }
 
     @Override
@@ -237,7 +244,7 @@ public class MainActivity extends AppCompatActivity {
             SharedPreferences sharedPreferencesTTS =
                     getSharedPreferences(getString(R.string.ttsMonthlyLimitPref), MODE_PRIVATE);
             boolean isSubscribed = sharedPreferencesTTS.getBoolean(getString(R.string.isSubscribed), false);
-            int remainingTTSQuota = sharedPreferencesTTS.getInt(getString(R.string.remainingTTSQuota), 60);
+            int remainingTTSQuota = sharedPreferencesTTS.getInt(getString(R.string.remainingTTSQuota), MONTHLY_DEFAULT_TTS_QUOTA);
 
             Toast.makeText(this, "Subscribed: " + isSubscribed + " Remaining Quota: " + remainingTTSQuota, Toast.LENGTH_SHORT).show();
         }
@@ -246,7 +253,7 @@ public class MainActivity extends AppCompatActivity {
                     getSharedPreferences(getString(R.string.ttsMonthlyLimitPref), MODE_PRIVATE);
             SharedPreferences.Editor editor = sharedPreferencesTTS.edit();
             editor.putBoolean(getString(R.string.isSubscribed), false);
-            editor.putInt(getString(R.string.remainingTTSQuota), 60);
+            editor.putInt(getString(R.string.remainingTTSQuota), MONTHLY_DEFAULT_TTS_QUOTA);
             editor.apply();
         }
         return super.onOptionsItemSelected(item);

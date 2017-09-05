@@ -71,6 +71,7 @@
     <string name="isSubscribed">Subscribed</string>
     <string name="remainingTTSQuota">Remaining TTS Quota</string>
     <string name="lastUpdatedMonth">Last Updated Month</string>
+    <string name="subscribedTTS">Subscribed TTS</string>
     <color name="white">#ffffff</color>
     <color name="black">#000000</color>
     <color name="app_icon_color">#2b5ea2</color>

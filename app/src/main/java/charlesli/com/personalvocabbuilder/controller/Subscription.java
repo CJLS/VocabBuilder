@@ -32,8 +32,9 @@ import static charlesli.com.personalvocabbuilder.controller.MainActivity.YEARLY_
 
 public class Subscription extends AppCompatActivity implements IabBroadcastReceiver.IabBroadcastListener {
 
-    public static String SKU_MONTHLY_TTS = "monthly_tts";
-    public static String SKU_YEARLY_TTS = "yearly_tts";
+    public static final String SKU_MONTHLY_TTS = "monthly_tts";
+    public static final String SKU_YEARLY_TTS = "yearly_tts";
+    public static final int MONTHLY_DEFAULT_TTS_QUOTA = 60;
     IabHelper mHelper;
     // Provides purchase notification while this app is running
     IabBroadcastReceiver mBroadcastReceiver;
@@ -104,20 +105,29 @@ public class Subscription extends AppCompatActivity implements IabBroadcastRecei
                 mSubscribedInfiniteTTSSku = "";
                 mAutoRenewEnabled = false;
             }
+
             mSubscribedToInfiniteTTS = (ttsMonthly != null) || (ttsYearly != null);
-            if (mSubscribedToInfiniteTTS) {
-                SharedPreferences sharedPreferencesTTS = getSharedPreferences(getString(R.string.ttsMonthlyLimitPref), MODE_PRIVATE);
-                SharedPreferences.Editor editor = sharedPreferencesTTS.edit();
+
+            SharedPreferences sharedPreferencesTTS = getSharedPreferences(getString(R.string.ttsMonthlyLimitPref), MODE_PRIVATE);
+            SharedPreferences.Editor editor = sharedPreferencesTTS.edit();
+
+            if (ttsYearly != null) {
                 editor.putBoolean(getString(R.string.isSubscribed), true);
-                editor.putInt(getString(R.string.remainingTTSQuota), 60);
+                editor.putInt(getString(R.string.remainingTTSQuota), MONTHLY_DEFAULT_TTS_QUOTA);
+                editor.putString(getString(R.string.subscribedTTS), SKU_YEARLY_TTS);
+                editor.apply();
+            }
+            else if (ttsMonthly != null) {
+                editor.putBoolean(getString(R.string.isSubscribed), true);
+                editor.putInt(getString(R.string.remainingTTSQuota), MONTHLY_DEFAULT_TTS_QUOTA);
+                editor.putString(getString(R.string.subscribedTTS), SKU_MONTHLY_TTS);
                 editor.apply();
             }
             else {
-                SharedPreferences sharedPreferencesTTS = getSharedPreferences(getString(R.string.ttsMonthlyLimitPref), MODE_PRIVATE);
-                SharedPreferences.Editor editor = sharedPreferencesTTS.edit();
                 editor.putBoolean(getString(R.string.isSubscribed), false);
                 editor.apply();
             }
+
             Log.d("IAB", "User " + (mSubscribedToInfiniteTTS ? "HAS" : "DOES NOT HAVE")
                     + " infinite tts subscription.");
 

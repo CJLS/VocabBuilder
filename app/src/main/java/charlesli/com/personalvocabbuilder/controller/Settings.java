@@ -9,9 +9,11 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Spinner;
+import android.widget.TextView;
 
 import charlesli.com.personalvocabbuilder.R;
 
+import static charlesli.com.personalvocabbuilder.controller.Subscription.SKU_MONTHLY_TTS;
 import static charlesli.com.personalvocabbuilder.sqlDatabase.LanguageOptions.DEFAULT_TARGET_LANGUAGE_ENGLISH;
 import static charlesli.com.personalvocabbuilder.sqlDatabase.LanguageOptions.DETECT_LANGUAGE;
 import static charlesli.com.personalvocabbuilder.sqlDatabase.LanguageOptions.FROM_LANGUAGE;
@@ -31,10 +33,24 @@ public class Settings extends AppCompatActivity {
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         }
 
-        final SharedPreferences sharedPreferences = getSharedPreferences(getResources().getString(R.string.sharedPrefTranslationFile), Context.MODE_PRIVATE);
+        SharedPreferences sharedPreferencesTTS =
+                getSharedPreferences(getString(R.string.ttsMonthlyLimitPref), MODE_PRIVATE);
+        boolean isSubscribed = sharedPreferencesTTS.getBoolean(getString(R.string.isSubscribed), false);
+        String subscribedTTS = sharedPreferencesTTS.getString(getString(R.string.subscribedTTS), "");
+        if (isSubscribed) {
+            TextView accountType = (TextView) findViewById(R.id.accountTypeInfoTV);
+            if (subscribedTTS.equals(SKU_MONTHLY_TTS)) {
+                accountType.setText("Monthly Plan: Unlimited text-to-speech");
+            }
+            else {
+                accountType.setText("Yearly Plan: Unlimited text-to-speech");
+            }
+        }
 
-        int sourceLanguagePos = sharedPreferences.getInt(getString(R.string.sharedPrefTranslationSourceKey), DETECT_LANGUAGE);
-        int targetLanguagePos = sharedPreferences.getInt(getString(R.string.sharedPrefTranslationTargetKey), DEFAULT_TARGET_LANGUAGE_ENGLISH);
+
+        SharedPreferences sharedPreferencesTranslation = getSharedPreferences(getResources().getString(R.string.sharedPrefTranslationFile), Context.MODE_PRIVATE);
+        int sourceLanguagePos = sharedPreferencesTranslation.getInt(getString(R.string.sharedPrefTranslationSourceKey), DETECT_LANGUAGE);
+        int targetLanguagePos = sharedPreferencesTranslation.getInt(getString(R.string.sharedPrefTranslationTargetKey), DEFAULT_TARGET_LANGUAGE_ENGLISH);
 
         setupLanguageSelector((Spinner) findViewById(R.id.translateFromSpinner),
                 FROM_LANGUAGE, true, sourceLanguagePos);
