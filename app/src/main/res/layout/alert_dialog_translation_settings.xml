@@ -22,8 +22,6 @@
         android:layout_alignParentEnd="true"
         android:layout_alignParentRight="true"
         android:layout_alignParentTop="true"
-        android:layout_toEndOf="@+id/tvTranslateFrom"
-        android:layout_toRightOf="@+id/tvTranslateFrom"
         android:spinnerMode="dropdown" />
 
     <TextView
@@ -40,10 +38,8 @@
         android:id="@+id/spinnerTranslateTo"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignLeft="@+id/spinnerTranslateFrom"
         android:layout_alignParentEnd="true"
         android:layout_alignParentRight="true"
-        android:layout_alignStart="@+id/spinnerTranslateFrom"
-        android:layout_alignTop="@+id/tvTranslateTo"
+        android:layout_below="@+id/spinnerTranslateFrom"
         android:spinnerMode="dropdown" />
 </RelativeLayout>

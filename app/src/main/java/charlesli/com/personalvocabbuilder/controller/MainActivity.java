@@ -32,7 +32,6 @@ import charlesli.com.personalvocabbuilder.ui.AddCategoryDialog;
 import charlesli.com.personalvocabbuilder.ui.EditCategoryDialog;
 import charlesli.com.personalvocabbuilder.ui.ModifyMyWordBankCategoryDialog;
 import charlesli.com.personalvocabbuilder.ui.ReviewDialog;
-import charlesli.com.personalvocabbuilder.ui.TranslationSettingsDialog;
 
 import static charlesli.com.personalvocabbuilder.controller.InternetConnection.isNetworkAvailable;
 import static charlesli.com.personalvocabbuilder.controller.Subscription.SKU_MONTHLY_TTS;
@@ -254,9 +253,13 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void setTranslationLanguage() {
+        Intent intent = new Intent(this, Settings.class);
+        startActivity(intent);
+        /*
         TranslationSettingsDialog dialog = new TranslationSettingsDialog(this);
         dialog.show();
         dialog.changeButtonsToAppIconColor();
+        */
     }
 
     private void addCategory() {

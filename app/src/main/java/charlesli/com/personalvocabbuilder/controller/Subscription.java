@@ -1,5 +1,6 @@
 package charlesli.com.personalvocabbuilder.controller;
 
+import android.app.AlertDialog;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
@@ -56,6 +57,7 @@ public class Subscription extends AppCompatActivity implements IabBroadcastRecei
 
             if (purchase.getSku().equals(SKU_MONTHLY_TTS) || purchase.getSku().equals(SKU_YEARLY_TTS)) {
                 Log.d("IAB", "Infinite tts subscription purchased.");
+                alert("Thank you for subscribing! Your subscription is tied to your Google Play store account.");
                 mSubscribedToInfiniteTTS = true;
                 mAutoRenewEnabled = purchase.isAutoRenewing();
                 mSubscribedInfiniteTTSSku = purchase.getSku();
@@ -134,7 +136,7 @@ public class Subscription extends AppCompatActivity implements IabBroadcastRecei
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_subscription);
 
-        Toolbar myToolbar = (Toolbar) findViewById(R.id.my_toolbar);
+        Toolbar myToolbar = (Toolbar) findViewById(R.id.subscription_toolbar);
         setSupportActionBar(myToolbar);
 
         if (getSupportActionBar() != null) {
@@ -293,6 +295,13 @@ public class Subscription extends AppCompatActivity implements IabBroadcastRecei
         else {
             Log.d("IAB", "onActivityResult handled by IABUtil.");
         }
+    }
+
+    void alert(String message) {
+        AlertDialog.Builder bld = new AlertDialog.Builder(this);
+        bld.setMessage(message);
+        bld.setNeutralButton("OK", null);
+        bld.create().show();
     }
 
     @Override
