@@ -91,17 +91,17 @@ public class Subscription extends AppCompatActivity implements IabBroadcastRecei
 
             Purchase ttsMonthly = inventory.getPurchase(SKU_MONTHLY_TTS);
             Purchase ttsYearly = inventory.getPurchase(SKU_YEARLY_TTS);
-            if (ttsMonthly != null && ttsMonthly.isAutoRenewing()) {
+            if (ttsMonthly != null) {
                 mSubscribedInfiniteTTSSku = SKU_MONTHLY_TTS;
-                mAutoRenewEnabled = true;
+                //mAutoRenewEnabled = true;
             }
-            else if (ttsYearly != null && ttsYearly.isAutoRenewing()) {
+            else if (ttsYearly != null) {
                 mSubscribedInfiniteTTSSku = SKU_YEARLY_TTS;
-                mAutoRenewEnabled = true;
+                //mAutoRenewEnabled = true;
             }
             else {
                 mSubscribedInfiniteTTSSku = "";
-                mAutoRenewEnabled = false;
+                //mAutoRenewEnabled = false;
             }
 
             mSubscribedToInfiniteTTS = (ttsMonthly != null) || (ttsYearly != null);
