@@ -27,9 +27,6 @@ import charlesli.com.personalvocabbuilder.inAppBilling.IabResult;
 import charlesli.com.personalvocabbuilder.inAppBilling.Inventory;
 import charlesli.com.personalvocabbuilder.inAppBilling.Purchase;
 
-import static charlesli.com.personalvocabbuilder.controller.MainActivity.MONTHLY_TTS_PRICE_EXTRA;
-import static charlesli.com.personalvocabbuilder.controller.MainActivity.YEARLY_TTS_PRICE_EXTRA;
-
 public class Subscription extends AppCompatActivity implements IabBroadcastReceiver.IabBroadcastListener {
 
     public static final String SKU_MONTHLY_TTS = "monthly_tts";
@@ -86,7 +83,7 @@ public class Subscription extends AppCompatActivity implements IabBroadcastRecei
             }
 
             // Set subscription buttons text if it hasn't been setup yet
-            if ((monthlyTTSPrice == null || yearlyTTSPrice == null)
+            if ((monthlyTTSPrice.equals("") || yearlyTTSPrice.equals(""))
                     && (inventory.getSkuDetails(SKU_MONTHLY_TTS) != null
                     && inventory.getSkuDetails(SKU_YEARLY_TTS) != null)) {
                 monthlyTTSPrice =
@@ -160,9 +157,10 @@ public class Subscription extends AppCompatActivity implements IabBroadcastRecei
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         }
 
-        Intent intent = getIntent();
-        monthlyTTSPrice = intent.getStringExtra(MONTHLY_TTS_PRICE_EXTRA);
-        yearlyTTSPrice = intent.getStringExtra(YEARLY_TTS_PRICE_EXTRA);
+        SharedPreferences sharedPreferencesTTS = getSharedPreferences(getString(R.string.ttsMonthlyLimitPref), MODE_PRIVATE);
+
+        monthlyTTSPrice = sharedPreferencesTTS.getString(getString(R.string.monthlyTTSPrice), "");
+        yearlyTTSPrice = sharedPreferencesTTS.getString(getString(R.string.yearlyTTSPrice), "");
 
         setSubscriptionButtonsText(monthlyTTSPrice, yearlyTTSPrice);
 
@@ -262,7 +260,7 @@ public class Subscription extends AppCompatActivity implements IabBroadcastRecei
     }
 
     private void setSubscriptionButtonsText(String monthlyTTSPrice, String yearlyTTSPrice) {
-        if (monthlyTTSPrice == null || yearlyTTSPrice == null) {
+        if (monthlyTTSPrice.equals("") || yearlyTTSPrice.equals("")) {
             return;
         }
         Button monthlySubButton = (Button) findViewById(R.id.monthlySubButton);

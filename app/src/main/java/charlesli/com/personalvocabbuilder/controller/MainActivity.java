@@ -42,14 +42,10 @@ import static charlesli.com.personalvocabbuilder.controller.Subscription.reverse
 
 public class MainActivity extends AppCompatActivity {
 
-    public static final String MONTHLY_TTS_PRICE_EXTRA = "MONTHLY_TTS_PRICE";
-    public static final String YEARLY_TTS_PRICE_EXTRA = "YEARLY_TTS_PRICE";
     private CategoryCursorAdapter mCategoryAdapter;
     private VocabDbHelper mDbHelper = VocabDbHelper.getDBHelper(MainActivity.this);
     private CustomTTS textToSpeech;
     private IabHelper mHelper;
-    private String monthlyTTSPrice;
-    private String yearlyTTSPrice;
     IabHelper.QueryInventoryFinishedListener mGotInventoryListener = new IabHelper.QueryInventoryFinishedListener() {
         public void onQueryInventoryFinished(IabResult result, Inventory inventory) {
             Log.d("IAB", "Query inventory finished.");
@@ -61,21 +57,21 @@ public class MainActivity extends AppCompatActivity {
                 return;
             }
 
+            SharedPreferences sharedPreferencesTTS = getSharedPreferences(getString(R.string.ttsMonthlyLimitPref), MODE_PRIVATE);
+            SharedPreferences.Editor editor = sharedPreferencesTTS.edit();
+
             if (inventory.getSkuDetails(SKU_MONTHLY_TTS) != null
                     && inventory.getSkuDetails(SKU_YEARLY_TTS) != null) {
-                monthlyTTSPrice =
-                        inventory.getSkuDetails(SKU_MONTHLY_TTS).getPrice();
-                yearlyTTSPrice =
-                        inventory.getSkuDetails(SKU_YEARLY_TTS).getPrice();
+                editor.putString(getString(R.string.monthlyTTSPrice),
+                        inventory.getSkuDetails(SKU_MONTHLY_TTS).getPrice());
+                editor.putString(getString(R.string.yearlyTTSPrice),
+                        inventory.getSkuDetails(SKU_YEARLY_TTS).getPrice());
             }
 
             Log.d("IAB", "Query inventory was successful.");
 
             Purchase ttsMonthly = inventory.getPurchase(SKU_MONTHLY_TTS);
             Purchase ttsYearly = inventory.getPurchase(SKU_YEARLY_TTS);
-
-            SharedPreferences sharedPreferencesTTS = getSharedPreferences(getString(R.string.ttsMonthlyLimitPref), MODE_PRIVATE);
-            SharedPreferences.Editor editor = sharedPreferencesTTS.edit();
 
             if (ttsYearly != null) {
                 editor.putBoolean(getString(R.string.isSubscribed), true);
@@ -233,8 +229,6 @@ public class MainActivity extends AppCompatActivity {
         else if (id == R.id.upgrade_button) {
             if (isNetworkAvailable(getBaseContext())) {
                 Intent intent = new Intent(this, Subscription.class);
-                intent.putExtra(MONTHLY_TTS_PRICE_EXTRA, monthlyTTSPrice);
-                intent.putExtra(YEARLY_TTS_PRICE_EXTRA, yearlyTTSPrice);
                 startActivity(intent);
             }
             else {
