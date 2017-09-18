@@ -56,10 +56,19 @@ public class Subscription extends AppCompatActivity implements IabBroadcastRecei
 
             if (purchase.getSku().equals(SKU_MONTHLY_TTS) || purchase.getSku().equals(SKU_YEARLY_TTS)) {
                 Log.d("IAB", "Infinite tts subscription purchased.");
-                alert("Thank you for subscribing! Your subscription is tied to your Google Play store account.");
                 mSubscribedToInfiniteTTS = true;
                 mAutoRenewEnabled = purchase.isAutoRenewing();
                 mSubscribedInfiniteTTSSku = purchase.getSku();
+                alert("Thank you for subscribing! You can now enjoy unlimited text-to-speech.");
+                finish();
+            }
+            if (mSubscribedInfiniteTTSSku.equals(SKU_MONTHLY_TTS)) {
+                TextView monthlySubText = (TextView) findViewById(R.id.monthlySubText);
+                monthlySubText.setText("Current Plan");
+            }
+            else if (mSubscribedInfiniteTTSSku.equals(SKU_YEARLY_TTS)) {
+                TextView yearlySubText = (TextView) findViewById(R.id.yearlySubText);
+                yearlySubText.setText("Current Plan");
             }
         }
     };

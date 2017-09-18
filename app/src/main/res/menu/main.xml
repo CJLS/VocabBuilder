@@ -15,21 +15,21 @@
         android:title="@string/action_settings"
         app:showAsAction="never"/>
 
+    <item android:id="@+id/upgrade_button"
+        android:orderInCategory="250"
+        android:title="@string/upgradeTitle"
+        app:showAsAction="never"/>
+
     <item android:id="@+id/export_button"
         android:icon="@drawable/ic_file_upload_white_48dp"
-        android:orderInCategory="250"
+        android:orderInCategory="350"
         android:title="@string/exportTitle"
         app:showAsAction="never"/>
 
     <item android:id="@+id/import_button"
         android:icon="@drawable/ic_file_download_white_48dp"
-        android:orderInCategory="350"
-        android:title="@string/importTitle"
-        app:showAsAction="never"/>
-
-    <item android:id="@+id/upgrade_button"
         android:orderInCategory="450"
-        android:title="@string/upgradeTitle"
+        android:title="@string/importTitle"
         app:showAsAction="never"/>
 
     <item android:id="@+id/test_button"

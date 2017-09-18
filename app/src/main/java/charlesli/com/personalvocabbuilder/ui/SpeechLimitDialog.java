@@ -24,7 +24,7 @@ public class SpeechLimitDialog extends CustomDialog {
                 context.startActivity(intent);
             }
         });
-        setButton(BUTTON_NEGATIVE, "Cancel", new DialogInterface.OnClickListener() {
+        setButton(BUTTON_NEGATIVE, "NOT NOW", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 dialog.cancel();
