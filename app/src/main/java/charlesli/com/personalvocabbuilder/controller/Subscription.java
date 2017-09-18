@@ -56,16 +56,24 @@ public class Subscription extends AppCompatActivity implements IabBroadcastRecei
                 mSubscribedToInfiniteTTS = true;
                 mAutoRenewEnabled = purchase.isAutoRenewing();
                 mSubscribedInfiniteTTSSku = purchase.getSku();
+
+                SharedPreferences sharedPreferencesTTS = getSharedPreferences(getString(R.string.ttsMonthlyLimitPref), MODE_PRIVATE);
+                SharedPreferences.Editor editor = sharedPreferencesTTS.edit();
+                editor.putBoolean(getString(R.string.isSubscribed), true);
+                editor.putInt(getString(R.string.remainingTTSQuota), MONTHLY_DEFAULT_TTS_QUOTA);
+                editor.putString(getString(R.string.subscribedTTS), mSubscribedInfiniteTTSSku);
+                editor.apply();
+
+                if (mSubscribedInfiniteTTSSku.equals(SKU_MONTHLY_TTS)) {
+                    TextView monthlySubText = (TextView) findViewById(R.id.monthlySubText);
+                    monthlySubText.setText("Current Plan");
+                }
+                else if (mSubscribedInfiniteTTSSku.equals(SKU_YEARLY_TTS)) {
+                    TextView yearlySubText = (TextView) findViewById(R.id.yearlySubText);
+                    yearlySubText.setText("Current Plan");
+                }
                 alert("Thank you for subscribing! You can now enjoy unlimited text-to-speech.");
                 finish();
-            }
-            if (mSubscribedInfiniteTTSSku.equals(SKU_MONTHLY_TTS)) {
-                TextView monthlySubText = (TextView) findViewById(R.id.monthlySubText);
-                monthlySubText.setText("Current Plan");
-            }
-            else if (mSubscribedInfiniteTTSSku.equals(SKU_YEARLY_TTS)) {
-                TextView yearlySubText = (TextView) findViewById(R.id.yearlySubText);
-                yearlySubText.setText("Current Plan");
             }
         }
     };
