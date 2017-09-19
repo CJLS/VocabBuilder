@@ -73,7 +73,6 @@ public class Subscription extends AppCompatActivity implements IabBroadcastRecei
                     yearlySubText.setText("Current Plan");
                 }
                 alert("Thank you for subscribing! You can now enjoy unlimited text-to-speech.");
-                finish();
             }
         }
     };
@@ -169,9 +168,20 @@ public class Subscription extends AppCompatActivity implements IabBroadcastRecei
 
         monthlyTTSPrice = sharedPreferencesTTS.getString(getString(R.string.monthlyTTSPrice), "");
         yearlyTTSPrice = sharedPreferencesTTS.getString(getString(R.string.yearlyTTSPrice), "");
-
         setSubscriptionButtonsText(monthlyTTSPrice, yearlyTTSPrice);
 
+        boolean isSubscribed = sharedPreferencesTTS.getBoolean(getString(R.string.isSubscribed), false);
+        String subscribedTTS = sharedPreferencesTTS.getString(getString(R.string.subscribedTTS), "");
+        if (isSubscribed) {
+            if (subscribedTTS.equals(SKU_MONTHLY_TTS)) {
+                TextView monthlySubText = (TextView) findViewById(R.id.monthlySubText);
+                monthlySubText.setText("Current Plan");
+            }
+            else {
+                TextView yearlySubText = (TextView) findViewById(R.id.yearlySubText);
+                yearlySubText.setText("Current Plan");
+            }
+        }
 
         String compiledKy = reverse(getBaseContext().getString(R.string.firstR))
                 + getBaseContext().getString(R.string.middle)
