@@ -32,14 +32,4 @@
         android:title="@string/importTitle"
         app:showAsAction="never"/>
 
-    <item android:id="@+id/test_button"
-        android:orderInCategory="500"
-        android:title="Test"
-        app:showAsAction="never"/>
-
-    <item android:id="@+id/reset_button"
-        android:orderInCategory="550"
-        android:title="Reset"
-        app:showAsAction="never"/>
-
 </menu>

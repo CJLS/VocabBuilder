@@ -37,6 +37,8 @@ public class Subscription extends AppCompatActivity implements IabBroadcastRecei
     boolean mAutoRenewEnabled = false;
     String mSubscribedInfiniteTTSSku = "";
     boolean mSubscribedToInfiniteTTS = false;
+    Button monthlySubButton;
+    Button yearlySubButton;
 
     IabHelper.OnIabPurchaseFinishedListener mPurchaseFinishedListener = new IabHelper.OnIabPurchaseFinishedListener() {
         public void onIabPurchaseFinished(IabResult result, Purchase purchase) {
@@ -65,12 +67,28 @@ public class Subscription extends AppCompatActivity implements IabBroadcastRecei
                 editor.apply();
 
                 if (mSubscribedInfiniteTTSSku.equals(SKU_MONTHLY_TTS)) {
+                    TextView yearlySubText = (TextView) findViewById(R.id.yearlySubText);
+                    yearlySubText.setText("12 Months");
                     TextView monthlySubText = (TextView) findViewById(R.id.monthlySubText);
                     monthlySubText.setText("Current Plan");
+                    yearlySubButton.setAlpha(1f);
+                    yearlySubButton.setClickable(true);
+                    if (mAutoRenewEnabled) {
+                        monthlySubButton.setAlpha(0.5f);
+                        monthlySubButton.setClickable(false);
+                    }
                 }
                 else if (mSubscribedInfiniteTTSSku.equals(SKU_YEARLY_TTS)) {
+                    TextView monthlySubText = (TextView) findViewById(R.id.monthlySubText);
+                    monthlySubText.setText("1 Month");
                     TextView yearlySubText = (TextView) findViewById(R.id.yearlySubText);
                     yearlySubText.setText("Current Plan");
+                    monthlySubButton.setAlpha(1f);
+                    monthlySubButton.setClickable(true);
+                    if (mAutoRenewEnabled) {
+                        yearlySubButton.setAlpha(0.5f);
+                        yearlySubButton.setClickable(false);
+                    }
                 }
                 alert("Thank you for subscribing! You can now enjoy unlimited text-to-speech.");
             }
@@ -106,15 +124,15 @@ public class Subscription extends AppCompatActivity implements IabBroadcastRecei
             Purchase ttsYearly = inventory.getPurchase(SKU_YEARLY_TTS);
             if (ttsMonthly != null) {
                 mSubscribedInfiniteTTSSku = SKU_MONTHLY_TTS;
-                //mAutoRenewEnabled = true;
+                mAutoRenewEnabled = ttsMonthly.isAutoRenewing();
             }
             else if (ttsYearly != null) {
                 mSubscribedInfiniteTTSSku = SKU_YEARLY_TTS;
-                //mAutoRenewEnabled = true;
+                mAutoRenewEnabled = ttsYearly.isAutoRenewing();
             }
             else {
                 mSubscribedInfiniteTTSSku = "";
-                //mAutoRenewEnabled = false;
+                mAutoRenewEnabled = false;
             }
 
             mSubscribedToInfiniteTTS = (ttsMonthly != null) || (ttsYearly != null);
@@ -172,14 +190,26 @@ public class Subscription extends AppCompatActivity implements IabBroadcastRecei
 
         boolean isSubscribed = sharedPreferencesTTS.getBoolean(getString(R.string.isSubscribed), false);
         String subscribedTTS = sharedPreferencesTTS.getString(getString(R.string.subscribedTTS), "");
+
+        monthlySubButton = (Button) findViewById(R.id.monthlySubButton);
+        yearlySubButton = (Button) findViewById(R.id.yearlySubButton);
+
         if (isSubscribed) {
             if (subscribedTTS.equals(SKU_MONTHLY_TTS)) {
                 TextView monthlySubText = (TextView) findViewById(R.id.monthlySubText);
                 monthlySubText.setText("Current Plan");
+                if (mAutoRenewEnabled) {
+                    monthlySubButton.setAlpha(0.5f);
+                    monthlySubButton.setClickable(false);
+                }
             }
             else {
                 TextView yearlySubText = (TextView) findViewById(R.id.yearlySubText);
                 yearlySubText.setText("Current Plan");
+                if (mAutoRenewEnabled) {
+                    yearlySubButton.setAlpha(0.5f);
+                    yearlySubButton.setClickable(false);
+                }
             }
         }
 
@@ -218,7 +248,7 @@ public class Subscription extends AppCompatActivity implements IabBroadcastRecei
             }
         });
 
-        Button monthlySubButton = (Button) findViewById(R.id.monthlySubButton);
+
         monthlySubButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -243,7 +273,6 @@ public class Subscription extends AppCompatActivity implements IabBroadcastRecei
             }
         });
 
-        Button yearlySubButton = (Button) findViewById(R.id.yearlySubButton);
         yearlySubButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
