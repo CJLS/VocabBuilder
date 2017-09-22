@@ -34,12 +34,10 @@ public class Subscription extends AppCompatActivity implements IabBroadcastRecei
     public static final int MONTHLY_DEFAULT_TTS_QUOTA = 60;
     IabHelper mHelper;
     IabBroadcastReceiver mBroadcastReceiver;
-    boolean mAutoRenewEnabled = false;
     String mSubscribedInfiniteTTSSku = "";
     boolean mSubscribedToInfiniteTTS = false;
     Button monthlySubButton;
     Button yearlySubButton;
-
     IabHelper.OnIabPurchaseFinishedListener mPurchaseFinishedListener = new IabHelper.OnIabPurchaseFinishedListener() {
         public void onIabPurchaseFinished(IabResult result, Purchase purchase) {
             Log.d("IAB", "Purchase finished: " + result + ", purchase: " + purchase);
@@ -56,7 +54,6 @@ public class Subscription extends AppCompatActivity implements IabBroadcastRecei
             if (purchase.getSku().equals(SKU_MONTHLY_TTS) || purchase.getSku().equals(SKU_YEARLY_TTS)) {
                 Log.d("IAB", "Infinite tts subscription purchased.");
                 mSubscribedToInfiniteTTS = true;
-                mAutoRenewEnabled = purchase.isAutoRenewing();
                 mSubscribedInfiniteTTSSku = purchase.getSku();
 
                 SharedPreferences sharedPreferencesTTS = getSharedPreferences(getString(R.string.ttsMonthlyLimitPref), MODE_PRIVATE);
@@ -66,30 +63,6 @@ public class Subscription extends AppCompatActivity implements IabBroadcastRecei
                 editor.putString(getString(R.string.subscribedTTS), mSubscribedInfiniteTTSSku);
                 editor.apply();
 
-                if (mSubscribedInfiniteTTSSku.equals(SKU_MONTHLY_TTS)) {
-                    TextView yearlySubText = (TextView) findViewById(R.id.yearlySubText);
-                    yearlySubText.setText("12 Months");
-                    TextView monthlySubText = (TextView) findViewById(R.id.monthlySubText);
-                    monthlySubText.setText("Current Plan");
-                    yearlySubButton.setAlpha(1f);
-                    yearlySubButton.setClickable(true);
-                    if (mAutoRenewEnabled) {
-                        monthlySubButton.setAlpha(0.5f);
-                        monthlySubButton.setClickable(false);
-                    }
-                }
-                else if (mSubscribedInfiniteTTSSku.equals(SKU_YEARLY_TTS)) {
-                    TextView monthlySubText = (TextView) findViewById(R.id.monthlySubText);
-                    monthlySubText.setText("1 Month");
-                    TextView yearlySubText = (TextView) findViewById(R.id.yearlySubText);
-                    yearlySubText.setText("Current Plan");
-                    monthlySubButton.setAlpha(1f);
-                    monthlySubButton.setClickable(true);
-                    if (mAutoRenewEnabled) {
-                        yearlySubButton.setAlpha(0.5f);
-                        yearlySubButton.setClickable(false);
-                    }
-                }
                 alert("Thank you for subscribing! You can now enjoy unlimited text-to-speech.");
             }
         }
@@ -120,45 +93,47 @@ public class Subscription extends AppCompatActivity implements IabBroadcastRecei
 
             Log.d("IAB", "Query inventory was successful.");
 
+            SharedPreferences sharedPreferencesTTS = getSharedPreferences(getString(R.string.ttsMonthlyLimitPref), MODE_PRIVATE);
+            SharedPreferences.Editor editor = sharedPreferencesTTS.edit();
+
             Purchase ttsMonthly = inventory.getPurchase(SKU_MONTHLY_TTS);
             Purchase ttsYearly = inventory.getPurchase(SKU_YEARLY_TTS);
             if (ttsMonthly != null) {
                 mSubscribedInfiniteTTSSku = SKU_MONTHLY_TTS;
-                mAutoRenewEnabled = ttsMonthly.isAutoRenewing();
-            }
-            else if (ttsYearly != null) {
-                mSubscribedInfiniteTTSSku = SKU_YEARLY_TTS;
-                mAutoRenewEnabled = ttsYearly.isAutoRenewing();
-            }
-            else {
-                mSubscribedInfiniteTTSSku = "";
-                mAutoRenewEnabled = false;
-            }
-
-            mSubscribedToInfiniteTTS = (ttsMonthly != null) || (ttsYearly != null);
-
-            SharedPreferences sharedPreferencesTTS = getSharedPreferences(getString(R.string.ttsMonthlyLimitPref), MODE_PRIVATE);
-            SharedPreferences.Editor editor = sharedPreferencesTTS.edit();
-
-            if (ttsYearly != null) {
+                yearlySubButton.setAlpha(1f);
+                yearlySubButton.setClickable(true);
+                if (ttsMonthly.isAutoRenewing()) {
+                    monthlySubButton.setAlpha(0.5f);
+                    monthlySubButton.setClickable(false);
+                }
                 editor.putBoolean(getString(R.string.isSubscribed), true);
-                editor.putInt(getString(R.string.remainingTTSQuota), MONTHLY_DEFAULT_TTS_QUOTA);
-                editor.putString(getString(R.string.subscribedTTS), SKU_YEARLY_TTS);
-                editor.apply();
-            }
-            else if (ttsMonthly != null) {
-                editor.putBoolean(getString(R.string.isSubscribed), true);
+                editor.putBoolean(getString(R.string.autoRenewed), ttsMonthly.isAutoRenewing());
                 editor.putInt(getString(R.string.remainingTTSQuota), MONTHLY_DEFAULT_TTS_QUOTA);
                 editor.putString(getString(R.string.subscribedTTS), SKU_MONTHLY_TTS);
                 editor.apply();
             }
+            else if (ttsYearly != null) {
+                mSubscribedInfiniteTTSSku = SKU_YEARLY_TTS;
+                monthlySubButton.setAlpha(1f);
+                monthlySubButton.setClickable(true);
+                if (ttsYearly.isAutoRenewing()) {
+                    yearlySubButton.setAlpha(0.5f);
+                    yearlySubButton.setClickable(false);
+                }
+                editor.putBoolean(getString(R.string.isSubscribed), true);
+                editor.putBoolean(getString(R.string.autoRenewed), ttsYearly.isAutoRenewing());
+                editor.putInt(getString(R.string.remainingTTSQuota), MONTHLY_DEFAULT_TTS_QUOTA);
+                editor.putString(getString(R.string.subscribedTTS), SKU_YEARLY_TTS);
+                editor.apply();
+            }
             else {
+                mSubscribedInfiniteTTSSku = "";
                 editor.putBoolean(getString(R.string.isSubscribed), false);
+                editor.putBoolean(getString(R.string.autoRenewed), false);
                 editor.apply();
             }
 
-            Log.d("IAB", "User " + (mSubscribedToInfiniteTTS ? "HAS" : "DOES NOT HAVE")
-                    + " infinite tts subscription.");
+            mSubscribedToInfiniteTTS = (ttsMonthly != null) || (ttsYearly != null);
 
             Log.d("IAB", "Initial inventory query finished; enabling main UI.");
         }
@@ -189,27 +164,20 @@ public class Subscription extends AppCompatActivity implements IabBroadcastRecei
         setSubscriptionButtonsText(monthlyTTSPrice, yearlyTTSPrice);
 
         boolean isSubscribed = sharedPreferencesTTS.getBoolean(getString(R.string.isSubscribed), false);
+        boolean isAutoRenewed = sharedPreferencesTTS.getBoolean(getString(R.string.autoRenewed), false);
         String subscribedTTS = sharedPreferencesTTS.getString(getString(R.string.subscribedTTS), "");
 
         monthlySubButton = (Button) findViewById(R.id.monthlySubButton);
         yearlySubButton = (Button) findViewById(R.id.yearlySubButton);
 
-        if (isSubscribed) {
+        if (isSubscribed && isAutoRenewed) {
             if (subscribedTTS.equals(SKU_MONTHLY_TTS)) {
-                TextView monthlySubText = (TextView) findViewById(R.id.monthlySubText);
-                monthlySubText.setText("Current Plan");
-                if (mAutoRenewEnabled) {
-                    monthlySubButton.setAlpha(0.5f);
-                    monthlySubButton.setClickable(false);
-                }
+                monthlySubButton.setAlpha(0.5f);
+                monthlySubButton.setClickable(false);
             }
             else {
-                TextView yearlySubText = (TextView) findViewById(R.id.yearlySubText);
-                yearlySubText.setText("Current Plan");
-                if (mAutoRenewEnabled) {
-                    yearlySubButton.setAlpha(0.5f);
-                    yearlySubButton.setClickable(false);
-                }
+                yearlySubButton.setAlpha(0.5f);
+                yearlySubButton.setClickable(false);
             }
         }
 

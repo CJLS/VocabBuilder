@@ -75,17 +75,20 @@ public class MainActivity extends AppCompatActivity {
 
             if (ttsYearly != null) {
                 editor.putBoolean(getString(R.string.isSubscribed), true);
+                editor.putBoolean(getString(R.string.autoRenewed), ttsYearly.isAutoRenewing());
                 editor.putInt(getString(R.string.remainingTTSQuota), MONTHLY_DEFAULT_TTS_QUOTA);
                 editor.putString(getString(R.string.subscribedTTS), SKU_YEARLY_TTS);
                 editor.apply();
             }
             else if (ttsMonthly != null) {
                 editor.putBoolean(getString(R.string.isSubscribed), true);
+                editor.putBoolean(getString(R.string.autoRenewed), ttsMonthly.isAutoRenewing());
                 editor.putInt(getString(R.string.remainingTTSQuota), MONTHLY_DEFAULT_TTS_QUOTA);
                 editor.putString(getString(R.string.subscribedTTS), SKU_MONTHLY_TTS);
                 editor.apply();
             }
             else {
+                editor.putBoolean(getString(R.string.autoRenewed), false);
                 editor.putBoolean(getString(R.string.isSubscribed), false);
                 editor.apply();
             }
