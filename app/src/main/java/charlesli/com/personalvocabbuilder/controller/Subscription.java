@@ -59,9 +59,19 @@ public class Subscription extends AppCompatActivity implements IabBroadcastRecei
                 SharedPreferences sharedPreferencesTTS = getSharedPreferences(getString(R.string.ttsMonthlyLimitPref), MODE_PRIVATE);
                 SharedPreferences.Editor editor = sharedPreferencesTTS.edit();
                 editor.putBoolean(getString(R.string.isSubscribed), true);
+                editor.putBoolean(getString(R.string.autoRenewed), true);
                 editor.putInt(getString(R.string.remainingTTSQuota), MONTHLY_DEFAULT_TTS_QUOTA);
                 editor.putString(getString(R.string.subscribedTTS), mSubscribedInfiniteTTSSku);
                 editor.apply();
+
+                if (mSubscribedInfiniteTTSSku.equals(SKU_MONTHLY_TTS)) {
+                    monthlySubButton.setAlpha(0.5f);
+                    monthlySubButton.setClickable(false);
+                }
+                else {
+                    yearlySubButton.setAlpha(0.5f);
+                    yearlySubButton.setClickable(false);
+                }
 
                 alert("Thank you for subscribing! You can now enjoy unlimited text-to-speech.");
             }
