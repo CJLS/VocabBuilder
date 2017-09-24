@@ -8,7 +8,6 @@ import android.speech.tts.TextToSpeech;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -48,14 +47,7 @@ public class MainActivity extends AppCompatActivity {
     private IabHelper mHelper;
     IabHelper.QueryInventoryFinishedListener mGotInventoryListener = new IabHelper.QueryInventoryFinishedListener() {
         public void onQueryInventoryFinished(IabResult result, Inventory inventory) {
-            Log.d("IAB", "Query inventory finished.");
-
-            if (mHelper == null) return;
-
-            if (result.isFailure()) {
-                Log.d("IAB", "Failed to query inventory: " + result);
-                return;
-            }
+            if (mHelper == null || result.isFailure()) return;
 
             SharedPreferences sharedPreferencesTTS = getSharedPreferences(getString(R.string.ttsMonthlyLimitPref), MODE_PRIVATE);
             SharedPreferences.Editor editor = sharedPreferencesTTS.edit();
@@ -67,8 +59,6 @@ public class MainActivity extends AppCompatActivity {
                 editor.putString(getString(R.string.yearlyTTSPrice),
                         inventory.getSkuDetails(SKU_YEARLY_TTS).getPrice());
             }
-
-            Log.d("IAB", "Query inventory was successful.");
 
             Purchase ttsMonthly = inventory.getPurchase(SKU_MONTHLY_TTS);
             Purchase ttsYearly = inventory.getPurchase(SKU_YEARLY_TTS);
@@ -92,8 +82,6 @@ public class MainActivity extends AppCompatActivity {
                 editor.putBoolean(getString(R.string.isSubscribed), false);
                 editor.apply();
             }
-            Log.d("IAB", "User " + (((ttsMonthly != null) || (ttsYearly != null)) ? "HAS" : "DOES NOT HAVE")
-                    + " infinite tts subscription.");
         }
     };
 
@@ -110,28 +98,21 @@ public class MainActivity extends AppCompatActivity {
                 + reverse(getBaseContext().getString(R.string.lastR));
 
         mHelper = new IabHelper(this, compiledKy);
-
-        mHelper.enableDebugLogging(true);
+        mHelper.enableDebugLogging(false);
 
         mHelper.startSetup(new IabHelper.OnIabSetupFinishedListener() {
             @Override
             public void onIabSetupFinished(IabResult result) {
-                Log.d("Subscription", "InSetUpFinished: " + result);
-                if (!result.isSuccess()) {
-                    Log.d("Subscription", "Problem setting up In-app Billing: " + result);
+                if (mHelper == null || !result.isSuccess()) {
                     return;
                 }
 
-                if (mHelper == null) return;
-
-                Log.d("IAB", "Setup successful. Querying inventory.");
                 try {
                     List<String> additionalSkuList = new ArrayList<String>();
                     additionalSkuList.add(SKU_MONTHLY_TTS);
                     additionalSkuList.add(SKU_YEARLY_TTS);
                     mHelper.queryInventoryAsync(true, null, additionalSkuList, mGotInventoryListener);
-                } catch (IabHelper.IabAsyncInProgressException e) {
-                    Log.d("IAB", "Error querying inventory. Another async operation in progress.");
+                } catch (IabHelper.IabAsyncInProgressException ignored) {
                 }
             }
         });

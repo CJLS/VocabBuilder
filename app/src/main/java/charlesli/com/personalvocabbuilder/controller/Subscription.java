@@ -9,7 +9,6 @@ import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
@@ -40,19 +39,9 @@ public class Subscription extends AppCompatActivity implements IabBroadcastRecei
     Button yearlySubButton;
     IabHelper.OnIabPurchaseFinishedListener mPurchaseFinishedListener = new IabHelper.OnIabPurchaseFinishedListener() {
         public void onIabPurchaseFinished(IabResult result, Purchase purchase) {
-            Log.d("IAB", "Purchase finished: " + result + ", purchase: " + purchase);
-
-            if (mHelper == null) return;
-
-            if (result.isFailure()) {
-                Log.d("IAB", "Error purchasing: " + result);
-                return;
-            }
-
-            Log.d("IAB", "Purchase successful.");
+            if (mHelper == null || result.isFailure()) return;
 
             if (purchase.getSku().equals(SKU_MONTHLY_TTS) || purchase.getSku().equals(SKU_YEARLY_TTS)) {
-                Log.d("IAB", "Infinite tts subscription purchased.");
                 mSubscribedToInfiniteTTS = true;
                 mSubscribedInfiniteTTSSku = purchase.getSku();
 
@@ -64,6 +53,10 @@ public class Subscription extends AppCompatActivity implements IabBroadcastRecei
                 editor.putString(getString(R.string.subscribedTTS), mSubscribedInfiniteTTSSku);
                 editor.apply();
 
+                monthlySubButton.setAlpha(1f);
+                monthlySubButton.setClickable(true);
+                yearlySubButton.setAlpha(1f);
+                yearlySubButton.setClickable(true);
                 if (mSubscribedInfiniteTTSSku.equals(SKU_MONTHLY_TTS)) {
                     monthlySubButton.setAlpha(0.5f);
                     monthlySubButton.setClickable(false);
@@ -81,14 +74,7 @@ public class Subscription extends AppCompatActivity implements IabBroadcastRecei
     private String yearlyTTSPrice;
     IabHelper.QueryInventoryFinishedListener mGotInventoryListener = new IabHelper.QueryInventoryFinishedListener() {
         public void onQueryInventoryFinished(IabResult result, Inventory inventory) {
-            Log.d("IAB", "Query inventory finished.");
-
-            if (mHelper == null) return;
-
-            if (result.isFailure()) {
-                Log.d("IAB", "Failed to query inventory: " + result);
-                return;
-            }
+            if (mHelper == null || result.isFailure()) return;
 
             // Set subscription buttons text if it hasn't been setup yet
             if ((monthlyTTSPrice.equals("") || yearlyTTSPrice.equals(""))
@@ -100,8 +86,6 @@ public class Subscription extends AppCompatActivity implements IabBroadcastRecei
                         inventory.getSkuDetails(SKU_YEARLY_TTS).getPrice();
                 setSubscriptionButtonsText(monthlyTTSPrice, yearlyTTSPrice);
             }
-
-            Log.d("IAB", "Query inventory was successful.");
 
             SharedPreferences sharedPreferencesTTS = getSharedPreferences(getString(R.string.ttsMonthlyLimitPref), MODE_PRIVATE);
             SharedPreferences.Editor editor = sharedPreferencesTTS.edit();
@@ -144,8 +128,6 @@ public class Subscription extends AppCompatActivity implements IabBroadcastRecei
             }
 
             mSubscribedToInfiniteTTS = (ttsMonthly != null) || (ttsYearly != null);
-
-            Log.d("IAB", "Initial inventory query finished; enabling main UI.");
         }
     };
 
@@ -202,26 +184,18 @@ public class Subscription extends AppCompatActivity implements IabBroadcastRecei
         mHelper.startSetup(new IabHelper.OnIabSetupFinishedListener() {
             @Override
             public void onIabSetupFinished(IabResult result) {
-                Log.d("Subscription", "InSetUpFinished: " + result);
-                if (!result.isSuccess()) {
-                    Log.d("Subscription", "Problem setting up In-app Billing: " + result);
-                    return;
-                }
-
-                if (mHelper == null) return;
+                if (mHelper == null || !result.isSuccess()) return;
 
                 mBroadcastReceiver = new IabBroadcastReceiver(Subscription.this);
                 IntentFilter broadcastFilter = new IntentFilter(IabBroadcastReceiver.ACTION);
                 registerReceiver(mBroadcastReceiver, broadcastFilter);
 
-                Log.d("IAB", "Setup successful. Querying inventory.");
                 try {
                     List<String> additionalSkuList = new ArrayList<String>();
                     additionalSkuList.add(SKU_MONTHLY_TTS);
                     additionalSkuList.add(SKU_YEARLY_TTS);
                     mHelper.queryInventoryAsync(true, null, additionalSkuList, mGotInventoryListener);
-                } catch (IabHelper.IabAsyncInProgressException e) {
-                    Log.d("IAB", "Error querying inventory. Another async operation in progress.");
+                } catch (IabHelper.IabAsyncInProgressException ignored) {
                 }
             }
         });
@@ -230,10 +204,7 @@ public class Subscription extends AppCompatActivity implements IabBroadcastRecei
         monthlySubButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (!mHelper.subscriptionsSupported()) {
-                    Log.d("IAB","Subscriptions not supported on your device yet. Sorry!");
-                    return;
-                }
+                if (!mHelper.subscriptionsSupported()) return;
                 try {
                     List<String> oldSku = null;
                     if (!TextUtils.isEmpty(mSubscribedInfiniteTTSSku)
@@ -245,8 +216,7 @@ public class Subscription extends AppCompatActivity implements IabBroadcastRecei
                     }
                     mHelper.launchPurchaseFlow(Subscription.this, SKU_MONTHLY_TTS, IabHelper.ITEM_TYPE_SUBS,
                             oldSku, 10001, mPurchaseFinishedListener, "");
-                } catch (IabHelper.IabAsyncInProgressException e) {
-                    Log.d("IAB", e.getMessage());
+                } catch (IabHelper.IabAsyncInProgressException ignored) {
                 }
             }
         });
@@ -254,10 +224,7 @@ public class Subscription extends AppCompatActivity implements IabBroadcastRecei
         yearlySubButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (!mHelper.subscriptionsSupported()) {
-                    Log.d("IAB","Subscriptions not supported on your device yet. Sorry!");
-                    return;
-                }
+                if (!mHelper.subscriptionsSupported()) return;
                 try {
                     List<String> oldSku = null;
                     if (!TextUtils.isEmpty(mSubscribedInfiniteTTSSku)
@@ -269,8 +236,7 @@ public class Subscription extends AppCompatActivity implements IabBroadcastRecei
                     }
                     mHelper.launchPurchaseFlow(Subscription.this, SKU_YEARLY_TTS, IabHelper.ITEM_TYPE_SUBS,
                             oldSku, 10001, mPurchaseFinishedListener, "");
-                } catch (IabHelper.IabAsyncInProgressException e) {
-                    Log.d("IAB", e.getMessage());
+                } catch (IabHelper.IabAsyncInProgressException ignored) {
                 }
             }
         });
@@ -316,7 +282,6 @@ public class Subscription extends AppCompatActivity implements IabBroadcastRecei
             unregisterReceiver(mBroadcastReceiver);
         }
 
-        Log.d("IAB", "Destroying helper.");
         if (mHelper != null) {
             mHelper.disposeWhenFinished();
             mHelper = null;
@@ -325,14 +290,10 @@ public class Subscription extends AppCompatActivity implements IabBroadcastRecei
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        Log.d("IAB", "onActivityResult(" + requestCode + "," + resultCode + "," + data);
         if (mHelper == null) return;
 
         if (!mHelper.handleActivityResult(requestCode, resultCode, data)) {
             super.onActivityResult(requestCode, resultCode, data);
-        }
-        else {
-            Log.d("IAB", "onActivityResult handled by IABUtil.");
         }
     }
 
@@ -346,11 +307,9 @@ public class Subscription extends AppCompatActivity implements IabBroadcastRecei
     @Override
     public void receivedBroadcast() {
         // Received a broadcast notification that the inventory of items has changed
-        Log.d("IAB", "Received broadcast notification. Querying inventory.");
         try {
             mHelper.queryInventoryAsync(mGotInventoryListener);
-        } catch (IabHelper.IabAsyncInProgressException e) {
-            Log.d("IAB", "Error querying inventory. Another async operation in progress.");
+        } catch (IabHelper.IabAsyncInProgressException ignored) {
         }
     }
 }

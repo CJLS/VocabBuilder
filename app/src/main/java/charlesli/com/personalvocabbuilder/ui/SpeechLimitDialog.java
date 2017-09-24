@@ -18,7 +18,7 @@ public class SpeechLimitDialog extends CustomDialog {
     public SpeechLimitDialog(final Context context) {
         super(context);
 
-        setMessage("Your monthly speech quota has been reached. Please subscribe for unlimited speech quota");
+        setMessage("Your monthly speech quota has been reached. Please subscribe for unlimited speech quota.");
 
         setButton(BUTTON_POSITIVE, "OK", new DialogInterface.OnClickListener() {
             @Override
