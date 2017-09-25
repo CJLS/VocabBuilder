@@ -72,6 +72,8 @@ public class Subscription extends AppCompatActivity implements IabBroadcastRecei
     };
     private String monthlyTTSPrice;
     private String yearlyTTSPrice;
+    private Long monthlyTTSPriceAmountMicro;
+    private Long yearlyTTSPriceAmountMicro;
     IabHelper.QueryInventoryFinishedListener mGotInventoryListener = new IabHelper.QueryInventoryFinishedListener() {
         public void onQueryInventoryFinished(IabResult result, Inventory inventory) {
             if (mHelper == null || result.isFailure()) return;
@@ -84,7 +86,12 @@ public class Subscription extends AppCompatActivity implements IabBroadcastRecei
                         inventory.getSkuDetails(SKU_MONTHLY_TTS).getPrice();
                 yearlyTTSPrice =
                         inventory.getSkuDetails(SKU_YEARLY_TTS).getPrice();
-                setSubscriptionButtonsText(monthlyTTSPrice, yearlyTTSPrice);
+                monthlyTTSPriceAmountMicro =
+                        inventory.getSkuDetails(SKU_MONTHLY_TTS).getPriceAmountMicros();
+                yearlyTTSPriceAmountMicro =
+                        inventory.getSkuDetails(SKU_YEARLY_TTS).getPriceAmountMicros();
+                setSubscriptionButtonsText(monthlyTTSPrice, yearlyTTSPrice,
+                        monthlyTTSPriceAmountMicro, yearlyTTSPriceAmountMicro);
             }
 
             SharedPreferences sharedPreferencesTTS = getSharedPreferences(getString(R.string.ttsMonthlyLimitPref), MODE_PRIVATE);
@@ -153,7 +160,9 @@ public class Subscription extends AppCompatActivity implements IabBroadcastRecei
 
         monthlyTTSPrice = sharedPreferencesTTS.getString(getString(R.string.monthlyTTSPrice), "");
         yearlyTTSPrice = sharedPreferencesTTS.getString(getString(R.string.yearlyTTSPrice), "");
-        setSubscriptionButtonsText(monthlyTTSPrice, yearlyTTSPrice);
+        monthlyTTSPriceAmountMicro = sharedPreferencesTTS.getLong(getString(R.string.monthlyTTSPriceAmountMicros), -1);
+        yearlyTTSPriceAmountMicro = sharedPreferencesTTS.getLong(getString(R.string.yearlyTTSPriceAmountMicros), -1);
+        setSubscriptionButtonsText(monthlyTTSPrice, yearlyTTSPrice, monthlyTTSPriceAmountMicro, yearlyTTSPriceAmountMicro);
 
         boolean isSubscribed = sharedPreferencesTTS.getBoolean(getString(R.string.isSubscribed), false);
         boolean isAutoRenewed = sharedPreferencesTTS.getBoolean(getString(R.string.autoRenewed), false);
@@ -250,8 +259,10 @@ public class Subscription extends AppCompatActivity implements IabBroadcastRecei
         });
     }
 
-    private void setSubscriptionButtonsText(String monthlyTTSPrice, String yearlyTTSPrice) {
-        if (monthlyTTSPrice.equals("") || yearlyTTSPrice.equals("")) {
+    private void setSubscriptionButtonsText(String monthlyTTSPrice, String yearlyTTSPrice,
+                                            Long monthlyTTSPriceAmountMicros, Long yearlyTTSPriceAmountMicros) {
+        if (monthlyTTSPrice.equals("") || yearlyTTSPrice.equals("") ||
+                monthlyTTSPriceAmountMicros <= 0 || yearlyTTSPriceAmountMicros <= 0) {
             return;
         }
         Button monthlySubButton = (Button) findViewById(R.id.monthlySubButton);
@@ -262,15 +273,22 @@ public class Subscription extends AppCompatActivity implements IabBroadcastRecei
         String yearlyPriceInfo = yearlyTTSPrice + " / Year";
         yearlySubButton.setText(yearlyPriceInfo);
 
-        Pattern pricePattern = Pattern.compile("[0-9]*\\.?[0-9]+");
-        Matcher priceMatcher = pricePattern.matcher(yearlyTTSPrice);
-        if (priceMatcher.find()) {
-            String yearlyPrice = priceMatcher.group();
-            float yearlyPricePerMonth = Float.parseFloat(yearlyPrice) / 12.0f;
+        Pattern pricePattern = Pattern.compile("[0-9,.]+");
+        Matcher yearlyPriceMatcher = pricePattern.matcher(yearlyTTSPrice);
+        if (yearlyPriceMatcher.find()) {
+            float yearlyPricePerMonth = yearlyTTSPriceAmountMicros / 1000000f / 12f;
             String yearlyPricePerMonthWithCurrency =
-                    priceMatcher.replaceFirst(String.format(Locale.CANADA, "%.2f", yearlyPricePerMonth));
+                    yearlyPriceMatcher.replaceFirst(String.format(Locale.CANADA, "%.2f", yearlyPricePerMonth));
             yearlyPriceInfo = yearlyPricePerMonthWithCurrency + " / Month";
             yearlySubButton.setText(yearlyPriceInfo);
+        }
+        Matcher monthlyPriceMatcher = pricePattern.matcher(monthlyTTSPrice);
+        if (monthlyPriceMatcher.find()) {
+            float monthlyPricePerMonth = monthlyTTSPriceAmountMicros / 1000000f;
+            String monthlyPricePerMonthWithCurrency =
+                    monthlyPriceMatcher.replaceFirst(String.format(Locale.getDefault(), "%.2f", monthlyPricePerMonth));
+            monthlyPriceInfo = monthlyPricePerMonthWithCurrency + " / Month";
+            monthlySubButton.setText(monthlyPriceInfo);
         }
     }
 

@@ -75,6 +75,8 @@
     <string name="monthlyTTSPrice">Monthly TTS Price</string>
     <string name="yearlyTTSPrice">Yearly TTS Price</string>
     <string name="autoRenewed">Auto-renewed</string>
+    <string name="monthlyTTSPriceAmountMicros">Monthly TTS Price Amount Micros</string>
+    <string name="yearlyTTSPriceAmountMicros">Yearly TTS Price Amount Micros</string>
     <color name="white">#ffffff</color>
     <color name="black">#000000</color>
     <color name="app_icon_color">#2b5ea2</color>

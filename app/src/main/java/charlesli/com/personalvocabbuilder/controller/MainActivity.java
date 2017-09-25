@@ -58,6 +58,10 @@ public class MainActivity extends AppCompatActivity {
                         inventory.getSkuDetails(SKU_MONTHLY_TTS).getPrice());
                 editor.putString(getString(R.string.yearlyTTSPrice),
                         inventory.getSkuDetails(SKU_YEARLY_TTS).getPrice());
+                editor.putLong(getString(R.string.monthlyTTSPriceAmountMicros),
+                        inventory.getSkuDetails(SKU_MONTHLY_TTS).getPriceAmountMicros());
+                editor.putLong(getString(R.string.yearlyTTSPriceAmountMicros),
+                        inventory.getSkuDetails(SKU_YEARLY_TTS).getPriceAmountMicros());
             }
 
             Purchase ttsMonthly = inventory.getPurchase(SKU_MONTHLY_TTS);
