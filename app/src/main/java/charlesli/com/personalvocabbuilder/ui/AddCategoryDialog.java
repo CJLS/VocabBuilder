@@ -9,6 +9,7 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.Spinner;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.ArrayList;
@@ -29,6 +30,8 @@ import charlesli.com.personalvocabbuilder.sqlDatabase.VocabDbHelper;
 public class AddCategoryDialog extends CustomDialog {
 
     private int selectedPos;
+    private HashMap<String, Locale> displayNameToLocaleMapping;
+    private ArrayList<String> supportedLanguages;
 
     public AddCategoryDialog(final Context context, final CategoryCursorAdapter categoryAdapter, final CustomTTS textToSpeech) {
         super(context);
@@ -39,12 +42,20 @@ public class AddCategoryDialog extends CustomDialog {
         View promptsView = li.inflate(R.layout.alert_dialog_add_category, null);
         Spinner speechLanguageSpinner = (Spinner) promptsView.findViewById(R.id.speechLanguageSpinner);
 
-        final HashMap<String, Locale> displayNameToLocaleMapping = textToSpeech.getSupportedDisplayNameToLocaleMapping();
-        final ArrayList<String> supportedLanguages = new ArrayList<>(displayNameToLocaleMapping.keySet());
-        Collections.sort(supportedLanguages);
-        selectedPos = supportedLanguages.indexOf(Locale.US.getDisplayName());
+        if (textToSpeech != null) {
+            displayNameToLocaleMapping = textToSpeech.getSupportedDisplayNameToLocaleMapping();
+            supportedLanguages = new ArrayList<>(displayNameToLocaleMapping.keySet());
+            Collections.sort(supportedLanguages);
+            selectedPos = supportedLanguages.indexOf(Locale.US.getDisplayName());
+            setupLanguageSelector(speechLanguageSpinner, supportedLanguages);
+        }
+        else {
+            // Hide speech selection option if TTS not initialized
+            TextView speechTV = (TextView) promptsView.findViewById(R.id.speechLanguageTV);
+            speechTV.setVisibility(View.GONE);
+            speechLanguageSpinner.setVisibility(View.GONE);
+        }
 
-        setupLanguageSelector(speechLanguageSpinner, supportedLanguages);
         final EditText categoryNameInput = (EditText) promptsView.findViewById(R.id.categoryNameInput);
         final EditText categoryDescInput = (EditText) promptsView.findViewById(R.id.categoryDescInput);
         setView(promptsView);
@@ -61,11 +72,14 @@ public class AddCategoryDialog extends CustomDialog {
                 else {
                     dbHelper.insertCategory(categoryName, description);
                     categoryAdapter.changeCursor(dbHelper.getCategoryCursor());
-                    String selectedLocaleDisplayName = supportedLanguages.get(selectedPos);
-                    dbHelper.updateCategoryLocaleDisplayName(categoryName, selectedLocaleDisplayName);
-                    int result = textToSpeech.isLanguageAvailable(displayNameToLocaleMapping.get(selectedLocaleDisplayName));
-                    if (result == TextToSpeech.LANG_MISSING_DATA || result == TextToSpeech.LANG_NOT_SUPPORTED) {
-                        Toast.makeText(context, "Please enable internet to download the selected language voice data", Toast.LENGTH_SHORT).show();
+
+                    if (textToSpeech != null) {
+                        String selectedLocaleDisplayName = supportedLanguages.get(selectedPos);
+                        dbHelper.updateCategoryLocaleDisplayName(categoryName, selectedLocaleDisplayName);
+                        int result = textToSpeech.isLanguageAvailable(displayNameToLocaleMapping.get(selectedLocaleDisplayName));
+                        if (result == TextToSpeech.LANG_MISSING_DATA || result == TextToSpeech.LANG_NOT_SUPPORTED) {
+                            Toast.makeText(context, "Please enable internet to download the selected language voice data", Toast.LENGTH_SHORT).show();
+                        }
                     }
                 }
             }
