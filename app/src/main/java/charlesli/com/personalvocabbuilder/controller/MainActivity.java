@@ -134,6 +134,7 @@ public class MainActivity extends AppCompatActivity {
                 String categoryName = categoryCursor.getString(categoryCursor.getColumnIndex(VocabDbContract.COLUMN_NAME_CATEGORY));
                 Intent intent = new Intent(MainActivity.this, MyVocab.class);
                 intent.putExtra("Category", categoryName);
+                categoryCursor.close();
                 startActivity(intent);
             }
         });
@@ -145,6 +146,7 @@ public class MainActivity extends AppCompatActivity {
                 categoryCursor.moveToPosition(position);
                 String categoryName = categoryCursor.getString(categoryCursor.getColumnIndex(VocabDbContract.COLUMN_NAME_CATEGORY));
                 String categoryDesc = categoryCursor.getString(categoryCursor.getColumnIndex(VocabDbContract.COLUMN_NAME_DESCRIPTION));
+                categoryCursor.close();
                 editCategoryAlertDialog(categoryName, categoryDesc);
                 return true;
             }

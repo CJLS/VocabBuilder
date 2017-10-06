@@ -108,6 +108,7 @@ public class CopyVocabDialog extends CustomDialog {
                 String vocab = cursor.getString(cursor.getColumnIndex(VocabDbContract.COLUMN_NAME_VOCAB));
                 String definition = cursor.getString(cursor.getColumnIndex(VocabDbContract.COLUMN_NAME_DEFINITION));
                 Integer level = cursor.getInt(cursor.getColumnIndex(VocabDbContract.COLUMN_NAME_LEVEL));
+                cursor.close();
                 dbHelper.insertVocab(toCategory, vocab, definition, level);
             }
             cursorAdapter.selectedItemsPositions.clear();

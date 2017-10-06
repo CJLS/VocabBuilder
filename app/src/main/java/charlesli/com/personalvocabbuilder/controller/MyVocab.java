@@ -67,6 +67,11 @@ public class MyVocab extends AppCompatActivity {
             public void onInit(int status) {
                 if (status != TextToSpeech.ERROR) {
                     String selectedLocaleDisplayName = mDbHelper.getCategoryLocaleDisplayName(categoryName);
+                    // textToSpeech shouldn't be null, added safeguard due to NullPointerException incurred in production
+                    if (textToSpeech == null) {
+                        Toast.makeText(MyVocab.this, "Sorry, the speech engine is currently unavailable.", Toast.LENGTH_SHORT).show();
+                        return;
+                    }
                     HashMap<String, Locale> displayNameToLocaleMapping = textToSpeech.getSupportedDisplayNameToLocaleMapping();
 
                     int result = textToSpeech.setLanguage(displayNameToLocaleMapping.get(selectedLocaleDisplayName));
