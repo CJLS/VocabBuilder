@@ -4,10 +4,11 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.database.Cursor;
-import android.text.InputType;
+import android.view.LayoutInflater;
+import android.view.View;
 import android.widget.EditText;
-import android.widget.LinearLayout;
 
+import charlesli.com.personalvocabbuilder.R;
 import charlesli.com.personalvocabbuilder.controller.MyVocab;
 import charlesli.com.personalvocabbuilder.sqlDatabase.VocabCursorAdapter;
 import charlesli.com.personalvocabbuilder.sqlDatabase.VocabDbHelper;
@@ -28,11 +29,15 @@ public class EditVocabDialog extends CustomDialog {
 
         setTitle("Edit Vocab");
 
-        final EditText vocabInput = new EditText(context);
-        final EditText definitionInput = new EditText(context);
+        LayoutInflater li = LayoutInflater.from(context);
+        View promptsView = li.inflate(R.layout.alert_dialog_edit_vocab, null);
 
-        setView(setUpCustomDialogLayout(vocabInput, definitionInput,
-                selectedVocab, selectedDefinition));
+        final EditText vocabInput = (EditText) promptsView.findViewById(R.id.editVocabName);
+        vocabInput.setText(selectedVocab);
+        final EditText definitionInput = (EditText) promptsView.findViewById(R.id.editVocabDescription);
+        definitionInput.setText(selectedDefinition);
+
+        setView(promptsView);
 
         setButton(BUTTON_NEUTRAL, "Cancel", new DialogInterface.OnClickListener() {
             @Override
@@ -68,22 +73,4 @@ public class EditVocabDialog extends CustomDialog {
         });
     }
 
-    private LinearLayout setUpCustomDialogLayout(EditText vocabInput, EditText definitionInput,
-                                                 String selectedVocab, String selectedDefinition) {
-        LinearLayout layout = new LinearLayout(getContext());
-        layout.setOrientation(LinearLayout.VERTICAL);
-
-        vocabInput.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_FLAG_AUTO_COMPLETE);
-        vocabInput.setHint("New vocab");
-        vocabInput.setText(selectedVocab);
-        layout.addView(vocabInput);
-
-
-        definitionInput.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_FLAG_AUTO_COMPLETE);
-        definitionInput.setHint("New definition");
-        definitionInput.setText(selectedDefinition);
-        layout.addView(definitionInput);
-
-        return layout;
-    }
 }
