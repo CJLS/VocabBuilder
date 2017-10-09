@@ -56,7 +56,7 @@ public class VocabDbHelper extends SQLiteOpenHelper {
             COLUMN_NAME_DEFINITION + " TEXT, " +
             COLUMN_NAME_LEVEL + " INTEGER, " +
                     COLUMN_NAME_CATEGORY + " TEXT, " +
-                    COLUMN_NAME_REVIEWED_AT + " DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP );";
+                    COLUMN_NAME_REVIEWED_AT + " DATETIME );";
     private String CREATE_TABLE_CATEGORY =
             "CREATE TABLE  " + TABLE_NAME_CATEGORY +
                     " (" + _ID + " INTEGER PRIMARY KEY," +
@@ -201,7 +201,7 @@ public class VocabDbHelper extends SQLiteOpenHelper {
         }
         if (oldVersion <= 7) {
             db.execSQL("ALTER TABLE " + TABLE_NAME_MY_VOCAB +
-                    " ADD COLUMN " + COLUMN_NAME_REVIEWED_AT + " DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP");
+                    " ADD COLUMN " + COLUMN_NAME_REVIEWED_AT + " DATETIME");
         }
 
     }
