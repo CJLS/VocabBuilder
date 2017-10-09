@@ -21,6 +21,7 @@ import static charlesli.com.personalvocabbuilder.sqlDatabase.VocabDbContract.COL
 import static charlesli.com.personalvocabbuilder.sqlDatabase.VocabDbContract.COLUMN_NAME_DESCRIPTION;
 import static charlesli.com.personalvocabbuilder.sqlDatabase.VocabDbContract.COLUMN_NAME_LEVEL;
 import static charlesli.com.personalvocabbuilder.sqlDatabase.VocabDbContract.COLUMN_NAME_LOCALE;
+import static charlesli.com.personalvocabbuilder.sqlDatabase.VocabDbContract.COLUMN_NAME_REVIEWED_AT;
 import static charlesli.com.personalvocabbuilder.sqlDatabase.VocabDbContract.COLUMN_NAME_VOCAB;
 import static charlesli.com.personalvocabbuilder.sqlDatabase.VocabDbContract.TABLE_NAME_CATEGORY;
 import static charlesli.com.personalvocabbuilder.sqlDatabase.VocabDbContract.TABLE_NAME_GMAT;
@@ -34,7 +35,7 @@ import static charlesli.com.personalvocabbuilder.sqlDatabase.VocabDbContract._ID
  */
 public class VocabDbHelper extends SQLiteOpenHelper {
     // If the database schema is changed, the database version must be incremented.
-    public static final int DATABASE_VERSION = 7;
+    public static final int DATABASE_VERSION = 8;
     public static final String DATABASE_NAME = "VocabDatabase.db";
     private static final String DELETE_TABLE_MY_VOCAB =
             "DROP TABLE IF EXISTS " + TABLE_NAME_MY_VOCAB;
@@ -54,7 +55,8 @@ public class VocabDbHelper extends SQLiteOpenHelper {
             COLUMN_NAME_VOCAB + " TEXT, " +
             COLUMN_NAME_DEFINITION + " TEXT, " +
             COLUMN_NAME_LEVEL + " INTEGER, " +
-                    COLUMN_NAME_CATEGORY + " TEXT );";
+                    COLUMN_NAME_CATEGORY + " TEXT, " +
+                    COLUMN_NAME_REVIEWED_AT + " DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP );";
     private String CREATE_TABLE_CATEGORY =
             "CREATE TABLE  " + TABLE_NAME_CATEGORY +
                     " (" + _ID + " INTEGER PRIMARY KEY," +
@@ -196,6 +198,10 @@ public class VocabDbHelper extends SQLiteOpenHelper {
             db.execSQL("ALTER TABLE " + TABLE_NAME_CATEGORY +
                     " ADD COLUMN " + COLUMN_NAME_LOCALE + " TEXT NOT NULL DEFAULT '" +
                     Locale.US.getDisplayName() + "'");
+        }
+        if (oldVersion <= 7) {
+            db.execSQL("ALTER TABLE " + TABLE_NAME_MY_VOCAB +
+                    " ADD COLUMN " + COLUMN_NAME_REVIEWED_AT + " DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP");
         }
 
     }

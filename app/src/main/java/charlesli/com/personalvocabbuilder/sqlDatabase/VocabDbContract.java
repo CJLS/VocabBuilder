@@ -19,6 +19,7 @@ public final class VocabDbContract implements BaseColumns{
     public static final String COLUMN_NAME_VOCAB = "vocab";
     public static final String COLUMN_NAME_DEFINITION = "definition";
     public static final String COLUMN_NAME_LEVEL = "level";
+    public static final String COLUMN_NAME_REVIEWED_AT = "reviewed_at";
 
     public static final String COLUMN_NAME_CATEGORY = "category";
     public static final String COLUMN_NAME_DESCRIPTION = "description";
