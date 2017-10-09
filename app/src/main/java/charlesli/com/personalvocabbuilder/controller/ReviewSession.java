@@ -18,7 +18,9 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Random;
@@ -329,19 +331,20 @@ public class ReviewSession extends AppCompatActivity {
         // New value for one column
         ContentValues values = new ContentValues();
         values.put(VocabDbContract.COLUMN_NAME_LEVEL, level);
+        values.put(VocabDbContract.COLUMN_NAME_REVIEWED_AT, getDateTime());
 
         // Which row to update, based on the ID
-        String selectionWordBank = VocabDbContract.COLUMN_NAME_VOCAB + " = ? AND " +
+        String selection = VocabDbContract.COLUMN_NAME_VOCAB + " = ? AND " +
                 VocabDbContract.COLUMN_NAME_DEFINITION + " = ?";
         String word = mCursor.getString(mCursor.getColumnIndexOrThrow(VocabDbContract.COLUMN_NAME_VOCAB));
         String definition = mCursor.getString(mCursor.getColumnIndexOrThrow(VocabDbContract.COLUMN_NAME_DEFINITION));
-        String[] selectionArgsWordBank = {word, definition};
+        String[] selectionArgs = {word, definition};
 
         db.update(
                 VocabDbContract.TABLE_NAME_MY_VOCAB,
                 values,
-                selectionWordBank,
-                selectionArgsWordBank
+                selection,
+                selectionArgs
         );
         // If this is not last word to be reviewed
         if (mTracker.size() < mReviewNumOfVocab) {
@@ -365,6 +368,12 @@ public class ReviewSession extends AppCompatActivity {
             startActivity(intent);
 
         }
+    }
+
+    private String getDateTime() {
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault());
+        Date date = new Date();
+        return dateFormat.format(date);
     }
 
 
