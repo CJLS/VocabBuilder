@@ -2,11 +2,12 @@ package charlesli.com.personalvocabbuilder.ui;
 
 import android.content.Context;
 import android.content.DialogInterface;
-import android.text.InputType;
+import android.view.LayoutInflater;
+import android.view.View;
 import android.widget.EditText;
-import android.widget.LinearLayout;
 import android.widget.Toast;
 
+import charlesli.com.personalvocabbuilder.R;
 import charlesli.com.personalvocabbuilder.sqlDatabase.CategoryCursorAdapter;
 import charlesli.com.personalvocabbuilder.sqlDatabase.VocabDbHelper;
 
@@ -20,11 +21,17 @@ public class EditCategoryDialog extends CustomDialog {
                               final String selectedCategory, String selectedDesc) {
         super(context);
 
-        final EditText categoryNameInput = new EditText(context);
-        final EditText categoryDescInput = new EditText(context);
         setTitle("Edit Category");
-        setView(setUpCustomDialogLayout(categoryNameInput, categoryDescInput,
-                selectedCategory, selectedDesc));
+
+        LayoutInflater li = LayoutInflater.from(context);
+        View promptsView = li.inflate(R.layout.alert_dialog_edit_category, null);
+
+        final EditText categoryNameInput = (EditText) promptsView.findViewById(R.id.editCategoryName);
+        categoryNameInput.setText(selectedCategory);
+        final EditText categoryDescInput = (EditText) promptsView.findViewById(R.id.editCategoryDescription);
+        categoryDescInput.setText(selectedDesc);
+
+        setView(promptsView);
         final VocabDbHelper dbHelper = VocabDbHelper.getDBHelper(context);
 
         setButton(BUTTON_NEUTRAL, "Cancel", new DialogInterface.OnClickListener() {
@@ -63,22 +70,4 @@ public class EditCategoryDialog extends CustomDialog {
 
     }
 
-    private LinearLayout setUpCustomDialogLayout(EditText categoryNameInput, EditText categoryDescInput,
-                                                 String selectedCategory, String selectedDesc) {
-        LinearLayout layout = new LinearLayout(getContext());
-        layout.setOrientation(LinearLayout.VERTICAL);
-
-        categoryNameInput.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_FLAG_AUTO_COMPLETE);
-        categoryNameInput.setHint("New name");
-        categoryNameInput.setText(selectedCategory);
-        layout.addView(categoryNameInput);
-
-
-        categoryDescInput.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_FLAG_AUTO_COMPLETE);
-        categoryDescInput.setHint("New description");
-        categoryDescInput.setText(selectedDesc);
-        layout.addView(categoryDescInput);
-
-        return layout;
-    }
 }
