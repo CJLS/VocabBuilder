@@ -218,6 +218,19 @@ public class VocabDbHelper extends SQLiteOpenHelper {
         db.insert(TABLE_NAME_MY_VOCAB, null, values);
     }
 
+    public void insertVocab(String category, String vocab, String definition, int level, String reviewedAt) {
+        SQLiteDatabase db = this.getWritableDatabase();
+
+        ContentValues values = new ContentValues();
+        values.put(COLUMN_NAME_VOCAB, vocab);
+        values.put(COLUMN_NAME_DEFINITION, definition);
+        values.put(COLUMN_NAME_LEVEL, level);
+        values.put(COLUMN_NAME_CATEGORY, category);
+        values.put(COLUMN_NAME_REVIEWED_AT, reviewedAt);
+
+        db.insert(TABLE_NAME_MY_VOCAB, null, values);
+    }
+
     public void updateVocabDefinition(String selectedVocab, String selectedDefinition, String newVocab, String newDefinition) {
         SQLiteDatabase db = this.getReadableDatabase();
 

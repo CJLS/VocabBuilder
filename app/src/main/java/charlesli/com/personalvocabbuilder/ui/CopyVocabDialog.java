@@ -61,13 +61,19 @@ public class CopyVocabDialog extends CustomDialog {
             }
         });
 
-        setButton(BUTTON_POSITIVE, "OK", new DialogInterface.OnClickListener() {
+        setButton(BUTTON_POSITIVE, "COPY", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                addVocabToSelectedTable(cursorAdapter, dbHelper, fromCategory, selectedCategory[0]);
+                addVocabToSelectedTable(cursorAdapter, dbHelper, fromCategory, selectedCategory[0], true);
             }
         });
-        setButton(BUTTON_NEGATIVE, "CANCEL", new DialogInterface.OnClickListener() {
+        setButton(BUTTON_NEGATIVE, "MOVE", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                addVocabToSelectedTable(cursorAdapter, dbHelper, fromCategory, selectedCategory[0], false);
+            }
+        });
+        setButton(BUTTON_NEUTRAL, "CANCEL", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 dialog.cancel();
@@ -76,7 +82,7 @@ public class CopyVocabDialog extends CustomDialog {
     }
 
     private void addVocabToSelectedTable(VocabCursorAdapter cursorAdapter, VocabDbHelper dbHelper,
-                                           String fromCategory, String toCategory) {
+                                           String fromCategory, String toCategory, boolean toBeCopied) {
         Iterator<Integer> posIt = cursorAdapter.selectedItemsPositions.iterator();
         if (cursorAdapter.selectedItemsPositions.isEmpty()) {
             Toast.makeText(getContext(), "No words are selected", Toast.LENGTH_SHORT).show();
@@ -108,8 +114,17 @@ public class CopyVocabDialog extends CustomDialog {
                 String vocab = cursor.getString(cursor.getColumnIndex(VocabDbContract.COLUMN_NAME_VOCAB));
                 String definition = cursor.getString(cursor.getColumnIndex(VocabDbContract.COLUMN_NAME_DEFINITION));
                 Integer level = cursor.getInt(cursor.getColumnIndex(VocabDbContract.COLUMN_NAME_LEVEL));
+                if (cursor.isNull(cursor.getColumnIndex(VocabDbContract.COLUMN_NAME_REVIEWED_AT))) {
+                    dbHelper.insertVocab(toCategory, vocab, definition, level);
+                }
+                else {
+                    String reviewedAt = cursor.getString(cursor.getColumnIndex(VocabDbContract.COLUMN_NAME_REVIEWED_AT));
+                    dbHelper.insertVocab(toCategory, vocab, definition, level, reviewedAt);
+                }
+                if (!toBeCopied) {
+                    dbHelper.deleteVocab(idInt);
+                }
                 cursor.close();
-                dbHelper.insertVocab(toCategory, vocab, definition, level);
             }
             cursorAdapter.selectedItemsPositions.clear();
 
@@ -119,7 +134,12 @@ public class CopyVocabDialog extends CustomDialog {
             Cursor cursor = dbHelper.getVocabCursor(fromCategory, orderBy);
             cursorAdapter.changeCursor(cursor);
 
-            Toast.makeText(getContext(), "Vocab added successfully", Toast.LENGTH_SHORT).show();
+            if (toBeCopied) {
+                Toast.makeText(getContext(), "Vocab copied successfully", Toast.LENGTH_SHORT).show();
+            }
+            else {
+                Toast.makeText(getContext(), "Vocab moved successfully", Toast.LENGTH_SHORT).show();
+            }
         }
     }
 }
