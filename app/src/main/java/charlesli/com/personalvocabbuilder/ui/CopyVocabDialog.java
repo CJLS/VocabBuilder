@@ -5,15 +5,16 @@ import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.AdapterView;
-import android.widget.LinearLayout;
 import android.widget.SimpleCursorAdapter;
 import android.widget.Spinner;
 import android.widget.Toast;
 
 import java.util.Iterator;
 
+import charlesli.com.personalvocabbuilder.R;
 import charlesli.com.personalvocabbuilder.sqlDatabase.VocabCursorAdapter;
 import charlesli.com.personalvocabbuilder.sqlDatabase.VocabDbContract;
 import charlesli.com.personalvocabbuilder.sqlDatabase.VocabDbHelper;
@@ -34,10 +35,12 @@ public class CopyVocabDialog extends CustomDialog {
         final String[] selectedCategory = new String[1];
         setTitle("Add Vocab To...");
 
-        LinearLayout layout = new LinearLayout(context);
-        layout.setOrientation(LinearLayout.VERTICAL);
+        LayoutInflater li = LayoutInflater.from(context);
+        View promptsView = li.inflate(R.layout.alert_dialog_copy_vocab, null);
+        Spinner spinner = (Spinner) promptsView.findViewById(R.id.copyVocabSpinner);
 
-        final Spinner spinner = new Spinner(context);
+        setView(promptsView);
+
         String[] from = {VocabDbContract.COLUMN_NAME_CATEGORY};
         int[] to = {android.R.id.text1};
         final Cursor categoryCursor = dbHelper.getCategoryCursor();
@@ -57,9 +60,6 @@ public class CopyVocabDialog extends CustomDialog {
 
             }
         });
-
-        layout.addView(spinner);
-        setView(layout);
 
         setButton(BUTTON_POSITIVE, "OK", new DialogInterface.OnClickListener() {
             @Override
