@@ -84,6 +84,7 @@ public class CopyVocabDialog extends CustomDialog {
     private void addVocabToSelectedTable(VocabCursorAdapter cursorAdapter, VocabDbHelper dbHelper,
                                            String fromCategory, String toCategory, boolean toBeCopied) {
         Iterator<Integer> posIt = cursorAdapter.selectedItemsPositions.iterator();
+        boolean allAdded = true;
         if (cursorAdapter.selectedItemsPositions.isEmpty()) {
             Toast.makeText(getContext(), "No words are selected", Toast.LENGTH_SHORT).show();
         }
@@ -110,6 +111,10 @@ public class CopyVocabDialog extends CustomDialog {
                         null,
                         null
                 );
+                if (cursor == null || cursor.getCount() == 0) {
+                    allAdded = false;
+                    continue;
+                }
                 cursor.moveToFirst();
                 String vocab = cursor.getString(cursor.getColumnIndex(VocabDbContract.COLUMN_NAME_VOCAB));
                 String definition = cursor.getString(cursor.getColumnIndex(VocabDbContract.COLUMN_NAME_DEFINITION));
@@ -134,11 +139,19 @@ public class CopyVocabDialog extends CustomDialog {
             Cursor cursor = dbHelper.getVocabCursor(fromCategory, orderBy);
             cursorAdapter.changeCursor(cursor);
 
-            if (toBeCopied) {
-                Toast.makeText(getContext(), "Vocab copied successfully", Toast.LENGTH_SHORT).show();
+            if (allAdded) {
+                if (toBeCopied) {
+                    Toast.makeText(getContext(), "Vocab copied successfully", Toast.LENGTH_SHORT).show();
+                } else {
+                    Toast.makeText(getContext(), "Vocab moved successfully", Toast.LENGTH_SHORT).show();
+                }
             }
             else {
-                Toast.makeText(getContext(), "Vocab moved successfully", Toast.LENGTH_SHORT).show();
+                if (toBeCopied) {
+                    Toast.makeText(getContext(), "Sorry, some vocab might not have been copied", Toast.LENGTH_SHORT).show();
+                } else {
+                    Toast.makeText(getContext(), "Sorry, some vocab might not have been moved", Toast.LENGTH_SHORT).show();
+                }
             }
         }
     }
