@@ -127,8 +127,8 @@ public class MyVocab extends AppCompatActivity {
         mVocabListView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
             @Override
             public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
-                String selectedVocab = (String) ((TextView) view.findViewById(R.id.vocabName)).getText();
-                String selectedDefinition = (String) ((TextView) view.findViewById(R.id.vocabDefinition)).getText();
+                String selectedVocab = ((TextView) view.findViewById(R.id.vocabName)).getText().toString();
+                String selectedDefinition = ((TextView) view.findViewById(R.id.vocabDefinition)).getText().toString();
                 editVocabAlertDialog(selectedVocab, selectedDefinition, id, mDbHelper,
                         categoryName, mVocabAdapter);
                 return true;
