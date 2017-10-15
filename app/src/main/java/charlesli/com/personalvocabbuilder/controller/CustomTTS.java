@@ -20,7 +20,18 @@ public class CustomTTS extends TextToSpeech {
     public HashMap<String, Locale> getSupportedDisplayNameToLocaleMapping() {
         HashMap<String, Locale> displayToLocaleHashMap = new HashMap<>();
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+        boolean getLanguagesMethodExisted = true;
+        try {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                getAvailableLanguages();
+            }
+        }
+        catch (Exception e) {
+            getLanguagesMethodExisted = false;
+        }
+
+
+        if (getLanguagesMethodExisted && Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             for (Locale locale : getAvailableLanguages()) {
                 displayToLocaleHashMap.put(locale.getDisplayName(), locale);
             }
