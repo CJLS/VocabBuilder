@@ -4,12 +4,14 @@ import android.app.Activity;
 import android.content.Context;
 import android.net.Uri;
 import android.os.AsyncTask;
+import android.util.Log;
 import android.view.View;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
+import java.util.Arrays;
 
 import charlesli.com.personalvocabbuilder.sqlDatabase.VocabDbHelper;
 
@@ -58,24 +60,30 @@ class ExportFileReader extends AsyncTask<Void, Void, Void> {
         try {
             br = new BufferedReader(new InputStreamReader(context.getContentResolver().openInputStream(exportFile)));
             String line;
+            String record = "";
             // Skip first header line
             br.readLine();
             while ((line = br.readLine()) != null) {
+                record += line;
+                Log.d("CJLS", line);
+                /*
+                TODO: Only length = 5 is valid, otherwise accumulate lines until length is 5
+                 */
                 // Header: "Vocab,Definition,Level,Category Name,Category Description"
                 // 1. Split line by , that's not preceded by /
-                String[] row = line.split("(?<!\\\\),");
-                if (row.length < 4) {
+                String[] row = record.split("(?<!\\\\),", -1);
+                Log.d("CJLS length", String.valueOf(row.length));
+                Log.d("CJLS array", Arrays.toString(row));
+                if (row.length < 5) {
                     continue;
                 }
+                Log.d("CJLS", "processing");
                 // 2. Get each item from array
                 String vocab = row[0];
                 String definition = row[1];
                 String progress = row[2];
                 String categoryName = row[3];
-                String categoryDescription = "";
-                if (row.length > 4) {
-                    categoryDescription = row[4];
-                }
+                String categoryDescription = row[4];
 
                 // 3. Convert each item from /, to ,
                 vocab = vocab.replace("\\,", ",");
@@ -121,6 +129,8 @@ class ExportFileReader extends AsyncTask<Void, Void, Void> {
                     dbHelper.insertVocab(categoryName, vocab, definition, level);
                 }
 
+                // 5. Reset record if it's processed
+                record = "";
             }
             br.close();
         } catch (Exception e) {
