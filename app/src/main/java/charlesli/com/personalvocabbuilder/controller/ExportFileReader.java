@@ -4,14 +4,12 @@ import android.app.Activity;
 import android.content.Context;
 import android.net.Uri;
 import android.os.AsyncTask;
-import android.util.Log;
 import android.view.View;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
-import java.util.Arrays;
 
 import charlesli.com.personalvocabbuilder.sqlDatabase.VocabDbHelper;
 
@@ -65,19 +63,14 @@ class ExportFileReader extends AsyncTask<Void, Void, Void> {
             br.readLine();
             while ((line = br.readLine()) != null) {
                 record += line;
-                Log.d("CJLS", line);
-                /*
-                TODO: Only length = 5 is valid, otherwise accumulate lines until length is 5
-                 */
                 // Header: "Vocab,Definition,Level,Category Name,Category Description"
                 // 1. Split line by , that's not preceded by /
                 String[] row = record.split("(?<!\\\\),", -1);
-                Log.d("CJLS length", String.valueOf(row.length));
-                Log.d("CJLS array", Arrays.toString(row));
+                // If record spans multiple lines, concatenate all lines for the record first
                 if (row.length < 5) {
+                    record += "\n";
                     continue;
                 }
-                Log.d("CJLS", "processing");
                 // 2. Get each item from array
                 String vocab = row[0];
                 String definition = row[1];

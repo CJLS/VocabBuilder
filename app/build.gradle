@@ -8,8 +8,8 @@ android {
         applicationId "charlesli.com.personalvocabbuilder"
         minSdkVersion 15
         targetSdkVersion 25
-        versionCode 60
-        versionName "3.2.1"
+        versionCode 61
+        versionName "3.2.2"
 
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }

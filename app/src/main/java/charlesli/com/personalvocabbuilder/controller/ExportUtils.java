@@ -5,7 +5,6 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Environment;
-import android.util.Log;
 
 import java.io.BufferedWriter;
 import java.io.File;
@@ -91,8 +90,6 @@ class ExportUtils {
                 category = category.replace(",", "\\,");
                 description = description.replace(",", "\\,");
                 String lineToWrite = vocab + "," + definition + "," + level + "," + category + "," + description;
-                Log.d("CJLS", definition);
-                Log.d("CJLS", lineToWrite);
 
                 bufferedWriter.write(lineToWrite);
                 bufferedWriter.newLine();
