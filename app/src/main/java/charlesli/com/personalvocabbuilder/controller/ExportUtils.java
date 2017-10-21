@@ -3,8 +3,8 @@ package charlesli.com.personalvocabbuilder.controller;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
-import android.net.Uri;
 import android.os.Environment;
+import android.support.v4.content.FileProvider;
 
 import java.io.BufferedWriter;
 import java.io.File;
@@ -30,7 +30,7 @@ class ExportUtils {
         sendFileIntent.setType("text/csv");
         sendFileIntent.putExtra(Intent.EXTRA_SUBJECT, "My Vocab Export File");
         sendFileIntent.putExtra(Intent.EXTRA_TEXT, "The export file can be viewed in a text editor.");
-        sendFileIntent.putExtra(Intent.EXTRA_STREAM, Uri.fromFile(exportFile));
+        sendFileIntent.putExtra(Intent.EXTRA_STREAM, FileProvider.getUriForFile(context, "charlesli.com.personalvocabbuilder.fileprovider", exportFile));
 
         if (sendFileIntent.resolveActivity(context.getPackageManager()) != null) {
             context.startActivity(Intent.createChooser(sendFileIntent, "Send to"));
