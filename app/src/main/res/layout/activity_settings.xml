@@ -157,9 +157,10 @@
         android:id="@+id/compatSwitch"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="8dp"
+        android:layout_marginLeft="0dp"
         android:layout_marginStart="8dp"
-        app:layout_constraintLeft_toRightOf="@+id/dailyReviewTV"
+        android:layout_marginTop="0dp"
+        app:layout_constraintLeft_toLeftOf="@+id/reminderTimeInfo"
         app:layout_constraintTop_toTopOf="@+id/dailyReviewTV" />
 
     <TextView
@@ -204,10 +205,90 @@
         android:id="@+id/dailyReviewCategorySpinner"
         android:layout_width="150dp"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="8dp"
+        android:layout_marginLeft="0dp"
         android:layout_marginStart="8dp"
         android:layout_marginTop="0dp"
-        app:layout_constraintLeft_toRightOf="@+id/categoryHeader"
+        app:layout_constraintLeft_toLeftOf="@+id/reminderTimeInfo"
         app:layout_constraintTop_toTopOf="@+id/categoryHeader" />
+
+    <TextView
+        android:id="@+id/typeHeader"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="16dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="16dp"
+        android:text="Type"
+        android:textColor="@color/black"
+        android:textSize="16sp"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/categoryHeader" />
+
+    <Spinner
+        android:id="@+id/dailyReviewTypeSpinner"
+        android:layout_width="150dp"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="0dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="0dp"
+        app:layout_constraintLeft_toLeftOf="@+id/dailyReviewCategorySpinner"
+        app:layout_constraintTop_toTopOf="@+id/typeHeader" />
+
+    <TextView
+        android:id="@+id/modeHeader"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="16dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="16dp"
+        android:text="Mode"
+        android:textColor="@color/black"
+        android:textSize="16sp"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/typeHeader" />
+
+    <Spinner
+        android:id="@+id/dailyReviewModeSpinner"
+        android:layout_width="150dp"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="0dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="0dp"
+        app:layout_constraintLeft_toLeftOf="@+id/dailyReviewTypeSpinner"
+        app:layout_constraintTop_toTopOf="@+id/modeHeader" />
+
+    <TextView
+        android:id="@+id/dailyGoalHeader"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="16dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="16dp"
+        android:text="Daily Goal"
+        android:textColor="@color/black"
+        android:textSize="16sp"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/modeHeader" />
+
+    <Spinner
+        android:id="@+id/dailyReviewGoalSpinner"
+        android:layout_width="100dp"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="0dp"
+        android:layout_marginTop="0dp"
+        app:layout_constraintLeft_toLeftOf="@+id/dailyReviewModeSpinner"
+        app:layout_constraintTop_toTopOf="@+id/dailyGoalHeader" />
+
+    <TextView
+        android:id="@+id/dailyGoalSuffix"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="8dp"
+        android:layout_marginTop="0dp"
+        android:text="Vocab"
+        android:textColor="@color/black"
+        android:textSize="16sp"
+        app:layout_constraintLeft_toRightOf="@+id/dailyReviewGoalSpinner"
+        app:layout_constraintTop_toTopOf="@+id/dailyReviewGoalSpinner" />
 
 </android.support.constraint.ConstraintLayout>
