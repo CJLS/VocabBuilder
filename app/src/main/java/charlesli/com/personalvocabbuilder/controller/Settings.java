@@ -66,8 +66,14 @@ public class Settings extends AppCompatActivity {
         categoryCursor = dbHelper.getCategoryCursor();
 
         setUpCategorySpinner((Spinner) findViewById(R.id.dailyReviewCategorySpinner), categoryCursor);
-        setUpTypeSpinner((Spinner) findViewById(R.id.dailyReviewTypeSpinner));
-        setUpModeSpinner((Spinner) findViewById(R.id.dailyReviewModeSpinner));
+
+        setUpStaticSpinner((Spinner) findViewById(R.id.dailyReviewTypeSpinner),
+                R.array.review_type_array, getString(R.string.sharedPrefDailyReviewTypeKey));
+        setUpStaticSpinner((Spinner) findViewById(R.id.dailyReviewModeSpinner),
+                R.array.review_mode_array, getString(R.string.sharedPrefDailyReviewModeKey));
+        setUpStaticSpinner((Spinner) findViewById(R.id.dailyReviewGoalSpinner),
+                R.array.review_goal_array, getString(R.string.sharedPrefDailyReviewGoalKey));
+
         setupLanguageSelector((Spinner) findViewById(R.id.translateFromSpinner),
                 FROM_LANGUAGE, true, sourceLanguagePos);
 
@@ -148,12 +154,12 @@ public class Settings extends AppCompatActivity {
         });
     }
 
-    private void setUpTypeSpinner(Spinner spinner) {
-        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(getBaseContext(), R.array.review_type_array,
+    private void setUpStaticSpinner(Spinner spinner, int selectionArrayResID, final String sharedPrefKey) {
+        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(getBaseContext(), selectionArrayResID,
                 android.R.layout.simple_spinner_dropdown_item);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinner.setAdapter(adapter);
-        int defaultPos = sharedPreferencesDailyReview.getInt(getString(R.string.sharedPrefDailyReviewTypeKey), 0);
+        int defaultPos = sharedPreferencesDailyReview.getInt(sharedPrefKey, 0);
 
         spinner.setSelection(defaultPos);
 
@@ -161,30 +167,7 @@ public class Settings extends AppCompatActivity {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 sharedPreferencesDailyReview.edit()
-                        .putInt(getString(R.string.sharedPrefDailyReviewTypeKey), position).apply();
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> parent) {
-
-            }
-        });
-    }
-
-    private void setUpModeSpinner(Spinner spinner) {
-        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(getBaseContext(), R.array.review_mode_array,
-                android.R.layout.simple_spinner_dropdown_item);
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        spinner.setAdapter(adapter);
-        int defaultPos = sharedPreferencesDailyReview.getInt(getString(R.string.sharedPrefDailyReviewModeKey), 0);
-
-        spinner.setSelection(defaultPos);
-
-        spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                sharedPreferencesDailyReview.edit()
-                        .putInt(getString(R.string.sharedPrefDailyReviewModeKey), position).apply();
+                        .putInt(sharedPrefKey, position).apply();
             }
 
             @Override

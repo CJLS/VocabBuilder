@@ -81,6 +81,7 @@
     <string name="sharedPrefDailyReviewCategoryKey">Daily Review Category</string>
     <string name="sharedPrefDailyReviewTypeKey">Daily Review Type</string>
     <string name="sharedPrefDailyReviewModeKey">Daily Review Mode</string>
+    <string name="sharedPrefDailyReviewGoalKey">Daily Review Goal</string>
     <color name="white">#ffffff</color>
     <color name="black">#000000</color>
     <color name="app_icon_color">#2b5ea2</color>
@@ -109,8 +110,13 @@
     <string-array name="review_mode_array">
         <item>Vocab -> Definition</item>
         <item>Definition -> Vocab</item>
-        <item>Vocab/Definition -> Definition/Vocab</item>
+        <item>Vocab/Def -> Def/Vocab</item>
     </string-array>
 
+    <string-array name="review_goal_array">
+        <item>Casual (10 Vocab)</item>
+        <item>Regular (20 Vocab)</item>
+        <item>Serious (30 Vocab)</item>
+    </string-array>
 
 </resources>
