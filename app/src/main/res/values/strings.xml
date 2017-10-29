@@ -77,6 +77,8 @@
     <string name="autoRenewed">Auto-renewed</string>
     <string name="monthlyTTSPriceAmountMicros">Monthly TTS Price Amount Micros</string>
     <string name="yearlyTTSPriceAmountMicros">Yearly TTS Price Amount Micros</string>
+    <string name="sharedPrefDailyReviewFile">My Vocab Daily Review</string>
+    <string name="sharedPrefDailyReviewCategoryKey">Daily Review Category</string>
     <color name="white">#ffffff</color>
     <color name="black">#000000</color>
     <color name="app_icon_color">#2b5ea2</color>

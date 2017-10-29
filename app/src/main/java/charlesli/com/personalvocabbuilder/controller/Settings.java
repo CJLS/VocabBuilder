@@ -2,22 +2,26 @@ package charlesli.com.personalvocabbuilder.controller;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.database.Cursor;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.SimpleCursorAdapter;
 import android.widget.Spinner;
 import android.widget.TextView;
 
 import charlesli.com.personalvocabbuilder.R;
+import charlesli.com.personalvocabbuilder.sqlDatabase.VocabDbHelper;
 
 import static charlesli.com.personalvocabbuilder.controller.Subscription.SKU_MONTHLY_TTS;
 import static charlesli.com.personalvocabbuilder.sqlDatabase.LanguageOptions.DEFAULT_TARGET_LANGUAGE_ENGLISH;
 import static charlesli.com.personalvocabbuilder.sqlDatabase.LanguageOptions.DETECT_LANGUAGE;
 import static charlesli.com.personalvocabbuilder.sqlDatabase.LanguageOptions.FROM_LANGUAGE;
 import static charlesli.com.personalvocabbuilder.sqlDatabase.LanguageOptions.TO_LANGUAGE;
+import static charlesli.com.personalvocabbuilder.sqlDatabase.VocabDbContract.COLUMN_NAME_CATEGORY;
 
 public class Settings extends AppCompatActivity {
 
@@ -52,6 +56,9 @@ public class Settings extends AppCompatActivity {
         int sourceLanguagePos = sharedPreferencesTranslation.getInt(getString(R.string.sharedPrefTranslationSourceKey), DETECT_LANGUAGE);
         int targetLanguagePos = sharedPreferencesTranslation.getInt(getString(R.string.sharedPrefTranslationTargetKey), DEFAULT_TARGET_LANGUAGE_ENGLISH);
 
+        VocabDbHelper dbHelper = VocabDbHelper.getDBHelper(getBaseContext());
+        final Cursor categoryCursor = dbHelper.getCategoryCursor();
+        setUpCategorySpinner((Spinner) findViewById(R.id.dailyReviewCategorySpinner), categoryCursor);
         setupLanguageSelector((Spinner) findViewById(R.id.translateFromSpinner),
                 FROM_LANGUAGE, true, sourceLanguagePos);
 
@@ -82,6 +89,42 @@ public class Settings extends AppCompatActivity {
                     editor.putInt(getString(R.string.sharedPrefTranslationTargetKey), position);
                 }
                 editor.apply();
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
+            }
+        });
+    }
+
+    private void setUpCategorySpinner(Spinner spinner, final Cursor categoryCursor) {
+        String[] from = {COLUMN_NAME_CATEGORY};
+        int[] to = {android.R.id.text1};
+
+        SimpleCursorAdapter spinnerAdapter = new SimpleCursorAdapter(getBaseContext(), android.R.layout.simple_spinner_item,
+                categoryCursor, from, to, 0);
+        spinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spinner.setAdapter(spinnerAdapter);
+        int defaultPos = 0;
+        categoryCursor.moveToFirst();
+        for (int currentPos = 0; currentPos < categoryCursor.getCount() - 1; currentPos++) {
+            String category = categoryCursor.getString(categoryCursor.getColumnIndex(COLUMN_NAME_CATEGORY));
+            if (category.equals("My Word Bank")) defaultPos = currentPos;
+            categoryCursor.moveToNext();
+        }
+
+        final SharedPreferences sharedPreferencesDailyReview =
+                getSharedPreferences(getString(R.string.sharedPrefDailyReviewFile), MODE_PRIVATE);
+        defaultPos = sharedPreferencesDailyReview.getInt(getString(R.string.sharedPrefDailyReviewCategoryKey), defaultPos);
+
+        spinner.setSelection(defaultPos);
+
+        spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                sharedPreferencesDailyReview.edit()
+                        .putInt(getString(R.string.sharedPrefDailyReviewCategoryKey), position).apply();
             }
 
             @Override
