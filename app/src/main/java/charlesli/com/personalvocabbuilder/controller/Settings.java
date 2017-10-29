@@ -25,6 +25,9 @@ import static charlesli.com.personalvocabbuilder.sqlDatabase.VocabDbContract.COL
 
 public class Settings extends AppCompatActivity {
 
+    Cursor categoryCursor;
+    SharedPreferences sharedPreferencesDailyReview;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -56,14 +59,26 @@ public class Settings extends AppCompatActivity {
         int sourceLanguagePos = sharedPreferencesTranslation.getInt(getString(R.string.sharedPrefTranslationSourceKey), DETECT_LANGUAGE);
         int targetLanguagePos = sharedPreferencesTranslation.getInt(getString(R.string.sharedPrefTranslationTargetKey), DEFAULT_TARGET_LANGUAGE_ENGLISH);
 
+        sharedPreferencesDailyReview =
+                getSharedPreferences(getString(R.string.sharedPrefDailyReviewFile), MODE_PRIVATE);
+
         VocabDbHelper dbHelper = VocabDbHelper.getDBHelper(getBaseContext());
-        final Cursor categoryCursor = dbHelper.getCategoryCursor();
+        categoryCursor = dbHelper.getCategoryCursor();
+
         setUpCategorySpinner((Spinner) findViewById(R.id.dailyReviewCategorySpinner), categoryCursor);
+        setUpTypeSpinner((Spinner) findViewById(R.id.dailyReviewTypeSpinner));
         setupLanguageSelector((Spinner) findViewById(R.id.translateFromSpinner),
                 FROM_LANGUAGE, true, sourceLanguagePos);
 
         setupLanguageSelector((Spinner) findViewById(R.id.translateToSpinner),
                 TO_LANGUAGE, false, targetLanguagePos);
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+
+        if (categoryCursor != null) categoryCursor.close();
     }
 
     private void setupLanguageSelector(Spinner spinner, String[] languages,
@@ -114,8 +129,6 @@ public class Settings extends AppCompatActivity {
             categoryCursor.moveToNext();
         }
 
-        final SharedPreferences sharedPreferencesDailyReview =
-                getSharedPreferences(getString(R.string.sharedPrefDailyReviewFile), MODE_PRIVATE);
         defaultPos = sharedPreferencesDailyReview.getInt(getString(R.string.sharedPrefDailyReviewCategoryKey), defaultPos);
 
         spinner.setSelection(defaultPos);
@@ -125,6 +138,30 @@ public class Settings extends AppCompatActivity {
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 sharedPreferencesDailyReview.edit()
                         .putInt(getString(R.string.sharedPrefDailyReviewCategoryKey), position).apply();
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
+            }
+        });
+    }
+
+    private void setUpTypeSpinner(Spinner spinner) {
+        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(getBaseContext(), R.array.review_type_array,
+                android.R.layout.simple_spinner_dropdown_item);
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spinner.setAdapter(adapter);
+        int defaultPos = 0;
+        defaultPos = sharedPreferencesDailyReview.getInt(getString(R.string.sharedPrefDailyReviewTypeKey), defaultPos);
+
+        spinner.setSelection(defaultPos);
+
+        spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                sharedPreferencesDailyReview.edit()
+                        .putInt(getString(R.string.sharedPrefDailyReviewTypeKey), position).apply();
             }
 
             @Override
