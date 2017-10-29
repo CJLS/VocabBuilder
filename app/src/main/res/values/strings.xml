@@ -80,6 +80,7 @@
     <string name="sharedPrefDailyReviewFile">My Vocab Daily Review</string>
     <string name="sharedPrefDailyReviewCategoryKey">Daily Review Category</string>
     <string name="sharedPrefDailyReviewTypeKey">Daily Review Type</string>
+    <string name="sharedPrefDailyReviewModeKey">Daily Review Mode</string>
     <color name="white">#ffffff</color>
     <color name="black">#000000</color>
     <color name="app_icon_color">#2b5ea2</color>
@@ -103,6 +104,12 @@
         <item>Least familiar</item>
         <item>Most recent</item>
         <item>Least recent</item>
+    </string-array>
+
+    <string-array name="review_mode_array">
+        <item>Vocab -> Definition</item>
+        <item>Definition -> Vocab</item>
+        <item>Vocab/Definition -> Definition/Vocab</item>
     </string-array>
 
 
