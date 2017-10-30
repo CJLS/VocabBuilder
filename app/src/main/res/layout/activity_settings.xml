@@ -180,7 +180,8 @@
         android:id="@+id/reminderTimeInfo"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="8dp"
+        android:layout_marginBottom="0dp"
+        android:layout_marginLeft="16dp"
         android:layout_marginStart="8dp"
         android:text="08:00 AM"
         android:textColor="@color/black"
@@ -279,17 +280,5 @@
         app:layout_constraintLeft_toLeftOf="@+id/dailyReviewModeSpinner"
         app:layout_constraintTop_toTopOf="@+id/dailyGoalHeader" />
 
-    <TextView
-        android:id="@+id/dailyGoalSuffix"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="8dp"
-        android:layout_marginTop="0dp"
-        android:text="Vocab"
-        android:textColor="@color/black"
-        android:textSize="16sp"
-        android:visibility="gone"
-        app:layout_constraintLeft_toRightOf="@+id/dailyReviewGoalSpinner"
-        app:layout_constraintTop_toTopOf="@+id/dailyReviewGoalSpinner" />
 
 </android.support.constraint.ConstraintLayout>

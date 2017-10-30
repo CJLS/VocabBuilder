@@ -156,7 +156,7 @@ public class Settings extends AppCompatActivity {
 
     private void setUpStaticSpinner(Spinner spinner, int selectionArrayResID, final String sharedPrefKey) {
         ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(getBaseContext(), selectionArrayResID,
-                android.R.layout.simple_spinner_dropdown_item);
+                android.R.layout.simple_spinner_item);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinner.setAdapter(adapter);
         int defaultPos = sharedPreferencesDailyReview.getInt(sharedPrefKey, 0);
