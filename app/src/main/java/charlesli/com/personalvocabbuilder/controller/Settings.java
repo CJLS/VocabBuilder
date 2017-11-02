@@ -5,10 +5,12 @@ import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.SwitchCompat;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.CompoundButton;
 import android.widget.SimpleCursorAdapter;
 import android.widget.Spinner;
 import android.widget.TextView;
@@ -65,6 +67,8 @@ public class Settings extends AppCompatActivity {
         VocabDbHelper dbHelper = VocabDbHelper.getDBHelper(getBaseContext());
         categoryCursor = dbHelper.getCategoryCursor();
 
+        setUpNotificationSwitch((SwitchCompat) findViewById(R.id.dailyReviewCompatSwitch));
+
         setUpCategorySpinner((Spinner) findViewById(R.id.dailyReviewCategorySpinner), categoryCursor);
 
         setUpStaticSpinner((Spinner) findViewById(R.id.dailyReviewTypeSpinner),
@@ -86,6 +90,20 @@ public class Settings extends AppCompatActivity {
         super.onDestroy();
 
         if (categoryCursor != null) categoryCursor.close();
+    }
+
+    private void setUpNotificationSwitch(SwitchCompat switchCompat) {
+
+        boolean isChecked = sharedPreferencesDailyReview.getBoolean(getString(R.string.sharedPrefDailyReviewSwitchKey), true);
+        switchCompat.setChecked(isChecked);
+
+        switchCompat.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton compoundButton, boolean isChecked) {
+                sharedPreferencesDailyReview.edit()
+                        .putBoolean(getString(R.string.sharedPrefDailyReviewSwitchKey), isChecked).apply();
+            }
+        });
     }
 
     private void setupLanguageSelector(Spinner spinner, String[] languages,
