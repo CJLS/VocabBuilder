@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.os.Bundle;
+import android.support.v4.app.DialogFragment;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.SwitchCompat;
 import android.support.v7.widget.Toolbar;
@@ -15,8 +16,11 @@ import android.widget.SimpleCursorAdapter;
 import android.widget.Spinner;
 import android.widget.TextView;
 
+import java.util.Locale;
+
 import charlesli.com.personalvocabbuilder.R;
 import charlesli.com.personalvocabbuilder.sqlDatabase.VocabDbHelper;
+import charlesli.com.personalvocabbuilder.ui.TimePickerFragment;
 
 import static charlesli.com.personalvocabbuilder.controller.Subscription.SKU_MONTHLY_TTS;
 import static charlesli.com.personalvocabbuilder.sqlDatabase.LanguageOptions.DEFAULT_TARGET_LANGUAGE_ENGLISH;
@@ -67,6 +71,8 @@ public class Settings extends AppCompatActivity {
         VocabDbHelper dbHelper = VocabDbHelper.getDBHelper(getBaseContext());
         categoryCursor = dbHelper.getCategoryCursor();
 
+        setUpDailyReviewStudyTime((TextView) findViewById(R.id.reminderTimeInfo));
+
         setUpNotificationSwitch((SwitchCompat) findViewById(R.id.dailyReviewCompatSwitch));
 
         setUpCategorySpinner((Spinner) findViewById(R.id.dailyReviewCategorySpinner), categoryCursor);
@@ -90,6 +96,32 @@ public class Settings extends AppCompatActivity {
         super.onDestroy();
 
         if (categoryCursor != null) categoryCursor.close();
+    }
+
+    private void setUpDailyReviewStudyTime(TextView studyTime) {
+        sharedPreferencesDailyReview =
+                getSharedPreferences(getString(R.string.sharedPrefDailyReviewFile), MODE_PRIVATE);
+        int hour = sharedPreferencesDailyReview.getInt(getString(R.string.sharedPrefDailyReviewStudyHourKey), 9);
+        int minute = sharedPreferencesDailyReview.getInt(getString(R.string.sharedPrefDailyReviewStudyMinKey), 30);
+        String periodOfDay = "AM";
+
+        if (hour >= 12) {
+            hour = hour - 12;
+            periodOfDay = "PM";
+        }
+        if (hour == 0) {
+            hour = 12;
+        }
+
+        studyTime.setText(hour + ":" + String.format(Locale.CANADA, "%02d", minute) + " " + periodOfDay);
+
+        studyTime.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                DialogFragment newFragment = new TimePickerFragment();
+                newFragment.show(getSupportFragmentManager(), "timePicker");
+            }
+        });
     }
 
     private void setUpNotificationSwitch(SwitchCompat switchCompat) {

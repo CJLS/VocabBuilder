@@ -83,6 +83,8 @@
     <string name="sharedPrefDailyReviewModeKey">Daily Review Mode</string>
     <string name="sharedPrefDailyReviewGoalKey">Daily Review Goal</string>
     <string name="sharedPrefDailyReviewSwitchKey">Daily Review Switch</string>
+    <string name="sharedPrefDailyReviewStudyHourKey">Daily Review Study Hour</string>
+    <string name="sharedPrefDailyReviewStudyMinKey">Daily Review Study Min</string>
     <color name="white">#ffffff</color>
     <color name="black">#000000</color>
     <color name="app_icon_color">#2b5ea2</color>
