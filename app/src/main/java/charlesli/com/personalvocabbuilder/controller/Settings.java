@@ -16,12 +16,14 @@ import android.widget.SimpleCursorAdapter;
 import android.widget.Spinner;
 import android.widget.TextView;
 
+import java.util.Arrays;
 import java.util.Locale;
 
 import charlesli.com.personalvocabbuilder.R;
 import charlesli.com.personalvocabbuilder.sqlDatabase.VocabDbHelper;
 import charlesli.com.personalvocabbuilder.ui.TimePickerFragment;
 
+import static charlesli.com.personalvocabbuilder.controller.ReviewSession.VOCAB_TO_DEF_REVIEW_MODE;
 import static charlesli.com.personalvocabbuilder.controller.Subscription.SKU_MONTHLY_TTS;
 import static charlesli.com.personalvocabbuilder.sqlDatabase.LanguageOptions.DEFAULT_TARGET_LANGUAGE_ENGLISH;
 import static charlesli.com.personalvocabbuilder.sqlDatabase.LanguageOptions.DETECT_LANGUAGE;
@@ -86,7 +88,6 @@ public class Settings extends AppCompatActivity {
 
         setupLanguageSelector((Spinner) findViewById(R.id.translateFromSpinner),
                 FROM_LANGUAGE, true, sourceLanguagePos);
-
         setupLanguageSelector((Spinner) findViewById(R.id.translateToSpinner),
                 TO_LANGUAGE, false, targetLanguagePos);
     }
@@ -99,8 +100,6 @@ public class Settings extends AppCompatActivity {
     }
 
     private void setUpDailyReviewStudyTime(TextView studyTime) {
-        sharedPreferencesDailyReview =
-                getSharedPreferences(getString(R.string.sharedPrefDailyReviewFile), MODE_PRIVATE);
         int hour = sharedPreferencesDailyReview.getInt(getString(R.string.sharedPrefDailyReviewStudyHourKey), 9);
         int minute = sharedPreferencesDailyReview.getInt(getString(R.string.sharedPrefDailyReviewStudyMinKey), 30);
         String periodOfDay = "AM";
@@ -125,7 +124,6 @@ public class Settings extends AppCompatActivity {
     }
 
     private void setUpNotificationSwitch(SwitchCompat switchCompat) {
-
         boolean isChecked = sharedPreferencesDailyReview.getBoolean(getString(R.string.sharedPrefDailyReviewSwitchKey), true);
         switchCompat.setChecked(isChecked);
 
@@ -179,22 +177,24 @@ public class Settings extends AppCompatActivity {
         spinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinner.setAdapter(spinnerAdapter);
         int defaultPos = 0;
+
+        String selectedCategory = sharedPreferencesDailyReview.getString(getString(R.string.sharedPrefDailyReviewCategoryKey), getString(R.string.my_word_bank));
         categoryCursor.moveToFirst();
         for (int currentPos = 0; currentPos < categoryCursor.getCount() - 1; currentPos++) {
             String category = categoryCursor.getString(categoryCursor.getColumnIndex(COLUMN_NAME_CATEGORY));
-            if (category.equals("My Word Bank")) defaultPos = currentPos;
+            if (category.equals(selectedCategory)) defaultPos = currentPos;
             categoryCursor.moveToNext();
         }
-
-        defaultPos = sharedPreferencesDailyReview.getInt(getString(R.string.sharedPrefDailyReviewCategoryKey), defaultPos);
 
         spinner.setSelection(defaultPos);
 
         spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                categoryCursor.moveToPosition(position);
+                String category = categoryCursor.getString(categoryCursor.getColumnIndex(COLUMN_NAME_CATEGORY));
                 sharedPreferencesDailyReview.edit()
-                        .putInt(getString(R.string.sharedPrefDailyReviewCategoryKey), position).apply();
+                        .putString(getString(R.string.sharedPrefDailyReviewCategoryKey), category).apply();
             }
 
             @Override
@@ -209,15 +209,40 @@ public class Settings extends AppCompatActivity {
                 android.R.layout.simple_spinner_item);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinner.setAdapter(adapter);
-        int defaultPos = sharedPreferencesDailyReview.getInt(sharedPrefKey, 0);
+        int selectedPos = 0;
 
-        spinner.setSelection(defaultPos);
+        if (sharedPrefKey.equals(getString(R.string.sharedPrefDailyReviewTypeKey))) {
+            String [] reviewTypeArray = getResources().getStringArray(R.array.review_type_array);
+            // Default review type selection is 0 : Vocab -> Def
+            String reviewType = sharedPreferencesDailyReview.getString(sharedPrefKey, reviewTypeArray[0]);
+            selectedPos = Arrays.asList(reviewTypeArray).indexOf(reviewType);
+            if (selectedPos < 0) selectedPos = 0;
+        }
+        else if (sharedPrefKey.equals(getString(R.string.sharedPrefDailyReviewModeKey))) {
+            selectedPos = sharedPreferencesDailyReview.getInt(sharedPrefKey, VOCAB_TO_DEF_REVIEW_MODE);
+        }
+        else if (sharedPrefKey.equals(getString(R.string.sharedPrefDailyReviewGoalKey))) {
+            selectedPos = sharedPreferencesDailyReview.getInt(sharedPrefKey, 0);
+        }
+
+        spinner.setSelection(selectedPos);
 
         spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                sharedPreferencesDailyReview.edit()
-                        .putInt(sharedPrefKey, position).apply();
+                if (sharedPrefKey.equals(getString(R.string.sharedPrefDailyReviewTypeKey))) {
+                    String [] reviewTypeArray = getResources().getStringArray(R.array.review_type_array);
+                    sharedPreferencesDailyReview.edit()
+                            .putString(sharedPrefKey, reviewTypeArray[position]).apply();
+                }
+                else if (sharedPrefKey.equals(getString(R.string.sharedPrefDailyReviewModeKey))) {
+                    sharedPreferencesDailyReview.edit()
+                            .putInt(sharedPrefKey, position).apply();
+                }
+                else if (sharedPrefKey.equals(getString(R.string.sharedPrefDailyReviewGoalKey))) {
+                    sharedPreferencesDailyReview.edit()
+                            .putInt(sharedPrefKey, position).apply();
+                }
             }
 
             @Override

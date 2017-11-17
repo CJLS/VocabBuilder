@@ -36,7 +36,7 @@
     <string name="review_option_selected">Review Option</string>
     <string name="level_again">Again</string>
     <string name="categories_my_vocab">My Vocab</string>
-    <string name="title_activity_my_word_bank">My Word Bank</string>
+    <string name="my_word_bank">My Word Bank</string>
     <string name="title_activity_gmat">GMAT</string>
     <string name="title_activity_gre">GRE</string>
     <string name="empty_text_view">Begin by adding the vocab you want to learn!</string>

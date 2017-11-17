@@ -5,6 +5,7 @@
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
     <uses-permission android:name="com.android.vending.BILLING" />
 
     <application
@@ -90,6 +91,17 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".controller.MainActivity" />
         </activity>
+        <service
+            android:name=".controller.NotificationService"
+            android:exported="false">
+        </service>
+        <receiver
+            android:name=".controller.NotificationAlarmReceiver"
+            android:process=":remote">
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+            </intent-filter>
+        </receiver>
     </application>
 
 </manifest>

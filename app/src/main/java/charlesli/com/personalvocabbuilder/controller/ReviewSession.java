@@ -53,8 +53,6 @@ public class ReviewSession extends AppCompatActivity {
     public static final int PERFECT = 3;
     private int mReviewMode;
     private String mReviewCategory;
-    private int mReviewNumOfVocab;
-    private int mReviewType;
     private int mDifficultCount = 0;
     private int mFamiliarCount = 0;
     private int mEasyCount = 0;
@@ -93,8 +91,8 @@ public class ReviewSession extends AppCompatActivity {
 
         mReviewMode = intent.getIntExtra("Mode", VOCAB_TO_DEF_REVIEW_MODE);
         mReviewCategory = intent.getStringExtra("Category");
-        mReviewNumOfVocab = intent.getIntExtra("NumOfVocab", 0);
-        mReviewType = intent.getIntExtra("Type", RANDOM_REVIEW_TYPE);
+        int mReviewNumOfVocab = intent.getIntExtra("NumOfVocab", 0);
+        int mReviewType = intent.getIntExtra("Type", RANDOM_REVIEW_TYPE);
 
         textToSpeech = new CustomTTS(this, new TextToSpeech.OnInitListener() {
             @Override
@@ -171,7 +169,7 @@ public class ReviewSession extends AppCompatActivity {
                 mCursor = mDbHelper.getVocabCursor(mReviewCategory, RANDOM, mReviewNumOfVocab);
         }
 
-        mReviewProgressBar.setMax(mReviewNumOfVocab);
+        mReviewProgressBar.setMax(mCursor.getCount());
         loadVocabInRandomOrder();
     }
 
@@ -347,7 +345,7 @@ public class ReviewSession extends AppCompatActivity {
                 selectionArgs
         );
         // If this is not last word to be reviewed
-        if (mTracker.size() < mReviewNumOfVocab) {
+        if (mTracker.size() < mCursor.getCount()) {
             // load the next vocab to be reviewed
             loadVocabInRandomOrder();
 
