@@ -176,7 +176,12 @@ public class MainActivity extends AppCompatActivity {
                 getSharedPreferences(getString(R.string.sharedPrefDailyReviewFile), MODE_PRIVATE);
         boolean isDailyReviewOn = sharedPreferencesDailyReview.getBoolean(getString(R.string.sharedPrefDailyReviewSwitchKey), true);
         if (isDailyReviewOn) {
-            scheduleAlarm();
+            Intent intent = new Intent(getApplicationContext(), NotificationAlarmReceiver.class);
+            // Schedule alarm if PendingIntent doesn't already exist
+            if (PendingIntent.getBroadcast(this, NotificationAlarmReceiver.REQUEST_CODE,
+                    intent, PendingIntent.FLAG_NO_CREATE) == null) {
+                scheduleAlarm();
+            }
         }
         else {
             cancelAlarm();
@@ -213,6 +218,7 @@ public class MainActivity extends AppCompatActivity {
                 intent, PendingIntent.FLAG_UPDATE_CURRENT);
         AlarmManager alarm = (AlarmManager) getSystemService(ALARM_SERVICE);
         alarm.cancel(pIntent);
+        pIntent.cancel();
     }
 
 
