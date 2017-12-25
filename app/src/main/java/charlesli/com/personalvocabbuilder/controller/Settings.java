@@ -180,7 +180,7 @@ public class Settings extends AppCompatActivity {
 
         String selectedCategory = sharedPreferencesDailyReview.getString(getString(R.string.sharedPrefDailyReviewCategoryKey), getString(R.string.my_word_bank));
         categoryCursor.moveToFirst();
-        for (int currentPos = 0; currentPos < categoryCursor.getCount() - 1; currentPos++) {
+        for (int currentPos = 0; currentPos < categoryCursor.getCount(); currentPos++) {
             String category = categoryCursor.getString(categoryCursor.getColumnIndex(COLUMN_NAME_CATEGORY));
             if (category.equals(selectedCategory)) defaultPos = currentPos;
             categoryCursor.moveToNext();

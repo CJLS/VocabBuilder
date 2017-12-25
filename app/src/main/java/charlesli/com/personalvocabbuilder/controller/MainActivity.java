@@ -207,9 +207,8 @@ public class MainActivity extends AppCompatActivity {
         long firstMillis = calendar.getTimeInMillis();
         AlarmManager alarm = (AlarmManager) getSystemService(ALARM_SERVICE);
 
-        // TODO: Change to daily before publish to production
         alarm.setInexactRepeating(AlarmManager.RTC_WAKEUP, firstMillis,
-                AlarmManager.INTERVAL_FIFTEEN_MINUTES, pIntent);
+                AlarmManager.INTERVAL_DAY, pIntent);
     }
 
     public void cancelAlarm() {
