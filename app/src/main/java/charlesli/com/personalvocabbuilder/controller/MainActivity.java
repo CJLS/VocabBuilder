@@ -208,7 +208,7 @@ public class MainActivity extends AppCompatActivity {
         AlarmManager alarm = (AlarmManager) getSystemService(ALARM_SERVICE);
 
         alarm.setInexactRepeating(AlarmManager.RTC_WAKEUP, firstMillis,
-                AlarmManager.INTERVAL_DAY, pIntent);
+                AlarmManager.INTERVAL_FIFTEEN_MINUTES, pIntent);
     }
 
     public void cancelAlarm() {
