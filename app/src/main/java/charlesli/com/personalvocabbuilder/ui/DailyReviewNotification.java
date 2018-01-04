@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.support.v4.app.NotificationCompat;
+import android.support.v4.app.TaskStackBuilder;
 
 import java.util.Arrays;
 
@@ -65,13 +66,13 @@ public class DailyReviewNotification {
         resultIntent.putExtra("Mode", reviewMode);
         resultIntent.putExtra("NumOfVocab", reviewGoal);
         resultIntent.putExtra("Type", reviewTypePos);
+        TaskStackBuilder stackBuilder = TaskStackBuilder.create(context);
+        // Adds the back stack
+        stackBuilder.addParentStack(ReviewSession.class);
+        // Adds the intent to the top of the stack
+        stackBuilder.addNextIntent(resultIntent);
         PendingIntent resultPendingIntent =
-                PendingIntent.getActivity(
-                        context,
-                        0,
-                        resultIntent,
-                        PendingIntent.FLAG_UPDATE_CURRENT
-                );
+                stackBuilder.getPendingIntent(0, PendingIntent.FLAG_UPDATE_CURRENT);
 
         notificationBuilder.setContentIntent(resultPendingIntent);
         notificationBuilder.setAutoCancel(true);
