@@ -1,7 +1,5 @@
 package charlesli.com.personalvocabbuilder.controller;
 
-import android.app.AlarmManager;
-import android.app.PendingIntent;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
@@ -35,6 +33,9 @@ import charlesli.com.personalvocabbuilder.ui.ModifyMyWordBankCategoryDialog;
 import charlesli.com.personalvocabbuilder.ui.ReviewDialog;
 
 import static charlesli.com.personalvocabbuilder.controller.InternetConnection.isNetworkAvailable;
+import static charlesli.com.personalvocabbuilder.controller.NotificationAlarm.alarmNotificationNotScheduled;
+import static charlesli.com.personalvocabbuilder.controller.NotificationAlarm.cancelAlarm;
+import static charlesli.com.personalvocabbuilder.controller.NotificationAlarm.scheduleAlarm;
 import static charlesli.com.personalvocabbuilder.controller.Subscription.MONTHLY_DEFAULT_TTS_QUOTA;
 import static charlesli.com.personalvocabbuilder.controller.Subscription.SKU_MONTHLY_TTS;
 import static charlesli.com.personalvocabbuilder.controller.Subscription.SKU_YEARLY_TTS;
@@ -176,50 +177,14 @@ public class MainActivity extends AppCompatActivity {
                 getSharedPreferences(getString(R.string.sharedPrefDailyReviewFile), MODE_PRIVATE);
         boolean isDailyReviewOn = sharedPreferencesDailyReview.getBoolean(getString(R.string.sharedPrefDailyReviewSwitchKey), true);
         if (isDailyReviewOn) {
-            Intent intent = new Intent(getApplicationContext(), NotificationAlarmReceiver.class);
-            // Schedule alarm if PendingIntent doesn't already exist
-            if (PendingIntent.getBroadcast(this, NotificationAlarmReceiver.REQUEST_CODE,
-                    intent, PendingIntent.FLAG_NO_CREATE) == null) {
-                scheduleAlarm();
+            if (alarmNotificationNotScheduled(this)) {
+                scheduleAlarm(this);
             }
         }
         else {
-            cancelAlarm();
+            cancelAlarm(this);
         }
     }
-
-    public void scheduleAlarm() {
-        // Construct an intent that will execute the AlarmReceiver
-        Intent intent = new Intent(getApplicationContext(), NotificationAlarmReceiver.class);
-        // Create a PendingIntent to be triggered when the alarm goes off
-        final PendingIntent pIntent = PendingIntent.getBroadcast(this, NotificationAlarmReceiver.REQUEST_CODE,
-                intent, PendingIntent.FLAG_UPDATE_CURRENT);
-        // Setup periodic alarm every every half hour from this point onwards
-        Calendar calendar = Calendar.getInstance();
-        SharedPreferences sharedPreferencesDailyReview =
-                getSharedPreferences(getString(R.string.sharedPrefDailyReviewFile), MODE_PRIVATE);
-        int hour = sharedPreferencesDailyReview.getInt(getString(R.string.sharedPrefDailyReviewStudyHourKey), 8);
-        int minute = sharedPreferencesDailyReview.getInt(getString(R.string.sharedPrefDailyReviewStudyMinKey), 30);
-
-        calendar.set(Calendar.HOUR_OF_DAY, hour);
-        calendar.set(Calendar.MINUTE, minute);
-        calendar.set(Calendar.SECOND, 0);
-        long firstMillis = calendar.getTimeInMillis();
-        AlarmManager alarm = (AlarmManager) getSystemService(ALARM_SERVICE);
-
-        alarm.setInexactRepeating(AlarmManager.RTC_WAKEUP, firstMillis,
-                AlarmManager.INTERVAL_DAY, pIntent);
-    }
-
-    public void cancelAlarm() {
-        Intent intent = new Intent(getApplicationContext(), NotificationAlarmReceiver.class);
-        final PendingIntent pIntent = PendingIntent.getBroadcast(this, NotificationAlarmReceiver.REQUEST_CODE,
-                intent, PendingIntent.FLAG_UPDATE_CURRENT);
-        AlarmManager alarm = (AlarmManager) getSystemService(ALARM_SERVICE);
-        alarm.cancel(pIntent);
-        pIntent.cancel();
-    }
-
 
     @Override
     protected void onResume() {

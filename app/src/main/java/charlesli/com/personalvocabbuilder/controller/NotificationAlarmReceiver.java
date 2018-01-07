@@ -10,9 +10,6 @@ import android.content.Intent;
 
 public class NotificationAlarmReceiver extends BroadcastReceiver {
 
-    public static final int REQUEST_CODE = 12345;
-    public static final String ACTION = "charlesli.com.personalvocabbuilder.notification.alarm";
-
     @Override
     public void onReceive(Context context, Intent intent) {
         Intent notificationIntent = new Intent(context, NotificationService.class);
