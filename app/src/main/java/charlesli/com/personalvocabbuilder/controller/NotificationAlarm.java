@@ -19,7 +19,7 @@ import static android.content.Context.MODE_PRIVATE;
 
 public class NotificationAlarm {
 
-    static final int REQUEST_CODE = 12345;
+    private static final int REQUEST_CODE = 12345;
 
     public static boolean alarmNotificationNotScheduled(Context context) {
         Intent intent = new Intent(context, NotificationAlarmReceiver.class);
@@ -46,8 +46,10 @@ public class NotificationAlarm {
         long firstMillis = calendar.getTimeInMillis();
         AlarmManager alarm = (AlarmManager) context.getSystemService(ALARM_SERVICE);
 
-        alarm.setInexactRepeating(AlarmManager.RTC_WAKEUP, firstMillis,
-                AlarmManager.INTERVAL_DAY, pIntent);
+        if (alarm != null) {
+            alarm.setInexactRepeating(AlarmManager.RTC_WAKEUP, firstMillis,
+                    AlarmManager.INTERVAL_DAY, pIntent);
+        }
     }
 
     public static void cancelAlarm(Context context) {
@@ -55,7 +57,9 @@ public class NotificationAlarm {
         final PendingIntent pIntent = PendingIntent.getBroadcast(context, REQUEST_CODE,
                 intent, PendingIntent.FLAG_UPDATE_CURRENT);
         AlarmManager alarm = (AlarmManager) context.getSystemService(ALARM_SERVICE);
-        alarm.cancel(pIntent);
+        if (alarm != null) {
+            alarm.cancel(pIntent);
+        }
         pIntent.cancel();
     }
 }

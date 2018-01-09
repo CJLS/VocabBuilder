@@ -186,7 +186,7 @@
         android:layout_marginLeft="16dp"
         android:layout_marginStart="8dp"
         android:gravity="center"
-        android:text="08:00 AM"
+        android:text="08:30 AM"
         android:textColor="@color/black"
         android:textSize="16sp"
         app:layout_constraintBottom_toBottomOf="@+id/reminderTimeHeader"

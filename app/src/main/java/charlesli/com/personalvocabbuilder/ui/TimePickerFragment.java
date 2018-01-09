@@ -14,7 +14,6 @@ import java.util.Locale;
 import charlesli.com.personalvocabbuilder.R;
 
 import static android.content.Context.MODE_PRIVATE;
-import static charlesli.com.personalvocabbuilder.controller.NotificationAlarm.alarmNotificationNotScheduled;
 import static charlesli.com.personalvocabbuilder.controller.NotificationAlarm.cancelAlarm;
 import static charlesli.com.personalvocabbuilder.controller.NotificationAlarm.scheduleAlarm;
 
@@ -58,13 +57,11 @@ public class TimePickerFragment extends DialogFragment implements TimePickerDial
         studyTime.setText(hour + ":" + String.format(Locale.CANADA, "%02d", minute) + " " + periodOfDay);
 
         boolean isDailyReviewOn = sharedPreferencesDailyReview.getBoolean(getString(R.string.sharedPrefDailyReviewSwitchKey), true);
+
         if (isDailyReviewOn) {
-            if (alarmNotificationNotScheduled(getContext())) {
-                scheduleAlarm(getContext());
-            }
-        }
-        else {
+            // Reschedule alarm
             cancelAlarm(getContext());
+            scheduleAlarm(getContext());
         }
     }
 }
