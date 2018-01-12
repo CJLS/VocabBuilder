@@ -59,7 +59,7 @@ public class DailyReviewNotification {
         NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(context)
                 .setSmallIcon(R.drawable.icon_vocabbuilder)
                 .setContentTitle("My Vocab Daily Review")
-                .setContentText("It's time for your daily review session. Take a few minutes to complete it.");
+                .setContentText("Take a few minutes to improve your vocab.");
 
         Intent resultIntent = new Intent(context, ReviewSession.class);
         resultIntent.putExtra("Category", reviewCategory);
