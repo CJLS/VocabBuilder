@@ -227,23 +227,19 @@ public class ReviewSession extends AppCompatActivity {
         if (mReviewMode == VOCAB_TO_DEF_REVIEW_MODE) {
             mTopTextView.setText(word);
             mBottomTextView.setText(definition);
-            mSpeaker.setVisibility(View.VISIBLE);
         }
         else if (mReviewMode == DEF_TO_VOCAB_REVIEW_MODE) {
             mTopTextView.setText(definition);
             mBottomTextView.setText(word);
-            mSpeaker.setVisibility(View.INVISIBLE);
         }
         else {
             if (mRandom.nextBoolean()) {
                 mTopTextView.setText(word);
                 mBottomTextView.setText(definition);
-                mSpeaker.setVisibility(View.VISIBLE);
             }
             else {
                 mTopTextView.setText(definition);
                 mBottomTextView.setText(word);
-                mSpeaker.setVisibility(View.INVISIBLE);
             }
         }
 
@@ -252,6 +248,7 @@ public class ReviewSession extends AppCompatActivity {
         mEasLvlButton.setVisibility(View.INVISIBLE);
         mPerLvlButton.setVisibility(View.INVISIBLE);
         mAgaLvlButton.setVisibility(View.INVISIBLE);
+        mSpeaker.setVisibility(View.INVISIBLE);
         mBottomTextView.setVisibility(View.INVISIBLE);
         mRevealButton.setVisibility(View.VISIBLE);
 
