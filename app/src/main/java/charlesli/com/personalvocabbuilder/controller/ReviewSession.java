@@ -269,6 +269,21 @@ public class ReviewSession extends AppCompatActivity {
                 mAgaLvlButton.setVisibility(View.VISIBLE);
                 mBottomTextView.setVisibility(View.VISIBLE);
 
+                if (textToSpeech != null) {
+                    SharedPreferences sharedPreferencesTTS =
+                            getSharedPreferences(getString(R.string.ttsMonthlyLimitPref), MODE_PRIVATE);
+                    boolean isSubscribed = sharedPreferencesTTS.getBoolean(getString(R.string.isSubscribed), false);
+                    int remainingTTSQuota = sharedPreferencesTTS.getInt(getString(R.string.remainingTTSQuota), 60);
+                    if (isSubscribed || (remainingTTSQuota > 0)) {
+                        if (Build.VERSION.SDK_INT >= 21) {
+                            textToSpeech.speak(word, TextToSpeech.QUEUE_FLUSH, null, "1");
+
+                        } else {
+                            textToSpeech.speak(word, TextToSpeech.QUEUE_FLUSH, null);
+                        }
+                    }
+                }
+
                 mDifLvlButton.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
