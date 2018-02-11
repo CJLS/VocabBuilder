@@ -35,18 +35,14 @@ import static charlesli.com.personalvocabbuilder.sqlDatabase.VocabDbContract._ID
  */
 public class VocabDbHelper extends SQLiteOpenHelper {
     // If the database schema is changed, the database version must be incremented.
-    public static final int DATABASE_VERSION = 8;
-    public static final String DATABASE_NAME = "VocabDatabase.db";
-    private static final String DELETE_TABLE_MY_VOCAB =
-            "DROP TABLE IF EXISTS " + TABLE_NAME_MY_VOCAB;
+    private static final int DATABASE_VERSION = 8;
+    private static final String DATABASE_NAME = "VocabDatabase.db";
     private static final String DELETE_TABLE_MY_WORD_BANK =
             "DROP TABLE IF EXISTS " + TABLE_NAME_MY_WORD_BANK;
     private static final String DELETE_TABLE_GMAT =
             "DROP TABLE IF EXISTS " + TABLE_NAME_GMAT;
     private static final String DELETE_TABLE_GRE =
             "DROP TABLE IF EXISTS " + TABLE_NAME_GRE;
-    private static final String DELETE_TABLE_CATEGORY =
-            "DROP TABLE IF EXISTS " + TABLE_NAME_CATEGORY;
     private static VocabDbHelper dbInstance;
 
     private String CREATE_TABLE_MY_VOCAB =

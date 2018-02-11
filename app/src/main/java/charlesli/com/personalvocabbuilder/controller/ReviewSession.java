@@ -30,23 +30,13 @@ import charlesli.com.personalvocabbuilder.sqlDatabase.VocabDbContract;
 import charlesli.com.personalvocabbuilder.sqlDatabase.VocabDbHelper;
 import charlesli.com.personalvocabbuilder.ui.SpeechLimitDialog;
 
-import static charlesli.com.personalvocabbuilder.sqlDatabase.VocabDbContract.DATE_ASC;
-import static charlesli.com.personalvocabbuilder.sqlDatabase.VocabDbContract.DATE_DESC;
-import static charlesli.com.personalvocabbuilder.sqlDatabase.VocabDbContract.LEVEL_ASC;
-import static charlesli.com.personalvocabbuilder.sqlDatabase.VocabDbContract.LEVEL_DESC;
-import static charlesli.com.personalvocabbuilder.sqlDatabase.VocabDbContract.RANDOM;
+import static charlesli.com.personalvocabbuilder.sqlDatabase.VocabDbContract.REVIEW_ORDER_BY;
 
 
 public class ReviewSession extends AppCompatActivity {
 
     public static final int VOCAB_TO_DEF_REVIEW_MODE = 0;
     public static final int DEF_TO_VOCAB_REVIEW_MODE = 1;
-    public static final int MIX_REVIEW_MODE = 2;
-    public static final int RANDOM_REVIEW_TYPE = 0;
-    public static final int MOST_FAMILIAR_REVIEW_TYPE = 1;
-    public static final int LEAST_FAMILIAR_REVIEW_TYPE = 2;
-    public static final int MOST_RECENT_REVIEW_TYPE = 3;
-    public static final int LEAST_RECENT_REVIEW_TYPE = 4;
     public static final int DIFFICULT = 0;
     public static final int FAMILIAR = 1;
     public static final int EASY = 2;
@@ -92,7 +82,6 @@ public class ReviewSession extends AppCompatActivity {
         mReviewMode = intent.getIntExtra("Mode", VOCAB_TO_DEF_REVIEW_MODE);
         mReviewCategory = intent.getStringExtra("Category");
         int mReviewNumOfVocab = intent.getIntExtra("NumOfVocab", 0);
-        int mReviewType = intent.getIntExtra("Type", RANDOM_REVIEW_TYPE);
 
         textToSpeech = new CustomTTS(this, new TextToSpeech.OnInitListener() {
             @Override
@@ -148,26 +137,7 @@ public class ReviewSession extends AppCompatActivity {
         mReviewProgressBar = (ProgressBar) findViewById(R.id.reviewProgressBar);
         mSpeaker = (ImageView) findViewById(R.id.pronounceVocab);
 
-
-        switch (mReviewType) {
-            case RANDOM_REVIEW_TYPE:
-                mCursor = mDbHelper.getVocabCursor(mReviewCategory, RANDOM, mReviewNumOfVocab);
-                break;
-            case MOST_FAMILIAR_REVIEW_TYPE:
-                mCursor = mDbHelper.getVocabCursor(mReviewCategory, LEVEL_DESC, mReviewNumOfVocab);
-                break;
-            case LEAST_FAMILIAR_REVIEW_TYPE:
-                mCursor = mDbHelper.getVocabCursor(mReviewCategory, LEVEL_ASC, mReviewNumOfVocab);
-                break;
-            case MOST_RECENT_REVIEW_TYPE:
-                mCursor = mDbHelper.getVocabCursor(mReviewCategory, DATE_DESC, mReviewNumOfVocab);
-                break;
-            case LEAST_RECENT_REVIEW_TYPE:
-                mCursor = mDbHelper.getVocabCursor(mReviewCategory, DATE_ASC, mReviewNumOfVocab);
-                break;
-            default:
-                mCursor = mDbHelper.getVocabCursor(mReviewCategory, RANDOM, mReviewNumOfVocab);
-        }
+        mCursor = mDbHelper.getVocabCursor(mReviewCategory, REVIEW_ORDER_BY, mReviewNumOfVocab);
 
         mReviewProgressBar.setMax(mCursor.getCount());
         loadVocabInRandomOrder();

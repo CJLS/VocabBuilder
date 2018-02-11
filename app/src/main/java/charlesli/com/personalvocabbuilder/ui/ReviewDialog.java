@@ -11,7 +11,6 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
-import android.widget.RadioButton;
 import android.widget.SeekBar;
 import android.widget.SimpleCursorAdapter;
 import android.widget.Spinner;
@@ -23,9 +22,6 @@ import charlesli.com.personalvocabbuilder.controller.ReviewSession;
 import charlesli.com.personalvocabbuilder.sqlDatabase.VocabDbContract;
 import charlesli.com.personalvocabbuilder.sqlDatabase.VocabDbHelper;
 
-import static charlesli.com.personalvocabbuilder.controller.ReviewSession.DEF_TO_VOCAB_REVIEW_MODE;
-import static charlesli.com.personalvocabbuilder.controller.ReviewSession.MIX_REVIEW_MODE;
-import static charlesli.com.personalvocabbuilder.controller.ReviewSession.RANDOM_REVIEW_TYPE;
 import static charlesli.com.personalvocabbuilder.controller.ReviewSession.VOCAB_TO_DEF_REVIEW_MODE;
 
 /**
@@ -44,7 +40,6 @@ public class ReviewDialog extends CustomDialog {
         VocabDbHelper dbHelper = VocabDbHelper.getDBHelper(context);
         final Cursor categoryCursor = dbHelper.getCategoryCursor();
         final int[] reviewMode = {VOCAB_TO_DEF_REVIEW_MODE};
-        final int[] reviewType = {RANDOM_REVIEW_TYPE};
 
         categoryCursor.moveToFirst();
         String firstCategoryInCategoryCursor =
@@ -60,16 +55,12 @@ public class ReviewDialog extends CustomDialog {
 
         final EditText reviewNumET = (EditText) promptsView.findViewById(R.id.numberText);
         Spinner categorySpinner = (Spinner) promptsView.findViewById(R.id.categorySpinner);
-        Spinner reviewTypeSpinner = (Spinner) promptsView.findViewById(R.id.reviewTypeSpinner);
-        final RadioButton vocabDefReview = (RadioButton) promptsView.findViewById(R.id.vocabDefReview);
-        final RadioButton defVocabReview = (RadioButton) promptsView.findViewById(R.id.defVocabReview);
-        final RadioButton mixReview = (RadioButton) promptsView.findViewById(R.id.mixReview);
+        Spinner reviewModeSpinner = (Spinner) promptsView.findViewById(R.id.reviewModeSpinner);
         final SeekBar seekBar = (SeekBar) promptsView.findViewById(R.id.seekBar);
 
         setUpReviewNumEditText(totalNum, reviewNum, reviewNumET, seekBar);
         setUpCategorySpinner(categoryCursor, reviewNumET, categorySpinner, seekBar, reviewCategory, totalNum, reviewNum);
-        setUpReviewTypeSpinner(reviewTypeSpinner, reviewType);
-        setUpRadioButtons(reviewMode, vocabDefReview, defVocabReview, mixReview);
+        setUpReviewModeSpinner(reviewModeSpinner, reviewMode);
         setUpSeekBar(totalNum, reviewNum, reviewNumET, seekBar);
 
         setView(promptsView);
@@ -84,7 +75,6 @@ public class ReviewDialog extends CustomDialog {
                     intent.putExtra("Mode", reviewMode[0]);
                     intent.putExtra("Category", reviewCategory[0]);
                     intent.putExtra("NumOfVocab", reviewNum[0]);
-                    intent.putExtra("Type", reviewType[0]);
                     getContext().startActivity(intent);
                 }
             }
@@ -153,39 +143,6 @@ public class ReviewDialog extends CustomDialog {
         });
     }
 
-    private void setUpRadioButtons(final int[] reviewMode, final RadioButton wordDef,
-                                   final RadioButton defWord, final RadioButton mix) {
-        wordDef.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                wordDef.setChecked(true);
-                defWord.setChecked(false);
-                mix.setChecked(false);
-                reviewMode[0] = VOCAB_TO_DEF_REVIEW_MODE;
-            }
-        });
-
-        defWord.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                wordDef.setChecked(false);
-                defWord.setChecked(true);
-                mix.setChecked(false);
-                reviewMode[0] = DEF_TO_VOCAB_REVIEW_MODE;
-            }
-        });
-
-        mix.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                wordDef.setChecked(false);
-                defWord.setChecked(false);
-                mix.setChecked(true);
-                reviewMode[0] = MIX_REVIEW_MODE;
-            }
-        });
-    }
-
     private void setUpCategorySpinner(final Cursor categoryCursor, final TextView numText, Spinner spinner,
                                       final SeekBar seekBar, final String[] reviewCategory,
                                       final int[] totalNum, final int[] reviewNum) {
@@ -220,15 +177,15 @@ public class ReviewDialog extends CustomDialog {
 
     }
 
-    private void setUpReviewTypeSpinner(Spinner spinner, final int[] reviewType) {
-        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(getContext(), R.array.review_type_array,
+    private void setUpReviewModeSpinner(Spinner spinner, final int[] reviewMode) {
+        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(getContext(), R.array.review_mode_array,
                 android.R.layout.simple_spinner_dropdown_item);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinner.setAdapter(adapter);
         spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                reviewType[0] = position;
+                reviewMode[0] = position;
             }
 
             @Override

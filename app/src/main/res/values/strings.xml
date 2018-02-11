@@ -79,7 +79,6 @@
     <string name="yearlyTTSPriceAmountMicros">Yearly TTS Price Amount Micros</string>
     <string name="sharedPrefDailyReviewFile">My Vocab Daily Review</string>
     <string name="sharedPrefDailyReviewCategoryKey">Daily Review Category</string>
-    <string name="sharedPrefDailyReviewTypeKey">Daily Review Type</string>
     <string name="sharedPrefDailyReviewModeKey">Daily Review Mode</string>
     <string name="sharedPrefDailyReviewGoalKey">Daily Review Goal</string>
     <string name="sharedPrefDailyReviewSwitchKey">Daily Review Switch</string>
@@ -100,14 +99,6 @@
         <item>My Word Bank</item>
         <item>GMAT</item>
         <item>GRE</item>
-    </string-array>
-
-    <string-array name="review_type_array">
-        <item>Random</item>
-        <item>Most familiar</item>
-        <item>Least familiar</item>
-        <item>Most recent</item>
-        <item>Least recent</item>
     </string-array>
 
     <string-array name="review_mode_array">

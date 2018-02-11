@@ -7,49 +7,19 @@
 
     <Spinner
         android:id="@+id/categorySpinner"
-        android:layout_width="150dp"
+        android:layout_width="200dp"
         android:layout_height="48dp"
         android:spinnerMode="dropdown"
         app:layout_constraintLeft_toRightOf="@+id/categoryTV"
         app:layout_constraintTop_toTopOf="parent" />
 
     <Spinner
-        android:id="@+id/reviewTypeSpinner"
-        android:layout_width="150dp"
+        android:id="@+id/reviewModeSpinner"
+        android:layout_width="200dp"
         android:layout_height="48dp"
         android:spinnerMode="dropdown"
-        app:layout_constraintLeft_toRightOf="@+id/vocabTypeTV"
+        app:layout_constraintLeft_toRightOf="@+id/vocabModeTV"
         app:layout_constraintTop_toBottomOf="@+id/categorySpinner" />
-
-    <RadioButton
-        android:id="@+id/vocabDefReview"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/categorySpinner"
-        android:checked="true"
-        android:text="Vocab -> Definition"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/reviewTypeSpinner" />
-
-    <RadioButton
-        android:id="@+id/defVocabReview"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/vocabDefReview"
-        android:checked="false"
-        android:text="Definition -> Vocab"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/vocabDefReview" />
-
-    <RadioButton
-        android:id="@+id/mixReview"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/defVocabReview"
-        android:checked="false"
-        android:text="Vocab/Definition -> Definition/Vocab"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/defVocabReview" />
 
     <SeekBar
         android:id="@+id/seekBar"
@@ -72,7 +42,7 @@
         android:text="100"
         android:textAppearance="?android:attr/textAppearanceMedium"
         app:layout_constraintLeft_toRightOf="@+id/reviewText"
-        app:layout_constraintTop_toBottomOf="@+id/mixReview" />
+        app:layout_constraintTop_toBottomOf="@+id/reviewModeSpinner" />
 
     <TextView
         android:id="@+id/wordsText"
@@ -104,14 +74,14 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
-        android:id="@+id/vocabTypeTV"
+        android:id="@+id/vocabModeTV"
         android:layout_width="80dp"
         android:layout_height="48dp"
         android:layout_marginLeft="5dp"
         android:layout_marginStart="5dp"
         android:gravity="center_vertical"
-        android:text="Vocab Type"
-        app:layout_constraintLeft_toLeftOf="@+id/vocabDefReview"
+        android:text="Mode"
+        app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/categoryTV" />
 
 </android.support.constraint.ConstraintLayout>

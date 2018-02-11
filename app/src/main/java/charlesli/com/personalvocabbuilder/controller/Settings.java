@@ -16,7 +16,6 @@ import android.widget.SimpleCursorAdapter;
 import android.widget.Spinner;
 import android.widget.TextView;
 
-import java.util.Arrays;
 import java.util.Locale;
 
 import charlesli.com.personalvocabbuilder.R;
@@ -79,8 +78,6 @@ public class Settings extends AppCompatActivity {
 
         setUpCategorySpinner((Spinner) findViewById(R.id.dailyReviewCategorySpinner), categoryCursor);
 
-        setUpStaticSpinner((Spinner) findViewById(R.id.dailyReviewTypeSpinner),
-                R.array.review_type_array, getString(R.string.sharedPrefDailyReviewTypeKey));
         setUpStaticSpinner((Spinner) findViewById(R.id.dailyReviewModeSpinner),
                 R.array.review_mode_array, getString(R.string.sharedPrefDailyReviewModeKey));
         setUpStaticSpinner((Spinner) findViewById(R.id.dailyReviewGoalSpinner),
@@ -211,14 +208,7 @@ public class Settings extends AppCompatActivity {
         spinner.setAdapter(adapter);
         int selectedPos = 0;
 
-        if (sharedPrefKey.equals(getString(R.string.sharedPrefDailyReviewTypeKey))) {
-            String [] reviewTypeArray = getResources().getStringArray(R.array.review_type_array);
-            // Default review type selection is 0 : Vocab -> Def
-            String reviewType = sharedPreferencesDailyReview.getString(sharedPrefKey, reviewTypeArray[0]);
-            selectedPos = Arrays.asList(reviewTypeArray).indexOf(reviewType);
-            if (selectedPos < 0) selectedPos = 0;
-        }
-        else if (sharedPrefKey.equals(getString(R.string.sharedPrefDailyReviewModeKey))) {
+        if (sharedPrefKey.equals(getString(R.string.sharedPrefDailyReviewModeKey))) {
             selectedPos = sharedPreferencesDailyReview.getInt(sharedPrefKey, VOCAB_TO_DEF_REVIEW_MODE);
         }
         else if (sharedPrefKey.equals(getString(R.string.sharedPrefDailyReviewGoalKey))) {
@@ -230,12 +220,7 @@ public class Settings extends AppCompatActivity {
         spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                if (sharedPrefKey.equals(getString(R.string.sharedPrefDailyReviewTypeKey))) {
-                    String [] reviewTypeArray = getResources().getStringArray(R.array.review_type_array);
-                    sharedPreferencesDailyReview.edit()
-                            .putString(sharedPrefKey, reviewTypeArray[position]).apply();
-                }
-                else if (sharedPrefKey.equals(getString(R.string.sharedPrefDailyReviewModeKey))) {
+                if (sharedPrefKey.equals(getString(R.string.sharedPrefDailyReviewModeKey))) {
                     sharedPreferencesDailyReview.edit()
                             .putInt(sharedPrefKey, position).apply();
                 }

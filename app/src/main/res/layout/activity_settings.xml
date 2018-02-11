@@ -216,29 +216,6 @@
         app:layout_constraintTop_toTopOf="@+id/categoryHeader" />
 
     <TextView
-        android:id="@+id/typeHeader"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="16dp"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="16dp"
-        android:text="Type"
-        android:textColor="@color/black"
-        android:textSize="16sp"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/categoryHeader" />
-
-    <Spinner
-        android:id="@+id/dailyReviewTypeSpinner"
-        android:layout_width="200dp"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="0dp"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="0dp"
-        app:layout_constraintLeft_toLeftOf="@+id/dailyReviewCategorySpinner"
-        app:layout_constraintTop_toTopOf="@+id/typeHeader" />
-
-    <TextView
         android:id="@+id/modeHeader"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -249,7 +226,7 @@
         android:textColor="@color/black"
         android:textSize="16sp"
         app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/typeHeader" />
+        app:layout_constraintTop_toBottomOf="@+id/categoryHeader" />
 
     <Spinner
         android:id="@+id/dailyReviewModeSpinner"
@@ -258,7 +235,7 @@
         android:layout_marginLeft="0dp"
         android:layout_marginStart="16dp"
         android:layout_marginTop="0dp"
-        app:layout_constraintLeft_toLeftOf="@+id/dailyReviewTypeSpinner"
+        app:layout_constraintLeft_toLeftOf="@+id/dailyReviewCategorySpinner"
         app:layout_constraintTop_toTopOf="@+id/modeHeader" />
 
     <TextView

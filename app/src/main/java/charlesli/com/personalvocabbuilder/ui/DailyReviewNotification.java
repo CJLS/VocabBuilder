@@ -7,8 +7,6 @@ import android.content.SharedPreferences;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.TaskStackBuilder;
 
-import java.util.Arrays;
-
 import charlesli.com.personalvocabbuilder.R;
 import charlesli.com.personalvocabbuilder.controller.ReviewSession;
 import charlesli.com.personalvocabbuilder.sqlDatabase.VocabDbHelper;
@@ -34,10 +32,6 @@ public class DailyReviewNotification {
         int numOfRows = mDbHelper.getVocabCursor(reviewCategory).getCount();
         if (numOfRows == 0) return null;
 
-        String [] reviewTypeArray = context.getResources().getStringArray(R.array.review_type_array);
-        String reviewType = sharedPreferencesDailyReview.getString(context.getString(R.string.sharedPrefDailyReviewTypeKey), reviewTypeArray[0]);
-        int reviewTypePos = Arrays.asList(reviewTypeArray).indexOf(reviewType);
-        if (reviewTypePos < 0) reviewTypePos = 0;
         int reviewMode = sharedPreferencesDailyReview.getInt(context.getString(R.string.sharedPrefDailyReviewModeKey), VOCAB_TO_DEF_REVIEW_MODE);
         int reviewGoalPos = sharedPreferencesDailyReview.getInt(context.getString(R.string.sharedPrefDailyReviewGoalKey), 0);
         int reviewGoal;
@@ -65,7 +59,6 @@ public class DailyReviewNotification {
         resultIntent.putExtra("Category", reviewCategory);
         resultIntent.putExtra("Mode", reviewMode);
         resultIntent.putExtra("NumOfVocab", reviewGoal);
-        resultIntent.putExtra("Type", reviewTypePos);
         TaskStackBuilder stackBuilder = TaskStackBuilder.create(context);
         // Adds the back stack
         stackBuilder.addParentStack(ReviewSession.class);
