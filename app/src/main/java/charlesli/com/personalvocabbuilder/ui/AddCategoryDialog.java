@@ -30,7 +30,7 @@ import charlesli.com.personalvocabbuilder.sqlDatabase.VocabDbHelper;
 public class AddCategoryDialog extends CustomDialog {
 
     private int selectedPos;
-    private HashMap<String, Locale> displayNameToLocaleMapping;
+    private HashMap<String, Locale> displayNameToLocaleMapping = new HashMap<>();
     private ArrayList<String> supportedLanguages;
 
     public AddCategoryDialog(final Context context, final CategoryCursorAdapter categoryAdapter, final CustomTTS textToSpeech) {
@@ -44,6 +44,8 @@ public class AddCategoryDialog extends CustomDialog {
 
         if (textToSpeech != null) {
             displayNameToLocaleMapping = textToSpeech.getSupportedDisplayNameToLocaleMapping();
+        }
+        if (!displayNameToLocaleMapping.isEmpty()) {
             supportedLanguages = new ArrayList<>(displayNameToLocaleMapping.keySet());
             Collections.sort(supportedLanguages);
             selectedPos = supportedLanguages.indexOf(Locale.US.getDisplayName());

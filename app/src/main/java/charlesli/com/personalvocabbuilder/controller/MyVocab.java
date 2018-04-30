@@ -73,6 +73,9 @@ public class MyVocab extends AppCompatActivity {
                         return;
                     }
                     HashMap<String, Locale> displayNameToLocaleMapping = textToSpeech.getSupportedDisplayNameToLocaleMapping();
+                    if (displayNameToLocaleMapping.isEmpty()) {
+                        return;
+                    }
 
                     int result = textToSpeech.setLanguage(displayNameToLocaleMapping.get(selectedLocaleDisplayName));
                     if (result == TextToSpeech.LANG_MISSING_DATA || result == TextToSpeech.LANG_NOT_SUPPORTED) {
@@ -188,7 +191,11 @@ public class MyVocab extends AppCompatActivity {
     }
 
     private void setSpeakerSettings() {
+        HashMap<String, Locale> displayNameToLocaleMapping = new HashMap<>();
         if (textToSpeech != null) {
+            displayNameToLocaleMapping = textToSpeech.getSupportedDisplayNameToLocaleMapping();
+        }
+        if (!displayNameToLocaleMapping.isEmpty()) {
             SpeechSettingsDialog speechSettingsDialog = new SpeechSettingsDialog(this, categoryName, textToSpeech);
             speechSettingsDialog.show();
             speechSettingsDialog.changeButtonsToAppIconColor();

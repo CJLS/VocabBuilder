@@ -89,6 +89,9 @@ public class ReviewSession extends AppCompatActivity {
                 if (status != TextToSpeech.ERROR) {
                     String selectedLocaleDisplayName = mDbHelper.getCategoryLocaleDisplayName(mReviewCategory);
                     HashMap<String, Locale> displayNameToLocaleMapping = textToSpeech.getSupportedDisplayNameToLocaleMapping();
+                    if (displayNameToLocaleMapping.isEmpty()) {
+                        return;
+                    }
 
                     int result = textToSpeech.setLanguage(displayNameToLocaleMapping.get(selectedLocaleDisplayName));
 
