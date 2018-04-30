@@ -6,6 +6,7 @@ import android.speech.tts.TextToSpeech;
 
 import java.util.HashMap;
 import java.util.Locale;
+import java.util.Set;
 
 /**
  * Created by charles on 2017-06-11.
@@ -32,8 +33,11 @@ public class CustomTTS extends TextToSpeech {
 
 
         if (getLanguagesMethodExisted && Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            for (Locale locale : getAvailableLanguages()) {
-                displayToLocaleHashMap.put(locale.getDisplayName(), locale);
+            Set<Locale> availableLanguages = getAvailableLanguages();
+            if (availableLanguages != null) {
+                for (Locale locale : availableLanguages) {
+                    displayToLocaleHashMap.put(locale.getDisplayName(), locale);
+                }
             }
         }
         else {
