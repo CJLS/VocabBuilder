@@ -13,6 +13,6 @@ public class NotificationAlarmReceiver extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) {
         Intent notificationIntent = new Intent(context, NotificationService.class);
-        context.startService(notificationIntent);
+        NotificationService.enqueueWork(context, notificationIntent);
     }
 }
