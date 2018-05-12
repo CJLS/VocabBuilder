@@ -558,9 +558,10 @@ public class VocabDbHelper extends SQLiteOpenHelper {
         SQLiteDatabase db = this.getReadableDatabase();
 
         String query = "SELECT * FROM " + TABLE_NAME_MY_VOCAB + " WHERE " +
-                COLUMN_NAME_VOCAB + " = ? " + " AND " +
-                COLUMN_NAME_DEFINITION + " = ?";
-        Cursor cursor = db.rawQuery(query, new String[]{vocab, definition});
+                COLUMN_NAME_VOCAB + " = ? COLLATE NOCASE " + " AND " +
+                COLUMN_NAME_DEFINITION + " LIKE ?";
+        String likePattern = "%" + definition + "%";
+        Cursor cursor = db.rawQuery(query, new String[]{vocab, likePattern});
         boolean vocabExists = false;
 
         if (cursor.getCount() > 0) {
@@ -605,10 +606,11 @@ public class VocabDbHelper extends SQLiteOpenHelper {
         // Check current category first
         String currentCategoryQuery = "SELECT " + COLUMN_NAME_CATEGORY + " FROM "
                 + TABLE_NAME_MY_VOCAB + " WHERE " + COLUMN_NAME_VOCAB
-                + " = ?" + " AND " + COLUMN_NAME_DEFINITION
-                + " = ?" + " AND " + COLUMN_NAME_CATEGORY
+                + " = ? COLLATE NOCASE" + " AND " + COLUMN_NAME_DEFINITION
+                + " LIKE ?" + " AND " + COLUMN_NAME_CATEGORY
                 + " = ?";
-        Cursor currentCategoryCursor = db.rawQuery(currentCategoryQuery, new String[]{vocab, definition, currentCategory});
+        String likePattern = "%" + definition + "%";
+        Cursor currentCategoryCursor = db.rawQuery(currentCategoryQuery, new String[]{vocab, likePattern, currentCategory});
         if (currentCategoryCursor.getCount() > 0) {
             currentCategoryCursor.moveToFirst();
             String category = currentCategoryCursor.getString(currentCategoryCursor.getColumnIndex(COLUMN_NAME_CATEGORY));
@@ -622,8 +624,8 @@ public class VocabDbHelper extends SQLiteOpenHelper {
         // Check other categories
         String allCategoriesQuery = "SELECT " + COLUMN_NAME_CATEGORY + " FROM "
                 + TABLE_NAME_MY_VOCAB + " WHERE " + COLUMN_NAME_VOCAB
-                + " = ?" + " AND " + COLUMN_NAME_DEFINITION + " = ?";
-        Cursor allCategoriesCursor = db.rawQuery(allCategoriesQuery, new String[]{vocab, definition});
+                + " = ? COLLATE NOCASE" + " AND " + COLUMN_NAME_DEFINITION + " LIKE ?";
+        Cursor allCategoriesCursor = db.rawQuery(allCategoriesQuery, new String[]{vocab, likePattern});
         if (allCategoriesCursor.getCount() > 0) {
             allCategoriesCursor.moveToFirst();
             String category = allCategoriesCursor.getString(allCategoriesCursor.getColumnIndex(COLUMN_NAME_CATEGORY));
