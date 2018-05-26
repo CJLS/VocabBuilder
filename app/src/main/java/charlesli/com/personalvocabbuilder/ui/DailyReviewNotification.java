@@ -1,9 +1,12 @@
 package charlesli.com.personalvocabbuilder.ui;
 
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.os.Build;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.TaskStackBuilder;
 
@@ -12,6 +15,7 @@ import charlesli.com.personalvocabbuilder.controller.ReviewSession;
 import charlesli.com.personalvocabbuilder.sqlDatabase.VocabDbHelper;
 
 import static android.content.Context.MODE_PRIVATE;
+import static android.support.v4.app.NotificationCompat.PRIORITY_DEFAULT;
 import static charlesli.com.personalvocabbuilder.controller.ReviewSession.VOCAB_TO_DEF_REVIEW_MODE;
 
 /**
@@ -21,6 +25,7 @@ import static charlesli.com.personalvocabbuilder.controller.ReviewSession.VOCAB_
 public class DailyReviewNotification {
 
     public static final int NOTIFICATION_ID = 123;
+    public static final String CHANNEL_ID = "com.charlesli.personalvocabbuilder";
 
     public static NotificationCompat.Builder getBuilder(Context context) {
         VocabDbHelper mDbHelper = VocabDbHelper.getDBHelper(context);
@@ -50,8 +55,9 @@ public class DailyReviewNotification {
         }
 
 
-        NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(context)
+        NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(context, CHANNEL_ID)
                 .setSmallIcon(R.drawable.icon_vocabbuilder)
+                .setPriority(PRIORITY_DEFAULT)
                 .setContentTitle("My Vocab Daily Review")
                 .setContentText("Take a few minutes to improve your vocab.");
 
@@ -71,6 +77,17 @@ public class DailyReviewNotification {
         notificationBuilder.setAutoCancel(true);
 
         return notificationBuilder;
+    }
+
+    public static void createNotificationChannel(Context context) {
+        // Create the NotificationChannel, but only on API 26+ because
+        // the NotificationChannel class is new and not in the support library
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            NotificationChannel channel = new NotificationChannel(CHANNEL_ID, "Daily Review", NotificationManager.IMPORTANCE_DEFAULT);
+            // Register the channel with the system
+            NotificationManager notificationManager = context.getSystemService(NotificationManager.class);
+            notificationManager.createNotificationChannel(channel);
+        }
     }
 
 }

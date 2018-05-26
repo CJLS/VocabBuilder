@@ -28,6 +28,7 @@ import charlesli.com.personalvocabbuilder.sqlDatabase.CategoryCursorAdapter;
 import charlesli.com.personalvocabbuilder.sqlDatabase.VocabDbContract;
 import charlesli.com.personalvocabbuilder.sqlDatabase.VocabDbHelper;
 import charlesli.com.personalvocabbuilder.ui.AddCategoryDialog;
+import charlesli.com.personalvocabbuilder.ui.DailyReviewNotification;
 import charlesli.com.personalvocabbuilder.ui.EditCategoryDialog;
 import charlesli.com.personalvocabbuilder.ui.ModifyMyWordBankCategoryDialog;
 import charlesli.com.personalvocabbuilder.ui.ReviewDialog;
@@ -164,6 +165,8 @@ public class MainActivity extends AppCompatActivity {
                 }
             });
         }
+
+        DailyReviewNotification.createNotificationChannel(this);
 
         textToSpeech = new CustomTTS(this, new TextToSpeech.OnInitListener() {
             @Override
